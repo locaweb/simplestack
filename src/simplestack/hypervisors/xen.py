@@ -100,7 +100,9 @@ class Stack(SimpleStack):
                 self.connection.xenapi.VM.set_VCPUs_at_startup(vm_ref, cpus)
                 self.connection.xenapi.VM.set_VCPUs_max(vm_ref, cpus)
         if guestdata.get("vcpu_settings"):
-            self.connection.xenapi.VM.adjust_vcpu_settings(vm_ref, guestdata["vcpu_settings"])
+            parameters = self.connection.xenapi.VM.get_VCPUs_params(vm_ref)
+            parameters.update(guestdata["vcpu_settings"])
+            self.connection.xenapi.VM.set_VCPUs_params(vm_ref, parameters)
         if guestdata.get("hdd"):
             disk = self.get_disks(vm_ref)[-1]
             hdd = guestdata.get("hdd") * 1024 * 1024 * 1024
