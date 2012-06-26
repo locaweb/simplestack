@@ -1,0 +1,8 @@
+[vmware]
+api_server = server
+username = admin
+password = secret
+[xen]
+api_server = server
+username = admin
+password = secret

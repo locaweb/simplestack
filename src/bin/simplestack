@@ -1,0 +1,28 @@
+#!/usr/bin/python
+import sys
+import getopt
+
+from supay import Daemon
+from simplestack.server import main
+
+if __name__ == '__main__':
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "a:", ["action="])
+    except getopt.GetoptError, err:
+        print str(err)
+
+    action = 'start'
+    for o, a in opts:
+        if o in ('-a', '--action'):
+            action = a
+
+    daemon = Daemon(name='simplestack')
+    if action == 'start':
+        daemon.start()
+        main()
+    elif action == 'status':
+        daemon.status()
+    elif action == 'stop':
+        daemon.stop()
+    elif action == 'foreground':
+        main()

@@ -1,0 +1,4 @@
+*.pyc
+doc/build
+test.cfg
+simplestack.cfg

@@ -1,0 +1,13 @@
+Source: simplestack
+Section: net
+Priority: extra
+Maintainer: Locaweb Cloud Team <cloud-dev@locaweb.com.br>
+Build-Depends: debhelper (>= 7.0.50~)
+Standards-Version: 3.8.4
+Homepage: https://github.com/locaweb/simplestack
+
+Package: simplestack
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-bottle, python-supay, python-gevent, python-xenapi
+Description: A simple abstraction to deal with different hypervisors
+ Deal with different hypervisors though a simple REST API.

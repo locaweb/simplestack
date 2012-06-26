@@ -1,0 +1,3 @@
+[DEFAULT]
+port: 80
+root_dir: /var/www/simplestack
