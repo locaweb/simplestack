@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 setup(
     name='simplestack',
@@ -7,8 +7,8 @@ setup(
     description='A simple abstraction to deal with different hypervisors',
     author='Locaweb',
     url='http://github.com/locaweb/simplestack',
-    packages=['simplestack']
-    package_dir={'simplestack': 'src/simplestack'},
+    package_dir={'': 'src'},
+    packages=find_packages('src'),
     data_files=[
         ('/usr/sbin', ['src/bin/simplestack']),
         ('/etc/init.d', ['src/init/simplestack']),
