@@ -37,14 +37,24 @@ class Stack(SimpleStack):
         self.connect()
 
     def connect(self):
-        self.connection = XenAPI.Session("https://%s/" % self.poolinfo.get("api_server"))
+        self.connection = XenAPI.Session(
+            "https://%s/" % self.poolinfo.get("api_server")
+        )
         try:
-            self.connection.xenapi.login_with_password(self.poolinfo.get("username"), self.poolinfo.get("password"))
+            self.connection.xenapi.login_with_password(
+                self.poolinfo.get("username"),
+                self.poolinfo.get("password")
+            )
         except Exception, error:
             # If host is slave, connect to master
             if 'HOST_IS_SLAVE' in str(error):
-                self.connection = XenAPI.Session("https://%s/" % str(error).split("'")[3])
-                self.connection.xenapi.login_with_password(self.poolinfo.get("username"), self.poolinfo.get("password"))
+                self.connection = XenAPI.Session(
+                    "https://%s/" % str(error).split("'")[3]
+                )
+                self.connection.xenapi.login_with_password(
+                    self.poolinfo.get("username"),
+                    self.poolinfo.get("password")
+                )
             else:
                 raise error
         return
@@ -57,8 +67,8 @@ class Stack(SimpleStack):
 
         total_memory = 0
         for host_ref in self.connection.xenapi.host.get_all():
-            metrics_ref = self.connection.xenapi.host.get_metrics(host_ref)
-            metrics_rec = self.connection.xenapi.host_metrics.get_record(metrics_ref)
+            met_ref = self.connection.xenapi.host.get_metrics(host_ref)
+            rec = self.connection.xenapi.host_metrics.get_record(met_ref)
             total_memory += int(metrics_rec['memory_total'])
 
         pool_rec = self.connection.xenapi.pool.get_all_records().values()[0]
@@ -84,18 +94,25 @@ class Stack(SimpleStack):
 
     def guest_shutdown(self, guest_id, force=False):
         if force:
-            return self.connection.xenapi.VM.hard_shutdown(self._vm_ref(guest_id))
+            return self.connection.xenapi.VM.hard_shutdown(
+                self._vm_ref(guest_id)
+            )
         else:
-            return self.connection.xenapi.VM.clean_shutdown(self._vm_ref(guest_id))
+            return self.connection.xenapi.VM.clean_shutdown(
+                self._vm_ref(guest_id)
+            )
 
     def guest_start(self, guest_id):
-        return self.connection.xenapi.VM.start(self._vm_ref(guest_id), False, False)
+        return self.connection.xenapi.VM.start(
+            self._vm_ref(guest_id), False, False
+        )
 
     def guest_reboot(self, guest_id, force=False):
+        vm_ref = self._vm_ref(guest_id)
         if force:
-            return self.connection.xenapi.VM.hard_reboot(self._vm_ref(guest_id))
+            return self.connection.xenapi.VM.hard_reboot(vm_ref)
         else:
-            return self.connection.xenapi.VM.clean_reboot(self._vm_ref(guest_id))
+            return self.connection.xenapi.VM.clean_reboot(vm_ref)
 
     def guest_suspend(self, guest_id):
         return self.connection.xenapi.VM.suspend(self._vm_ref(guest_id))
@@ -109,7 +126,9 @@ class Stack(SimpleStack):
             self.connection.xenapi.VM.set_name_label(vm_ref, guestdata["name"])
         if guestdata.get("memory"):
             memory = str(int(guestdata["memory"]) * 1024 * 1024)
-            self.connection.xenapi.VM.set_memory_limits(vm_ref, memory, memory, memory, memory)
+            self.connection.xenapi.VM.set_memory_limits(
+                vm_ref, memory, memory, memory, memory
+            )
         if guestdata.get("cpus"):
             max_cpus = self.connection.xenapi.VM.get_VCPUs_max(vm_ref)
             cpus = str(guestdata["cpus"])
@@ -137,11 +156,17 @@ class Stack(SimpleStack):
         session_ref = self.connection._session
         # FIXME: get real master
         master = self.poolinfo.get("api_server")
-        task_ref = self.connection.xenapi.task.create("import vm", "import job")
-        path = "/import?session_id=%s&task_id=%s" % (session_ref, task_ref)
+        task_ref = self.connection.xenapi.task.create(
+            "import vm", "import job"
+        )
+        path = "/import?session_id=%s&task_id=%s" % (
+            session_ref, task_ref
+        )
 
         conn = httplib.HTTPConnection(master)
-        response = conn.request("PUT", path, vm_stream, {"Content-Length": vm_size})
+        response = conn.request(
+            "PUT", path, vm_stream, {"Content-Length": vm_size}
+        )
         response.status
         response.read()
 
@@ -154,8 +179,12 @@ class Stack(SimpleStack):
         session_ref = self.connection._session
         # FIXME: get real master
         master = self.poolinfo.get("api_server")
-        task_ref = self.connection.xenapi.task.create("export vm %s" % guest_id, "export job")
-        path = "/export?session_id=%s&task_id=%s&ref=%s" % (session_ref, task_ref, vm_ref)
+        task_ref = self.connection.xenapi.task.create(
+            "export vm %s" % guest_id, "export job"
+        )
+        path = "/export?session_id=%s&task_id=%s&ref=%s" % (
+            session_ref, task_ref, vm_ref
+        )
         conn = httplib.HTTPConnection(master)
         response = conn.request("GET", path)
         response.status
@@ -168,8 +197,12 @@ class Stack(SimpleStack):
         cd_ref = self._cd_ref(vm_ref)
         if media_data.get("name") and media_data["name"] != "":
             self.media_unmount(guest_id)
-            iso_ref = self.connection.xenapi.VDI.get_by_name_label(media_data["name"])[0]
-            self.connection.xenapi.VBD.set_bootable(cd_ref, media_data.get("bootable") == True)
+            iso_ref = self.connection.xenapi.VDI.get_by_name_label(
+                media_data["name"]
+            )[0]
+            self.connection.xenapi.VBD.set_bootable(
+                cd_ref, media_data.get("bootable") == True
+            )
             self.connection.xenapi.VBD.insert(cd_ref, iso_ref)
         else:
             self.media_unmount(guest_id)
@@ -177,7 +210,8 @@ class Stack(SimpleStack):
     def media_unmount(self, guest_id):
         vm_ref = self._vm_ref(guest_id)
         cd_ref = self._cd_ref(vm_ref)
-        if self.connection.xenapi.VBD.get_record(cd_ref)["VDI"] != 'OpaqueRef:NULL':
+        null_ref = 'OpaqueRef:NULL'
+        if self.connection.xenapi.VBD.get_record(cd_ref)["VDI"] != null_ref:
             self.connection.xenapi.VBD.eject(cd_ref)
         self.connection.xenapi.VM.set_HVM_boot_policy(vm_ref, "")
 
@@ -185,10 +219,12 @@ class Stack(SimpleStack):
         vm_ref = self._vm_ref(guest_id)
         cd_ref = self._cd_ref(vm_ref)
         iso_ref = self.connection.xenapi.VBD.get_record(cd_ref)["VDI"]
+        name_l = self.connection.xenapi.VDI.get_record(iso_ref)["name_label"]
+
         if iso_ref == 'OpaqueRef:NULL':
             return {"name": None}
         else:
-            return {"name": self.connection.xenapi.VDI.get_record(iso_ref)["name_label"]}
+            return {"name": name_l}
 
     def network_interface_list(self, guest_id):
         vm_ref = self._vm_ref(guest_id)
@@ -203,16 +239,25 @@ class Stack(SimpleStack):
             vif_rec = self.connection.xenapi.VIF.get_record(vif_ref)
             if vif_rec["device"] == network_interface_id:
                 return self._network_interface_info(vif_ref)
-        raise EntityNotFound("NetworkInterface", "%s - on Guest %s" % (network_interface_id, guest_id))
+
+        entity_info = "%s - on Guest %s" % (network_interface_id, guest_id)
+        raise EntityNotFound("NetworkInterface", entity_info)
 
     def snapshot_list(self, guest_id):
-        snaps = [self._snapshot_info(s) for s in self.connection.xenapi.VM.get_snapshots(self._vm_ref(guest_id))]
+        snaps = [
+            self._snapshot_info(s)
+            for s in self.connection.xenapi.VM.get_snapshots(
+                self._vm_ref(guest_id)
+            )
+        ]
         return snaps
 
     def snapshot_create(self, guest_id, snapshot_name=None):
         if not snapshot_name:
             snapshot_name = str(datetime.datetime.now())
-        snap = self.connection.xenapi.VM.snapshot(self._vm_ref(guest_id), snapshot_name)
+        snap = self.connection.xenapi.VM.snapshot(
+            self._vm_ref(guest_id), snapshot_name
+        )
         return self._snapshot_info(snap)
 
     def snapshot_info(self, guest_id, snapshot_id):
@@ -241,9 +286,12 @@ class Stack(SimpleStack):
         return self.connection.xenapi.VM.get_by_uuid(uuid)
 
     def _vm_info(self, vm_ref):
-        vm = self.connection.xenapi.VM.get_record(vm_ref)
-        guest_ref = self.connection.xenapi.VM.get_guest_metrics(vm_ref)
-        tools_up_to_date = guest_ref != "OpaqueRef:NULL" and self.connection.xenapi.VM_guest_metrics.get_PV_drivers_up_to_date(guest_ref)
+        xapi = self.connection.xenapi
+        pv_ok = xapi.VM_guest_metrics.get_PV_drivers_up_to_date(guest_ref)
+
+        vm = xapi.VM.get_record(vm_ref)
+        guest_ref = xapi.VM.get_guest_metrics(vm_ref)
+        tools_up_to_date = guest_ref != "OpaqueRef:NULL" and pv_ok
         return {
             'id': vm.get('uuid'),
             'name': vm.get('name_label'),
@@ -263,7 +311,9 @@ class Stack(SimpleStack):
 
     def _network_interface_info(self, vif_ref):
         vif_rec = self.connection.xenapi.VIF.get_record(vif_ref)
-        network_rec = self.connection.xenapi.network.get_record(vif_rec["network"])
+        network_rec = self.connection.xenapi.network.get_record(
+            vif_rec["network"]
+        )
         return {
             'id': vif_rec["device"],
             'mac': vif_rec["MAC"],

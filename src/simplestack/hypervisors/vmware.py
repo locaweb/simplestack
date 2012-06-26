@@ -42,7 +42,11 @@ class Stack(SimpleStack):
 
     def connect(self):
         self.connection = VIServer()
-        self.connection.connect(self.poolinfo.get("api_server"), self.poolinfo.get("username"), self.poolinfo.get("password"))
+        self.connection.connect(
+            self.poolinfo.get("api_server"),
+            self.poolinfo.get("username"),
+            self.poolinfo.get("password")
+        )
         return
 
     def pool_info(self):
@@ -51,7 +55,12 @@ class Stack(SimpleStack):
         }
 
     def guest_list(self):
-        return [{"id": self.connection.get_vm_by_path(path).properties.name} for path in self.connection.get_registered_vms(cluster=self.poolinfo.get('cluster'))]
+        return [
+            {"id": self.connection.get_vm_by_path(path).properties.name}
+            for path in self.connection.get_registered_vms(
+                cluster=self.poolinfo.get('cluster')
+            )
+        ]
 
     def guest_info(self, guest_id):
         vm = self._vm_ref(guest_id)
@@ -150,7 +159,8 @@ class Stack(SimpleStack):
         return tags
 
     def _vm_ref(self, vm_id):
-        if re.match(r'[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}', vm_id, re.I):
+        regex = r'[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'
+        if re.match(regex, vm_id, re.I):
             return vmware.get_vm_by_uuid(self.connection, vm_id)
         else:
             return self.connection.get_vm_by_name(vm_id)

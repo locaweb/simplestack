@@ -197,7 +197,9 @@ def xapi_local():
 
 def _parse_result(result):
     if type(result) != dict or 'Status' not in result:
-        raise xmlrpclib.Fault(500, 'Missing Status in response from server' + result)
+        raise xmlrpclib.Fault(
+            500, 'Missing Status in response from server' + result
+        )
     if result['Status'] == 'Success':
         if 'Value' in result:
             return result['Value']
@@ -232,7 +234,8 @@ class _Dispatcher:
         if self.__name is None:
             return _Dispatcher(self.__API_version, self.__send, name)
         else:
-            return _Dispatcher(self.__API_version, self.__send, "%s.%s" % (self.__name, name))
+            name = "%s.%s" % (self.__name, name)
+            return _Dispatcher(self.__API_version, self.__send, name)
 
     def __call__(self, *args):
         return self.__send(self.__name, args)

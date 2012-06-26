@@ -128,7 +128,8 @@ class Stack(SimpleStack):
         for nw_int in self.guests[guest_id]['network_interfaces']:
             if nw_int['id'] == network_interface_id:
                 return nw_int
-        raise EntityNotFound("NetworkInterface", "%s - on Guest %s" % (network_interface_id, guest_id))
+        entity_info = "%s - on Guest %s" % (network_interface_id, guest_id)
+        raise EntityNotFound("NetworkInterface", entity_info)
 
     def snapshot_list(self, guest_id):
         return self.guests[guest_id]['snapshots'].values()

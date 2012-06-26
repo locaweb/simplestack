@@ -195,12 +195,12 @@ def network_interface_list(hypervisor, host, guest_id):
     return json.dumps(manager.network_interface_list(guest_id))
 
 
-@get('/:hypervisor/:host/guests/:guest_id/network_interfaces/:network_interface_id')
-def network_interface_info(hypervisor, host, guest_id, network_interface_id):
+@get('/:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id')
+def network_interface_info(hypervisor, host, guest_id, interface_id):
     """
     ::
 
-      GET /:hypervisor/:host/guests/:guest_id/network_interfaces/:network_interface_id
+      GET /:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id
 
     Get a network interfaces in a given guest
     """
@@ -289,7 +289,9 @@ def snapshot_create(hypervisor, host, guest_id):
         abort(400, 'No data received')
     data = json.loads(data)
     snapshot = manager.snapshot_create(guest_id, data.get('name'))
-    snapshot_url = "/%s/%s/guests/%s/snapshots/%s" % (hypervisor, host, guest_id, snapshot["id"])
+    snapshot_url = "/%s/%s/guests/%s/snapshots/%s" % (
+        hypervisor, host, guest_id, snapshot["id"]
+    )
     response.set_header("Location", snapshot_url)
     return json.dumps(snapshot)
 

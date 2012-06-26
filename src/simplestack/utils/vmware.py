@@ -21,18 +21,22 @@ from pysphere import VIServer, VITask
 from pysphere.vi_property import VIProperty
 from pysphere.vi_virtual_machine import VIVirtualMachine
 from pysphere.resources import VimService_services as VI
-from pysphere.resources import VimService_services_types as VITypes  # ns0.VirtualCdromIsoBackingInfo_Def
+
+# ns0.VirtualCdromIsoBackingInfo_Def
+from pysphere.resources import VimService_services_types as VITypes
 from simplestack.exceptions import HypervisorError
 
 import re
 import uuid
 
-VirtualCdromIsoBackingInfo = VITypes.ns0.VirtualCdromIsoBackingInfo_Def(None).pyclass
+VCdIsoBackingInfo = VITypes.ns0.VirtualCdromIsoBackingInfo_Def(None).pyclass
 
 
 def get_vm_by_uuid(server, guest_id):
     request = VI.FindByUuidRequestMsg()
-    mor_search_index = request.new__this(server._do_service_content.SearchIndex)
+    mor_search_index = request.new__this(
+        server._do_service_content.SearchIndex
+    )
     mor_search_index.set_attribute_type('SearchIndex')
     request.set_element__this(mor_search_index)
     request.set_element_uuid(guest_id)
@@ -72,7 +76,8 @@ def update_vm(server, vm_obj, guestdata):
         disk_size = get_disk_size(vm_obj)
         if new_hdd * 1024 * 1024 > disk_size:
             disk = get_disks(vm_obj)[-1]
-            new_disk_size = (new_hdd * 1024 * 1024) - disk_size + disk.capacityInKB
+            hdd_in_GB = new_hdd * 1024 * 1024
+            new_disk_size = hdd_in_GB - disk_size + disk.capacityInKB
 
             device_config_spec = spec.new_deviceChange()
             device_config_spec.set_element_operation('edit')
@@ -90,7 +95,7 @@ def update_vm(server, vm_obj, guestdata):
             connectable.set_element_startConnected(True)
             media_device._obj.set_element_connectable(connectable)
 
-            backing = VirtualCdromIsoBackingInfo()
+            backing = VCdIsoBackingInfo()
             backing.set_element_fileName(new_iso["name"])
             media_device._obj.set_element_backing(backing)
         else:
@@ -198,7 +203,8 @@ def create_snapshot(server, vm_obj, snapshot_name):
 
 
 def get_snapshot(vm_obj, snapshot_id):
-    if re.match(r'[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}', snapshot_id, re.I):
+    regex = r'[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'
+    if re.match(regex, snapshot_id, re.I):
         for snap in vm_obj.get_snapshots():
             if snap.get_description() == snapshot_id:
                 return snap

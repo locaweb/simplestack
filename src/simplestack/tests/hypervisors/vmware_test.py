@@ -31,8 +31,13 @@ class VMwareTest(unittest.TestCase, HypervisorBaseTest):
     def setUpClass(clazz):
         conf = ConfigParser.ConfigParser()
         conf.read("test.cfg")
-        clazz.stack = vmware.Stack({"api_server": conf.get("vmware", "api_server"), "username": conf.get("vmware", "username"), "password": conf.get("vmware", "password")})
-        clazz.vm = clazz.stack.connection.get_vm_by_name("clone").clone("TestVM:%f" % random.random())
+        clazz.stack = vmware.Stack({
+            "api_server": conf.get("vmware", "api_server"),
+            "username": conf.get("vmware", "username"),
+            "password": conf.get("vmware", "password")
+        })
+        vm = "TestVM:%f" % random.random()
+        clazz.vm = clazz.stack.connection.get_vm_by_name("clone").clone(vm)
 
     @classmethod
     def tearDownClass(clazz):

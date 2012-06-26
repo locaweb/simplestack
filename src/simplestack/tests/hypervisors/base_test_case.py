@@ -70,7 +70,8 @@ class HypervisorBaseTest(object):
         self.assertEqual(guest["state"], "STARTED")
 
     def test_guest_update(self):
-        guest_data = {"memory": 128, "cpus": 2, "name": "vm%f" % random.random(), "hdd": 50}
+        vm = "vm%f" % random.random()
+        guest_data = {"memory": 128, "cpus": 2, "name": vm, "hdd": 50}
         self.stack.guest_shutdown(self._get_vm_id(), True)
         guest = self.stack.guest_update(self._get_vm_id(), guest_data)
         self.assertEqual(guest["memory"], guest_data["memory"])
@@ -93,7 +94,9 @@ class HypervisorBaseTest(object):
         self.assertEqual(len(nw_interfaces), 1)
 
     def test_network_interface_info(self):
-        nw_interface = self.stack.network_interface_info(self._get_vm_id(), self._get_nw_interface_id())
+        nw_interface = self.stack.network_interface_info(
+            self._get_vm_id(), self._get_nw_interface_id()
+        )
         self.assertEqual(nw_interface['id'], self._get_nw_interface_id())
 
     def test_snapshot_list(self):

@@ -29,11 +29,18 @@ class XenTest(unittest.TestCase, HypervisorBaseTest):
     def setUpClass(clazz):
         conf = ConfigParser.ConfigParser()
         conf.read("test.cfg")
-        clazz.stack = xen.Stack({"api_server": conf.get("xen", "api_server"), "username": conf.get("xen", "username"), "password": conf.get("xen", "password")})
+        clazz.stack = xen.Stack({
+            "api_server": conf.get("xen", "api_server"),
+            "username": conf.get("xen", "username"),
+            "password": conf.get("xen", "password")
+        })
         clazz.vm_name = "TestVM:%f" % random.random()
-        main_vm_ref = clazz.stack.connection.xenapi.VM.get_by_uuid("6562aace-6bae-4e58-bf62-c4ec62a1e6c6")
-        vm_ref = clazz.stack.connection.xenapi.VM.clone(main_vm_ref, clazz.vm_name)
-        clazz.vm = clazz.stack.connection.xenapi.VM.get_record(vm_ref)
+
+        uuid = "6562aace-6bae-4e58-bf62-c4ec62a1e6c6"
+        connection = clazz.stack.connection
+        main_vm_ref = connection.xenapi.VM.get_by_uuid(uuid)
+        vm_ref = connection.xenapi.VM.clone(main_vm_ref, clazz.vm_name)
+        clazz.vm = connection.xenapi.VM.get_record(vm_ref)
 
     @classmethod
     def tearDownClass(clazz):
