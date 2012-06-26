@@ -65,8 +65,8 @@ class Stack(SimpleStack):
         master_rec = self.connection.xenapi.host.get_record(pool_rec["master"])
 
         return {
-            "used_memory": used_memory/(1024 * 1024),
-            "total_memory": total_memory/(1024 * 1024),
+            "used_memory": used_memory / (1024 * 1024),
+            "total_memory": total_memory / (1024 * 1024),
             "master": master_rec["address"]
         }
 
