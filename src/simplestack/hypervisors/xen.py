@@ -165,9 +165,10 @@ class Stack(SimpleStack):
         )
 
         conn = httplib.HTTPConnection(master)
-        response = conn.request(
+        conn.request(
             "PUT", path, vm_stream, {"Content-Length": vm_size}
         )
+        response = conn.getresponse()
         response.status
         response.read()
 
@@ -187,7 +188,8 @@ class Stack(SimpleStack):
             session_ref, task_ref, vm_ref
         )
         conn = httplib.HTTPConnection(master)
-        response = conn.request("GET", path)
+        conn.request("GET", path)
+        response = conn.getresponse()
         response.status
         response_size = response.getheader("Content-Length")
 
