@@ -4,6 +4,7 @@ Priority: extra
 Maintainer: Locaweb Cloud Team <cloud-dev@locaweb.com.br>
 Build-Depends: debhelper (>= 7.0.50~)
 Standards-Version: 3.8.4
+XS-Python-Version: python2.6
 Homepage: https://github.com/locaweb/simplestack
 
 Package: simplestack
