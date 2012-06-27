@@ -290,8 +290,8 @@ class Stack(SimpleStack):
         tools_up_to_date = None
         vm = xapi.VM.get_record(vm_ref)
 
-        if vm["VM_guest_metrics"] != "OpaqueRef:NULL":
-            tools_up_to_date = xapi.VM_guest_metrics.get_PV_drivers_up_to_date(vm["VM_guest_metrics"])
+        if vm["guest_metrics"] != "OpaqueRef:NULL":
+            tools_up_to_date = xapi.VM_guest_metrics.get_PV_drivers_up_to_date(vm["guest_metrics"])
 
         return {
             'id': vm.get('uuid'),
