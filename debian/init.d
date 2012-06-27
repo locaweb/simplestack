@@ -1,13 +1,13 @@
-#! /bin/sh
+#!/bin/sh
 ### BEGIN INIT INFO
-# Provides:          /usr/sbin/python-simplestack
+# Provides:          /usr/sbin/simplestack
 # Required-Start:    $remote_fs $network $syslog
 # Required-Stop:
 # X-Stop-After:      sendsigs
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Python Milter
-# Description:       Python milter
+# Short-Description: simplestack hypervisor control layer
+# Description:       simplestack hypervisor control layer
 ### END INIT INFO
 
 # Based on default init from Francisco Freire <francisco.freire@locaweb.com.br>
@@ -18,7 +18,7 @@ DESC="python simplestack service"
 NAME=simplestack
 
 LOCASTACK=simplestack
-LOCASTACK_BIN=/usr/sbin/python-simplestack
+LOCASTACK_BIN=/usr/sbin/simplestack
 LOCASTACK_OPTIONS=""
 LOCASTACK_PIDFILE=/var/run/simplestack.pid
 
