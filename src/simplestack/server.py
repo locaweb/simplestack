@@ -17,6 +17,7 @@
 # @author: Thiago Morello (morellon), Locaweb.
 # @author: Willian Molinari (PotHix), Locaweb.
 
+import os
 import json
 import time
 import base64
@@ -416,15 +417,14 @@ def create_manager(hypervisor, host):
 
 
 def main():
-    debug(True)
     config = ConfigParser.ConfigParser()
-    config.read("simplestack.cfg")
+    config_file = "/etc/simplestack.cfg"
+    port = 8081
+    bind_addr = "0.0.0.0"
+    if os.path.isfile:
+        config.read("/etc/simplestack.cfg")
+        debug(config.getboolean("server", "debug"))
+        port = config.getint("server", "port")
+        bind_addr = config.get("server", "bind_addr")
 
-    port = get_config("port") or 80
-    run(host='0.0.0.0', port=port, server="gevent")
-
-
-def get_config(key):
-    config = ConfigParser.ConfigParser()
-    config.read("simplestack.cfg")
-    return config.get("DEFAULT", key)
+    run(host=bind_addr, port=port, server="gevent")

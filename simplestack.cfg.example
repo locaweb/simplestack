@@ -1,3 +1,4 @@
-[DEFAULT]
-port: 80
-root_dir: /var/www/simplestack
+[server]
+port: 8081
+debug: True
+bind_addr: 0.0.0.0
