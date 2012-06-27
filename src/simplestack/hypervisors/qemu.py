@@ -24,6 +24,41 @@ import libvirt
 
 class Stack(SimpleStack):
 
-    def __init__(self, db):
+    state_translation = {
+        1: "STARTED",
+        5: "STOPPED",
+        7: "PAUSED"
+    }
+
+    def __init__(self, poolinfo):
         self.connection = False
-        self.database = db
+        self.poolinfo = poolinfo
+        self.connect()
+
+    def connect(self):
+        self.connection = libvirt.open("qemu://%s@%s/system" % (
+            self.poolinfo.get("username"),
+            self.poolinfo.get("api_server")
+        ))
+
+    def guest_list(self):
+        return [
+            {"id": id}
+            for id in self.connection.listDomainsID()
+        ]
+
+    def guest_info(self, guest_id):
+        dom = self.connection.lookupByID(guest_id)
+        return self._vm_info(dom)
+
+    def _vm_info(dom):
+        infos = dom.info()
+        return {
+            'id': dom.ID(),
+            'name': dom.name(),
+            'cpus': infos[3],
+            'memory': infos[1]/1024,
+            'hdd': None,
+            'tools_up_to_date': None,
+            'state': self.state_translation[infos[0]],
+        }
