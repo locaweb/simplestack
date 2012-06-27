@@ -219,11 +219,11 @@ class Stack(SimpleStack):
         vm_ref = self._vm_ref(guest_id)
         cd_ref = self._cd_ref(vm_ref)
         iso_ref = self.connection.xenapi.VBD.get_record(cd_ref)["VDI"]
-        name = self.connection.xenapi.VDI.get_record(iso_ref)["name_label"]
 
         if iso_ref == 'OpaqueRef:NULL':
             return {"name": None}
         else:
+            name = self.connection.xenapi.VDI.get_record(iso_ref)["name_label"]
             return {"name": name}
 
     def network_interface_list(self, guest_id):
