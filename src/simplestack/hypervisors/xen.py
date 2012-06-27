@@ -190,7 +190,7 @@ class Stack(SimpleStack):
         conn = httplib.HTTPConnection(master)
         conn.request("GET", path)
         response = conn.getresponse()
-        response.status
+        print response.status
         response_size = response.getheader("Content-Length")
 
         return (response, response_size)
