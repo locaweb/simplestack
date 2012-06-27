@@ -82,7 +82,7 @@ class XenTest(unittest.TestCase, HypervisorBaseTest):
         self.__class__._stopVmClass()
 
     def _media_name(self):
-        return "systemrescuecd-x86-2.7.0.iso"
+        return "xs-tools.iso"
 
     def test_guest_suspend(self):
         pass

@@ -68,8 +68,8 @@ class Stack(SimpleStack):
         total_memory = 0
         for host_ref in self.connection.xenapi.host.get_all():
             met_ref = self.connection.xenapi.host.get_metrics(host_ref)
-            rec = self.connection.xenapi.host_metrics.get_record(met_ref)
-            total_memory += int(metrics_rec['memory_total'])
+            m_rec = self.connection.xenapi.host_metrics.get_record(met_ref)
+            total_memory += int(m_rec['memory_total'])
 
         pool_rec = self.connection.xenapi.pool.get_all_records().values()[0]
         master_rec = self.connection.xenapi.host.get_record(pool_rec["master"])
@@ -219,12 +219,12 @@ class Stack(SimpleStack):
         vm_ref = self._vm_ref(guest_id)
         cd_ref = self._cd_ref(vm_ref)
         iso_ref = self.connection.xenapi.VBD.get_record(cd_ref)["VDI"]
-        name_l = self.connection.xenapi.VDI.get_record(iso_ref)["name_label"]
+        name = self.connection.xenapi.VDI.get_record(iso_ref)["name_label"]
 
         if iso_ref == 'OpaqueRef:NULL':
             return {"name": None}
         else:
-            return {"name": name_l}
+            return {"name": name}
 
     def network_interface_list(self, guest_id):
         vm_ref = self._vm_ref(guest_id)
