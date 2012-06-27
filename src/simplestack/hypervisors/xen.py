@@ -21,6 +21,7 @@ from simplestack.utils import XenAPI
 from simplestack.hypervisors.base import SimpleStack
 
 import re
+import httplib
 
 
 class Stack(SimpleStack):
