@@ -85,6 +85,23 @@ def guest_create(hypervisor, host):
     return json.dumps(guest)
 
 
+@put('/:hypervisor/:host/guests')
+def guest_import(hypervisor, host):
+    """
+    ::
+
+      PUT /:hypervisor/:host/guests
+
+    Import a new guest
+    """
+    response.content_type = "application/json"
+    manager = create_manager(hypervisor, host)
+    guest = manager.guest_import(request.body)
+    guest_url = "/%s/%s/guests/%s" % (hypervisor, host, guest["id"])
+    response.set_header("Location", guest_url)
+    return json.dumps(guest)
+
+
 @get('/:hypervisor/:host/guests/:guest_id')
 def guest_info(hypervisor, host, guest_id):
     """

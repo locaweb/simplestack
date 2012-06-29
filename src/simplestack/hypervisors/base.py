@@ -40,6 +40,9 @@ class SimpleStack(object):
     def guest_create(self, guestdata):
         raise FeatureNotImplemented()
 
+    def guest_import(self, gueststream, guestsize):
+        raise FeatureNotImplemented()
+
     def guest_info(self, guest_id):
         raise FeatureNotImplemented()
 
