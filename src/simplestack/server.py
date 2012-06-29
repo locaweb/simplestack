@@ -126,6 +126,7 @@ def guest_export(hypervisor, host, guest_id):
 
     Export guest file
     """
+    response.content_type = "application/octet-stream"
     manager = create_manager(hypervisor, host)
     export_response, export_length = manager.guest_export(guest_id)
     response_part = export_response.read(1024)
