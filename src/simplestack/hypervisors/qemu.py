@@ -25,9 +25,9 @@ import libvirt
 class Stack(SimpleStack):
 
     state_translation = {
-        1: "STARTED",
-        5: "STOPPED",
-        7: "PAUSED"
+        libvirt.VIR_DOMAIN_RUNNING: "STARTED",
+        libvirt.VIR_DOMAIN_SHUTOFF: "STOPPED",
+        libvirt.VIR_DOMAIN_PMSUSPENDED: "PAUSED"
     }
 
     def __init__(self, poolinfo):
@@ -36,7 +36,7 @@ class Stack(SimpleStack):
         self.connect()
 
     def connect(self):
-        self.connection = libvirt.open("qemu://%s@%s/system" % (
+        self.connection = libvirt.open("qemu+tls://%s@%s/system?no_verify=1" % (
             self.poolinfo.get("username"),
             self.poolinfo.get("api_server")
         ))
@@ -57,7 +57,7 @@ class Stack(SimpleStack):
         return snaps
 
     # http://libvirt.org/guide/html/
-    # virDomainCreate
+    # virDomainCreate # connection.create
     # virDomainDestroy # force => true
     # virDomainShutdown # force => false
     # virDomainSuspend || virDomainSave
@@ -81,7 +81,7 @@ class Stack(SimpleStack):
             'tools_up_to_date': None,
             'state': self.state_translation[infos[0]],
         }
-    
+
     def _snapshot_info(self, snapshot):
         return {
             'id': snapshot.get_description(),

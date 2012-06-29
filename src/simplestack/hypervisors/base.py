@@ -19,7 +19,6 @@
 
 from simplestack.exceptions import FeatureNotImplemented
 
-
 class SimpleStack(object):
 
     def __init__(self):
