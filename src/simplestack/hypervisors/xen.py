@@ -19,6 +19,7 @@
 
 from simplestack.utils import XenAPI
 from simplestack.hypervisors.base import SimpleStack
+from simplestack.models.format_view import FormatView
 
 import re
 import httplib
@@ -35,6 +36,7 @@ class Stack(SimpleStack):
     def __init__(self, poolinfo):
         self.connection = False
         self.poolinfo = poolinfo
+        self.format_for = FormatView()
         self.connect()
 
     def connect(self):
@@ -75,11 +77,13 @@ class Stack(SimpleStack):
         pool_rec = self.connection.xenapi.pool.get_all_records().values()[0]
         master_rec = self.connection.xenapi.host.get_record(pool_rec["master"])
 
-        return {
-            "used_memory": used_memory / (1024 * 1024),
-            "total_memory": total_memory / (1024 * 1024),
-            "master": master_rec["address"]
-        }
+        return (
+            self.format_for.pool(
+                used_memory / (1024 * 1024),
+                total_memory / (1024 * 1024),
+                master_rec["address"]
+            )
+        )
 
     def guest_list(self):
         guests = []
@@ -288,40 +292,44 @@ class Stack(SimpleStack):
         return self.connection.xenapi.VM.get_by_uuid(uuid)
 
     def _vm_info(self, vm_ref):
-        xapi = self.connection.xenapi
+        vm = self.connection.xenapi.VM.get_record(vm_ref)
         tools_up_to_date = None
-        vm = xapi.VM.get_record(vm_ref)
 
-        if vm["guest_metrics"] != "OpaqueRef:NULL":
-            tools_up_to_date = xapi.VM_guest_metrics.get_PV_drivers_up_to_date(vm["guest_metrics"])
-
-        return {
-            'id': vm.get('uuid'),
-            'name': vm.get('name_label'),
-            'cpus': int(vm.get('VCPUs_at_startup')),
-            'memory': int(vm.get('memory_static_max')) / (1024 * 1024),
-            'hdd': self.get_disks_size(vm_ref) / (1024 * 1024 * 1024),
-            'tools_up_to_date': tools_up_to_date,
-            'state': self.state_translation[vm.get('power_state')],
-        }
+        return(
+            self.format_for.guest(
+                vm.get('uuid'),
+                vm.get('name_label'),
+                int(vm.get('VCPUs_at_startup')),
+                int(vm.get('memory_static_max')) / (1024 * 1024),
+                self.get_disks_size(vm_ref) / (1024 * 1024 * 1024),
+                tools_up_to_date,
+                self.state_translation[vm.get('power_state')]
+            )
+        )
 
     def _snapshot_info(self, snapshot_ref):
         snapshot = self.connection.xenapi.VM.get_record(snapshot_ref)
-        return {
-            'id': snapshot.get('uuid'),
-            'name': snapshot.get('name_label')
-        }
+
+        return(
+            self.format_for.snapshot(
+                snapshot.get('uuid'),
+                snapshot.get('name_label')
+            )
+        )
 
     def _network_interface_info(self, vif_ref):
         vif_rec = self.connection.xenapi.VIF.get_record(vif_ref)
         network_rec = self.connection.xenapi.network.get_record(
             vif_rec["network"]
         )
-        return {
-            'id': vif_rec["device"],
-            'mac': vif_rec["MAC"],
-            'network': network_rec["name_label"]
-        }
+
+        return(
+            self.format_for.network(
+                vif_rec["device"],
+                vif_rec["MAC"],
+                network_rec["name_label"]
+            )
+        )
 
     def _delete_vm(self, vm_id):
         vm_ref = self._vm_ref(vm_id)

@@ -21,6 +21,7 @@ from pysphere import VIServer
 from simplestack.utils import vmware
 from simplestack.exceptions import EntityNotFound
 from simplestack.hypervisors.base import SimpleStack
+from simplestack.models.format_view import FormatView
 
 import re
 import datetime
@@ -38,6 +39,7 @@ class Stack(SimpleStack):
     def __init__(self, poolinfo):
         self.connection = False
         self.poolinfo = poolinfo
+        self.format_for = FormatView()
         self.connect()
 
     def connect(self):
@@ -50,9 +52,9 @@ class Stack(SimpleStack):
         return
 
     def pool_info(self):
-        return {
-            "master": self.poolinfo.get("api_server")
-        }
+        return (
+            self.format_for.pool(0, 0, self.poolinfo.get("api_server"))
+        )
 
     def guest_list(self):
         return [
@@ -167,21 +169,25 @@ class Stack(SimpleStack):
 
     def _vm_info(self, vm):
         vm_info = vm.get_properties()
-        return {
-            'id': vm.properties.config.uuid,
-            'name': vm_info.get('name'),
-            'cpus': vm_info.get('num_cpu'),
-            'memory': vm_info.get('memory_mb'),
-            'hdd': vmware.get_disk_size(vm) / (1024 * 1024),
-            'tools_up_to_date': vm.properties.guest.toolsStatus == "toolsOk",
-            'state': self.state_translation[vm.get_status()],
-        }
+        return(
+            self.format_for.guest(
+                vm.properties.config.uuid,
+                vm_info.get('name'),
+                vm_info.get('num_cpu'),
+                vm_info.get('memory_mb'),
+                vmware.get_disk_size(vm) / (1024 * 1024),
+                vm.properties.guest.toolsStatus == "toolsOk",
+                self.state_translation[vm.get_status()]
+            )
+        )
 
     def _snapshot_info(self, snapshot):
-        return {
-            'id': snapshot.get_description(),
-            'name': snapshot.get_name(),
-            'state': snapshot.get_state(),
-            'path': snapshot.get_path(),
-            'created': snapshot.get_create_time()
-        }
+        return(
+            self.format_for.snapshot(
+                snapshot.get_description(),
+                snapshot.get_name(),
+                snapshot.get_state(),
+                snapshot.get_path(),
+                snapshot.get_create_time()
+            )
+        )

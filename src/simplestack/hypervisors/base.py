@@ -25,6 +25,9 @@ class SimpleStack(object):
     def __init__(self):
         self.connection = False
 
+    def libvirt_connect(self):
+        raise FeatureNotImplemented()
+
     def connect(self):
         raise FeatureNotImplemented()
 

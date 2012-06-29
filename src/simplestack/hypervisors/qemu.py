@@ -76,7 +76,7 @@ class Stack(SimpleStack):
             'id': dom.ID(),
             'name': dom.name(),
             'cpus': infos[3],
-            'memory': infos[1]/1024,
+            'memory': infos[1] / 1024,
             'hdd': None,
             'tools_up_to_date': None,
             'state': self.state_translation[infos[0]],

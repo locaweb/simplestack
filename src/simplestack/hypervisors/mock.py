@@ -19,6 +19,7 @@
 
 from simplestack.exceptions import EntityNotFound
 from simplestack.hypervisors.base import SimpleStack
+from simplestack.models.format_view import FormatView
 
 import uuid
 import datetime
@@ -48,16 +49,13 @@ class Stack(SimpleStack):
     def __init__(self, poolinfo):
         self.connection = False
         self.poolinfo = poolinfo
+        self.format_for = FormatView()
 
     def connect(self):
         pass
 
     def pool_info(self):
-        return {
-            "total_memory": 1024,
-            "used_memory": 64,
-            "master": "127.0.0.1"
-        }
+        return self.format_for.pool(1024, 64, "127.0.0.1")
 
     def guest_list(self):
         return self.guests.values()
@@ -140,16 +138,15 @@ class Stack(SimpleStack):
         snapshot_id = str(uuid.uuid4())
 
         snapshot = {
-            'created': str(datetime.datetime.now()),
+            'id': snapshot_id,
             'name': name,
-            'id': snapshot_id
+            'created': str(datetime.datetime.now())
         }
 
         self.guests[guest_id]['snapshots'][snapshot_id] = snapshot
         return snapshot
 
     def snapshot_info(self, guest_id, snapshot_id):
-        ''' Guest snapshot info '''
         return self.guests[guest_id]['snapshots'][snapshot_id]
 
     def snapshot_revert(self, guest_id, snapshot_id):
