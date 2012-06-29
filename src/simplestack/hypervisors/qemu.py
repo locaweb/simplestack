@@ -51,6 +51,25 @@ class Stack(SimpleStack):
         dom = self.connection.lookupByID(guest_id)
         return self._vm_info(dom)
 
+    def snapshot_list(self, guest_id):
+        dom = self.connection.lookupByID(guest_id)
+        snaps = [self._snapshot_info(s) for s in dom.listAllSnapshots()]
+        return snaps
+
+    # http://libvirt.org/guide/html/
+    # virDomainCreate
+    # virDomainDestroy # force => true
+    # virDomainShutdown # force => false
+    # virDomainSuspend || virDomainSave
+    # virDomainResume || virDomainRestore
+    # virDomainReboot # force => false
+    # virDomainReset # force => true
+    # virDomainSetVcpus & virDomainSetMemory
+    # dom.RevertToSnapshot(snapshot, 0)
+    # snapshot.delete(0)
+    # snapshot.createXML
+    # snapshot.getXMLDesc
+
     def _vm_info(dom):
         infos = dom.info()
         return {
@@ -61,4 +80,13 @@ class Stack(SimpleStack):
             'hdd': None,
             'tools_up_to_date': None,
             'state': self.state_translation[infos[0]],
+        }
+    
+    def _snapshot_info(self, snapshot):
+        return {
+            'id': snapshot.get_description(),
+            'name': snapshot.name(),
+            'state': snapshot.get_state(),
+            'path': snapshot.get_path(),
+            'created': snapshot.get_create_time()
         }
