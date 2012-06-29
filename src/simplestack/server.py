@@ -128,7 +128,6 @@ def guest_export(hypervisor, host, guest_id):
     """
     manager = create_manager(hypervisor, host)
     export_response, export_length = manager.guest_export(guest_id)
-    response.set_header("Content-Length", export_length)
     response_part = export_response.read(1024)
     while response_part:
         yield response_part
