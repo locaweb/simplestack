@@ -6,7 +6,7 @@ def not_implemented(f):
             print("NEW METHOD")
             return f(*args, **kws)
         except:
-            print("FODEU")
+            print("EXCEPT")
     return wrapped
 
 class not_implemented_all(object):
@@ -31,10 +31,10 @@ class Abc(object):
         pass
 
     def hello(self):
-        print "OLA"
+        print "HELLO"
 
     def ola(self):
-        print "XUPA"
+        print "OLA"
 
 a = Abc()
 
