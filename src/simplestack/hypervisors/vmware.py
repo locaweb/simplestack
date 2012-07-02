@@ -102,11 +102,6 @@ class Stack(SimpleStack):
         vm = self._vm_ref(guest_id)
         vmware.delete_vm(self.connection, vm)
 
-    def snapshot_list(self, guest_id):
-        vm = self._vm_ref(guest_id)
-        snaps = [self._snapshot_info(s) for s in vm.get_snapshots()]
-        return snaps
-
     def media_mount(self, guest_id, media_data):
         vm = self._vm_ref(guest_id)
         vmware.update_vm(self.connection, vm, {"iso": media_data})
@@ -118,6 +113,11 @@ class Stack(SimpleStack):
             return {"name": media.backing.fileName}
         else:
             return {"name": None}
+
+    def snapshot_list(self, guest_id):
+        vm = self._vm_ref(guest_id)
+        snaps = [self._snapshot_info(s) for s in vm.get_snapshots()]
+        return snaps
 
     def snapshot_create(self, guest_id, snapshot_name=None):
         if not snapshot_name:

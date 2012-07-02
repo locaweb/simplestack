@@ -27,7 +27,7 @@ class Stack(SimpleStack):
     state_translation = {
         libvirt.VIR_DOMAIN_RUNNING: "STARTED",
         libvirt.VIR_DOMAIN_SHUTOFF: "STOPPED",
-        libvirt.VIR_DOMAIN_PMSUSPENDED: "PAUSED"
+        libvirt.VIR_DOMAIN_PAUSED: "PAUSED"
     }
 
     def __init__(self, poolinfo):
@@ -43,21 +43,53 @@ class Stack(SimpleStack):
 
     def guest_list(self):
         return [
-            {"id": id}
-            for id in self.connection.listDomainsID()
+            self._vm_info(self.connection.lookupByID(vm_id))
+            for vm_id in self.connection.listDomainsID()
         ]
 
     def guest_info(self, guest_id):
-        dom = self.connection.lookupByID(guest_id)
+        dom = self.connection.lookupByUUIDString(guest_id)
         return self._vm_info(dom)
+
+    def guest_shutdown(self, guest_id, force=False):
+        dom = self.connection.lookupByUUIDString(guest_id)
+        if force:
+            return dom.destroy()
+        else:
+            return dom.shutdown()
+
+    # def guest_start(self, guest_id):
+    #     dom = self.connection.lookupByUUIDString(guest_id)
+
+    def guest_reboot(self, guest_id, force=False):
+        dom = self.connection.lookupByUUIDString(guest_id)
+        if force:
+            return vm.reset(0)
+        else:
+            return vm.reboot(0)
+
+    def guest_suspend(self, guest_id):
+        dom = self.connection.lookupByUUIDString(guest_id)
+        return dom.suspend()
+
+    def guest_resume(self, guest_id):
+        dom = self.connection.lookupByUUIDString(guest_id)
+        return dom.resume()
+
+    # def guest_update(self, guest_id, guestdata):
+    #     dom = self.connection.lookupByUUIDString(guest_id)
+    #
+    # def guest_delete(self, guest_id):
+    #     dom = self.connection.lookupByUUIDString(guest_id)
 
     def snapshot_list(self, guest_id):
         dom = self.connection.lookupByID(guest_id)
-        snaps = [self._snapshot_info(s) for s in dom.listAllSnapshots()]
+        snaps = [self._snapshot_info(s) for s in dom.snapshotListNames()]
         return snaps
 
+
     # http://libvirt.org/guide/html/
-    # virDomainCreate # connection.create
+    # virDomainCreate # connection.create("<domain type='kvm'><name>test</name><memory unit='KiB'>524288</memory><os><type arch='x86_64'>hvm</type></os></domain>", 0)
     # virDomainDestroy # force => true
     # virDomainShutdown # force => false
     # virDomainSuspend || virDomainSave
@@ -67,13 +99,13 @@ class Stack(SimpleStack):
     # virDomainSetVcpus & virDomainSetMemory
     # dom.RevertToSnapshot(snapshot, 0)
     # snapshot.delete(0)
-    # snapshot.createXML
+    # dom.createXML("<domainsnapshot><description>name</description></domainsnapshot>", 0)
     # snapshot.getXMLDesc
 
     def _vm_info(dom):
         infos = dom.info()
         return {
-            'id': dom.ID(),
+            'id': dom.UUIDString(),
             'name': dom.name(),
             'cpus': infos[3],
             'memory': infos[1] / 1024,
