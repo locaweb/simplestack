@@ -29,7 +29,7 @@ class Stack(SimpleStack):
         self.hostinfo = hostinfo
         self.connect()
 
-    def connect(self):
+    def libvirt_connect(self):
         open_flags = 0
         valid_auth_options = [
             libvirt.VIR_CRED_AUTHNAME, libvirt.VIR_CRED_NOECHOPROMPT
@@ -43,7 +43,10 @@ class Stack(SimpleStack):
         self.connection = libvirt.openAuth(
             uri, [valid_auth_options, authcb, authcb_data], open_flags
         )
-        return
+
+    def connect(self):
+        self.libvirt_connect()
+        self.connection = self.libvirt
 
     def host_info(self):
         return self.connection.getInfo()
