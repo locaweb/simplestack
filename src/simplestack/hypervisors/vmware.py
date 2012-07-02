@@ -21,7 +21,7 @@ from pysphere import VIServer
 from simplestack.utils import vmware
 from simplestack.exceptions import EntityNotFound
 from simplestack.hypervisors.base import SimpleStack
-from simplestack.models.format_view import FormatView
+from simplestack.views.format_view import FormatView
 
 import re
 import datetime
