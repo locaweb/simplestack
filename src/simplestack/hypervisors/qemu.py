@@ -42,10 +42,15 @@ class Stack(SimpleStack):
         ))
 
     def guest_list(self):
-        return [
+        not_running = [
+            self._vm_info(self.connection.lookupByName(vm_name))
+            for vm_name in self.connection.listDefinedDomains()
+        ]
+        running = [
             self._vm_info(self.connection.lookupByID(vm_id))
             for vm_id in self.connection.listDomainsID()
         ]
+        return not_running + running
 
     def guest_info(self, guest_id):
         dom = self.connection.lookupByUUIDString(guest_id)
@@ -58,8 +63,9 @@ class Stack(SimpleStack):
         else:
             return dom.shutdown()
 
-    # def guest_start(self, guest_id):
-    #     dom = self.connection.lookupByUUIDString(guest_id)
+    def guest_start(self, guest_id):
+        dom = self.connection.lookupByUUIDString(guest_id)
+        dom.create()
 
     def guest_reboot(self, guest_id, force=False):
         dom = self.connection.lookupByUUIDString(guest_id)
@@ -81,28 +87,53 @@ class Stack(SimpleStack):
     #
     # def guest_delete(self, guest_id):
     #     dom = self.connection.lookupByUUIDString(guest_id)
+    #
+    # def media_mount(self, guest_id, media_data):
+    #     dom = self.connection.lookupByUUIDString(guest_id)
+    #
+    # def media_info(self, guest_id):
+    #     dom = self.connection.lookupByUUIDString(guest_id)
 
     def snapshot_list(self, guest_id):
-        dom = self.connection.lookupByID(guest_id)
+        dom = self.connection.lookupByUUIDString(guest_id)
         snaps = [self._snapshot_info(s) for s in dom.snapshotListNames()]
         return snaps
+
+    # def snapshot_create(self, guest_id, snapshot_name=None):
+    #     dom = self.connection.lookupByID(guest_id)
+
+    def snapshot_info(self, guest_id, snapshot_id):
+        dom = self.connection.lookupByUUIDString(guest_id)
+        snap = self._get_snapshot(dom, snapshot_id)
+        if snap:
+            return self._snapshot_info(snap)
+        else:
+            raise EntityNotFound("Snapshot", snapshot_id)
+
+    def snapshot_revert(self, guest_id, snapshot_id):
+        dom = self.connection.lookupByUUIDString(guest_id)
+        snap = self._get_snapshot(dom, snapshot_id)
+        dom.revertToSnapshot(snap)
+
+    def snapshot_delete(self, guest_id, snapshot_id):
+        dom = self.connection.lookupByUUIDString(guest_id)
+        snap = self._get_snapshot(dom, snapshot_id)
+        snap.delete(0)
 
 
     # http://libvirt.org/guide/html/
     # virDomainCreate # connection.create("<domain type='kvm'><name>test</name><memory unit='KiB'>524288</memory><os><type arch='x86_64'>hvm</type></os></domain>", 0)
-    # virDomainDestroy # force => true
-    # virDomainShutdown # force => false
     # virDomainSuspend || virDomainSave
     # virDomainResume || virDomainRestore
-    # virDomainReboot # force => false
-    # virDomainReset # force => true
     # virDomainSetVcpus & virDomainSetMemory
-    # dom.RevertToSnapshot(snapshot, 0)
     # snapshot.delete(0)
     # dom.createXML("<domainsnapshot><description>name</description></domainsnapshot>", 0)
     # snapshot.getXMLDesc
 
-    def _vm_info(dom):
+    def _get_snapshot(self, dom, snapshot_id):
+        pass
+
+    def _vm_info(self, dom):
         infos = dom.info()
         return {
             'id': dom.UUIDString(),
