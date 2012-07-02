@@ -35,11 +35,17 @@ class Stack(SimpleStack):
         self.poolinfo = poolinfo
         self.connect()
 
+    def libvirt_connect(self):
+        return (
+            libvirt.open("qemu+tls://%s@%s/system?no_verify=1" % (
+                self.poolinfo.get("username"),
+                self.poolinfo.get("api_server")
+            ))
+        )
+
     def connect(self):
-        self.connection = libvirt.open("qemu+tls://%s@%s/system?no_verify=1" % (
-            self.poolinfo.get("username"),
-            self.poolinfo.get("api_server")
-        ))
+        self.libvirt_connection = self.libvirt_connect()
+        self.connection = self.libvirt_connection
 
     def guest_list(self):
         not_running = [
