@@ -16,6 +16,7 @@
 # @author: Francisco Freire, Locaweb.
 # @author: Thiago Morello (morellon), Locaweb.
 # @author: Willian Molinari (PotHix), Locaweb.
+# @author: Juliano Martinez (ncode), Locaweb.
 
 import os
 import socket
@@ -26,9 +27,9 @@ import logging.config
 import logging.handlers
 
 config = ConfigParser.ConfigParser()
-config_file = "/etc/simplestack.cfg"
+config_file = "/etc/simplestack/simplestack.cfg"
 if os.path.isfile(config_file):
-    config.read("/etc/simplestack.cfg")
+    config.read("/etc/simplestack/simplestack.cfg")
 
 
 def set_logger():

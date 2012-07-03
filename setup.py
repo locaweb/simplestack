@@ -11,6 +11,6 @@ setup(
     packages=find_packages('src'),
     data_files=[
         ('/usr/sbin', ['src/bin/simplestack']),
-        ('/etc', ['src/conf/simplestack.cfg']),
+        ('/etc/simplestack', ['src/conf/simplestack.cfg']),
     ]
 )
