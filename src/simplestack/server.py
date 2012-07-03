@@ -17,22 +17,22 @@
 # @author: Thiago Morello (morellon), Locaweb.
 # @author: Willian Molinari (PotHix), Locaweb.
 
-import os
 import json
 import time
 import base64
-import syslog
-import ConfigParser
+import logging
 
 import bottle
 from bottle import delete, put, get, post, redirect, run, debug
 from bottle import abort, request, ServerAdapter, response, static_file
 
+from simplestack.common.config import config, set_logger
+
 from gevent import monkey
 monkey.patch_all()
 
-syslog.openlog("simplestack", 0, syslog.LOG_DAEMON)
 app = bottle.app()
+LOG = logging.getLogger('simplestack.server')
 
 
 @get('/:hypervisor/:host')
@@ -437,14 +437,10 @@ def create_manager(hypervisor, host):
 
 
 def main():
-    config = ConfigParser.ConfigParser()
-    config_file = "/etc/simplestack.cfg"
-    port = 8081
-    bind_addr = "0.0.0.0"
-    if os.path.isfile:
-        config.read("/etc/simplestack.cfg")
-        debug(config.getboolean("server", "debug"))
-        port = config.getint("server", "port")
-        bind_addr = config.get("server", "bind_addr")
-
+    config.read("/etc/simplestack.cfg")
+    debug(config.getboolean("server", "debug"))
+    port = config.getint("server", "port")
+    bind_addr = config.get("server", "bind_addr")
+    set_logger()
+    LOG.info("Starting Simplestack server")
     run(host=bind_addr, port=port, server="gevent")
