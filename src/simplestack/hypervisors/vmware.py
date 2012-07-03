@@ -24,7 +24,6 @@ from simplestack.hypervisors.base import SimpleStack
 from simplestack.views.format_view import FormatView
 
 import re
-import libvirt
 import datetime
 import pysphere
 
@@ -42,7 +41,6 @@ class Stack(SimpleStack):
         self.poolinfo = poolinfo
         self.format_for = FormatView()
         self.connect()
-        self.libvirt_connect()
 
     def libvirt_connect(self):
         self.libvirt_connection = libvirt.open("esx://%s@%s/" % (

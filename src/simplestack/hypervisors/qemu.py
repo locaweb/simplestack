@@ -64,10 +64,15 @@ class Stack(SimpleStack):
     #     dom = self.connection.lookupByID(guest_id)
 
     # http://libvirt.org/guide/html/
-    # virDomainCreate # connection.create("<domain type='kvm'><name>test</name><memory unit='KiB'>524288</memory><os><type arch='x86_64'>hvm</type></os></domain>", 0)
+    # <domain type='kvm'>
+    #     <name>test</name>
+    #     <memory unit='KiB'>524288</memory>
+    #     <os>
+    #         <type arch='x86_64'>hvm</type>
+    #     </os>
+    # </domain>
     # virDomainSuspend || virDomainSave
     # virDomainResume || virDomainRestore
     # virDomainSetVcpus & virDomainSetMemory
-    # snapshot.delete(0)
-    # dom.createXML("<domainsnapshot><description>name</description></domainsnapshot>", 0)
+    # <domainsnapshot><description>name</description></domainsnapshot>
     # snapshot.getXMLDesc
