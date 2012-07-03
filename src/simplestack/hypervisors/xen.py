@@ -123,7 +123,9 @@ class Stack(SimpleStack):
         return self.connection.xenapi.VM.suspend(self._vm_ref(guest_id))
 
     def guest_resume(self, guest_id):
-        return self.connection.xenapi.VM.resume(self._vm_ref(guest_id), True)
+        return self.connection.xenapi.VM.resume(
+            self._vm_ref(guest_id), False, False
+        )
 
     def guest_update(self, guest_id, guestdata):
         vm_ref = self._vm_ref(guest_id)

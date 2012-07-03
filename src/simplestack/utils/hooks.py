@@ -55,6 +55,7 @@ class not_implemented_all(hook_all):
         self.regex = r'^(pool|guest|media|network|snapshot|tag)'
         super(self.__class__, self).__init__(subject)
 
+
 @not_implemented_all
 class Mock(object):
     def __init__(self):
