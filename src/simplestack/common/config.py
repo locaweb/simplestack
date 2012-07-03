@@ -18,6 +18,7 @@
 # @author: Willian Molinari (PotHix), Locaweb.
 
 import os
+import socket
 import ConfigParser
 
 import logging
@@ -40,10 +41,10 @@ def set_logger():
 
     SysLogHandler = logging.handlers.SysLogHandler
     try:
-        handler = SysLogHandler(address='/var/run/syslog',
+        handler = SysLogHandler(address='/dev/log',
                                 facility=SysLogHandler.LOG_SYSLOG)
     except socket.error:
-        handler = SysLogHandler(address='/dev/log',
+        handler = SysLogHandler(address='/var/run/syslog',
                                 facility=SysLogHandler.LOG_SYSLOG)
 
     handler.setFormatter(formatter)
