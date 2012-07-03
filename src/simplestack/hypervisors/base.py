@@ -197,4 +197,4 @@ class SimpleStack(object):
         pass
 
     def has_libvirt(self):
-        return has_attr(self, "libvirt_connection") and self.libvirt_connection
+        return hasattr(self, "libvirt_connection") and self.libvirt_connection

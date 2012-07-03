@@ -42,7 +42,7 @@ class hook_all(object):
 def not_implemented(f):
     def wrapped(*args, **kws):
         f_self = args[0]
-        if not (has_attr(f_self, "libvirt_connection") and
+        if not (hasattr(f_self, "libvirt_connection") and
                 f_self.libvirt_connection):
             raise FeatureNotImplemented()
         return f(*args, **kws)
@@ -55,12 +55,12 @@ class not_implemented_all(hook_all):
         self.regex = r'^(pool|guest|media|network|snapshot|tag)'
         super(self.__class__, self).__init__(subject)
 
-
+@not_implemented_all
 class Mock(object):
     def __init__(self):
         pass
 
-    def pool_stuff():
+    def pool_stuff(self):
         pass
 
 mock = Mock()
