@@ -56,7 +56,6 @@ class not_implemented_all(hook_all):
         super(self.__class__, self).__init__(subject)
 
 
-@not_implemented_all
 class Mock(object):
     def __init__(self):
         pass
@@ -64,7 +63,13 @@ class Mock(object):
     def pool_stuff(self):
         pass
 
-mock = Mock()
+
+@not_implemented_all
+class Mock2(Mock):
+    pass
+
+
+mock = Mock2()
 try:
     mock.pool_stuff()
 except Exception, e:
