@@ -2,11 +2,14 @@
 
 A simple abstraction layer to deal with different hypervisors.
 
+Simplestack is made under of a simple HTTP REST API.
+
 ## Hypervisors
 
 * VMware
 * Xen
-* KVM (not yet implemented)
+* KVM (Work in progress)
+* HyperV (Not yet implemented)
 
 ## Testing
 
