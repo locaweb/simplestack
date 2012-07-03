@@ -1,0 +1,21 @@
+#!/bin/bash
+
+chgrp simplestack /etc/simplestack/simplestack.conf 2>/dev/null || addgroup --system simplestack
+chown simplestack /etc/simplestack/simplestack.conf 2>/dev/null || adduser --system --disabled-login --home /var/run/simplestack --no-create-home --disabled-password --ingroup simplestack simplestack
+
+# Automatically added by dh_pysupport
+if which update-python-modules >/dev/null 2>&1; then
+	update-python-modules  simplestack.public
+fi
+# End automatically added section
+
+# Automatically added by dh_installinit
+if [ -x "/etc/init.d/simplestack" ]; then
+	update-rc.d simplestack defaults >/dev/null
+	if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
+		invoke-rc.d simplestack start || exit $?
+	else
+		/etc/init.d/simplestack start || exit $?
+	fi
+fi
+# End automatically added section
