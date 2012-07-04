@@ -28,8 +28,9 @@ import logging.handlers
 
 config = ConfigParser.ConfigParser()
 config_file = "/etc/simplestack/simplestack.cfg"
+
 if os.path.isfile(config_file):
-    config.read("/etc/simplestack/simplestack.cfg")
+    config.read(config_file)
 
 
 def set_logger():

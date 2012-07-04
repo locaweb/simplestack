@@ -44,10 +44,12 @@
 # OF THIS SOFTWARE.
 # --------------------------------------------------------------------
 
-import gettext
-import xmlrpclib
-import httplib
 import socket
+import gettext
+import httplib
+import xmlrpclib
+
+from simplestack.common.config import config
 
 translation = gettext.translation('xen-xm', fallback=True)
 
@@ -188,7 +190,11 @@ class Session(xmlrpclib.ServerProxy):
         elif name.startswith('login') or name.startswith('slave_local'):
             return lambda *params: self._login(name, params)
         else:
-            return xmlrpclib.ServerProxy.__getattr__(self, name)
+            try:
+                socket.setdefaulttimeout(config.getint("server", "timeout"))
+                return xmlrpclib.ServerProxy.__getattr__(self, name)
+            finally:
+                socket.setdefaulttimeout(None)
 
 
 def xapi_local():
