@@ -1,0 +1,511 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>simplestack.server &mdash; Simplestack 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/theme_extras.js"></script>
+    <link rel="top" title="Simplestack 0.0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../../index.html">
+          <span>Simplestack 0.0.1 documentation</span></a></h1>
+        <h2 class="heading"><span>simplestack.server</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <h1>Source code for simplestack.server</h1><div class="highlight"><pre>
+<span class="c"># Copyright 2012 Locaweb.</span>
+<span class="c"># All Rights Reserved.</span>
+<span class="c">#</span>
+<span class="c">#    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c">#    you may not use this file except in compliance with the License.</span>
+<span class="c">#    You may obtain a copy of the License at</span>
+<span class="c">#</span>
+<span class="c">#        http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c">#</span>
+<span class="c">#    Unless required by applicable law or agreed to in writing, software</span>
+<span class="c">#    distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c">#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c">#    See the License for the specific language governing permissions and</span>
+<span class="c">#    limitations under the License.</span>
+<span class="c">#</span>
+<span class="c"># @author: Francisco Freire, Locaweb.</span>
+<span class="c"># @author: Thiago Morello (morellon), Locaweb.</span>
+<span class="c"># @author: Willian Molinari (PotHix), Locaweb.</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">bottle</span>
+<span class="kn">from</span> <span class="nn">bottle</span> <span class="kn">import</span> <span class="n">delete</span><span class="p">,</span> <span class="n">put</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">debug</span>
+<span class="kn">from</span> <span class="nn">bottle</span> <span class="kn">import</span> <span class="n">abort</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">ServerAdapter</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">static_file</span>
+
+<span class="kn">from</span> <span class="nn">simplestack.common.config</span> <span class="kn">import</span> <span class="n">config</span><span class="p">,</span> <span class="n">set_logger</span>
+
+<span class="kn">from</span> <span class="nn">gevent</span> <span class="kn">import</span> <span class="n">monkey</span>
+<span class="n">monkey</span><span class="o">.</span><span class="n">patch_all</span><span class="p">()</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">bottle</span><span class="o">.</span><span class="n">app</span><span class="p">()</span>
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;simplestack.server&#39;</span><span class="p">)</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="pool_info"><a class="viewcode-back" href="../../index.html#simplestack.server.pool_info">[docs]</a><span class="k">def</span> <span class="nf">pool_info</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      GET /:hypervisor/:host</span>
+
+<span class="sd">    Get pool information</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">pool_info</span><span class="p">())</span>
+
+</div>
+<span class="nd">@get</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="pool_guests"><a class="viewcode-back" href="../../index.html#simplestack.server.pool_guests">[docs]</a><span class="k">def</span> <span class="nf">pool_guests</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      GET /:hypervisor/:host/guests</span>
+
+<span class="sd">    Get guests for a given pool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">guest_list</span><span class="p">())</span>
+
+</div>
+<span class="nd">@post</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="guest_create"><a class="viewcode-back" href="../../index.html#simplestack.server.guest_create">[docs]</a><span class="k">def</span> <span class="nf">guest_create</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      POST /:hypervisor/:host/guests</span>
+
+<span class="sd">    Create a new guest</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="s">&#39;No data received&#39;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">guest</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">guest_create</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">guest_url</span> <span class="o">=</span> <span class="s">&quot;/</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">/guests/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest</span><span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">])</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">set_header</span><span class="p">(</span><span class="s">&quot;Location&quot;</span><span class="p">,</span> <span class="n">guest_url</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">guest</span><span class="p">)</span>
+
+</div>
+<span class="nd">@put</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="guest_import"><a class="viewcode-back" href="../../index.html#simplestack.server.guest_import">[docs]</a><span class="k">def</span> <span class="nf">guest_import</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      PUT /:hypervisor/:host/guests</span>
+
+<span class="sd">    Import a new guest</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="n">guest</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">guest_import</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+    <span class="n">guest_url</span> <span class="o">=</span> <span class="s">&quot;/</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">/guests/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest</span><span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">])</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">set_header</span><span class="p">(</span><span class="s">&quot;Location&quot;</span><span class="p">,</span> <span class="n">guest_url</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">guest</span><span class="p">)</span>
+
+</div>
+<span class="nd">@get</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests/:guest_id&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="guest_info"><a class="viewcode-back" href="../../index.html#simplestack.server.guest_info">[docs]</a><span class="k">def</span> <span class="nf">guest_info</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      GET /:hypervisor/:host/guests/:guest_id</span>
+
+<span class="sd">    Get guest informations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">guest_info</span><span class="p">(</span><span class="n">guest_id</span><span class="p">))</span>
+
+</div>
+<span class="nd">@put</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests/:guest_id&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="guest_update"><a class="viewcode-back" href="../../index.html#simplestack.server.guest_update">[docs]</a><span class="k">def</span> <span class="nf">guest_update</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      PUT /:hypervisor/:host</span>
+
+<span class="sd">    Update guest informations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="s">&#39;No data received&#39;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">guest_update</span><span class="p">(</span><span class="n">guest_id</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+
+</div>
+<span class="nd">@get</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests/:guest_id/export&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="guest_export"><a class="viewcode-back" href="../../index.html#simplestack.server.guest_export">[docs]</a><span class="k">def</span> <span class="nf">guest_export</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      GET /:hypervisor/:host/guests/:guest_id/export</span>
+
+<span class="sd">    Export guest file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/octet-stream&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="n">export_response</span><span class="p">,</span> <span class="n">export_length</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">guest_export</span><span class="p">(</span><span class="n">guest_id</span><span class="p">)</span>
+    <span class="n">response_part</span> <span class="o">=</span> <span class="n">export_response</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">response_part</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">response_part</span>
+        <span class="n">response_part</span> <span class="o">=</span> <span class="n">export_response</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+
+</div>
+<span class="nd">@delete</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests/:guest_id&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="guest_delete"><a class="viewcode-back" href="../../index.html#simplestack.server.guest_delete">[docs]</a><span class="k">def</span> <span class="nf">guest_delete</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      DELETE /:hypervisor/:host/guests/:guest_id</span>
+
+<span class="sd">    Deletes guest</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">guest_delete</span><span class="p">(</span><span class="n">guest_id</span><span class="p">))</span>
+
+</div>
+<span class="nd">@put</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests/:guest_id/media_device&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="media_mount"><a class="viewcode-back" href="../../index.html#simplestack.server.media_mount">[docs]</a><span class="k">def</span> <span class="nf">media_mount</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      PUT /:hypervisor/:host/guests/:guest_id/media_device</span>
+
+<span class="sd">    Mounts an ISO to a CD/DVD drive</span>
+
+<span class="sd">    Deletes guest</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="s">&#39;No data received&#39;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">manager</span><span class="o">.</span><span class="n">media_mount</span><span class="p">(</span><span class="n">guest_id</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+</div>
+<span class="nd">@get</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests/:guest_id/media_device&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="media_info"><a class="viewcode-back" href="../../index.html#simplestack.server.media_info">[docs]</a><span class="k">def</span> <span class="nf">media_info</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      GET /:hypervisor/:host/guests/:guest_id/media_device</span>
+
+<span class="sd">    Gets the mounted media device name</span>
+
+<span class="sd">    Deletes guest</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">media_info</span><span class="p">(</span><span class="n">guest_id</span><span class="p">))</span>
+
+</div>
+<span class="nd">@get</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests/:guest_id/network_interfaces&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="network_interface_list"><a class="viewcode-back" href="../../index.html#simplestack.server.network_interface_list">[docs]</a><span class="k">def</span> <span class="nf">network_interface_list</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      GET /:hypervisor/:host/guests/:guest_id/network_interfaces</span>
+
+<span class="sd">    Get all network interfaces for a given guest</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">network_interface_list</span><span class="p">(</span><span class="n">guest_id</span><span class="p">))</span>
+
+</div>
+<span class="nd">@get</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="network_interface_info"><a class="viewcode-back" href="../../index.html#simplestack.server.network_interface_info">[docs]</a><span class="k">def</span> <span class="nf">network_interface_info</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">,</span> <span class="n">interface_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      GET /:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id</span>
+
+<span class="sd">    Get a network interfaces in a given guest</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">network_interface_info</span><span class="p">(</span><span class="n">guest_id</span><span class="p">))</span>
+
+</div>
+<span class="nd">@get</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests/:guest_id/tags&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="tag_list"><a class="viewcode-back" href="../../index.html#simplestack.server.tag_list">[docs]</a><span class="k">def</span> <span class="nf">tag_list</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      GET /:hypervisor/:host/guests/:guest_id/tags</span>
+
+<span class="sd">    Get all tags for a given guest</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">tag_list</span><span class="p">(</span><span class="n">guest_id</span><span class="p">))</span>
+
+</div>
+<span class="nd">@post</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests/:guest_id/tags&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="tag_create"><a class="viewcode-back" href="../../index.html#simplestack.server.tag_create">[docs]</a><span class="k">def</span> <span class="nf">tag_create</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      POST /:hypervisor/:host/guests/:guest_id/tags</span>
+
+<span class="sd">    Create a new tag for a given guest</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="s">&#39;No data received&#39;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">tag_create</span><span class="p">(</span><span class="n">guest_id</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">))</span>
+    <span class="c">#TODO: Should we return the Location for the first tag?</span>
+    <span class="n">tag_url</span> <span class="o">=</span> <span class="s">&quot;/</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">/guests/</span><span class="si">%s</span><span class="s">/tags/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">,</span> <span class="n">tag</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">set_header</span><span class="p">(</span><span class="s">&quot;Location&quot;</span><span class="p">,</span> <span class="n">tag_url</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+
+</div>
+<span class="nd">@delete</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests/:guest_id/tags/:tag_name&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="tag_delete"><a class="viewcode-back" href="../../index.html#simplestack.server.tag_delete">[docs]</a><span class="k">def</span> <span class="nf">tag_delete</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      DELETE /:hypervisor/:host/guests/:guest_id/tags</span>
+
+<span class="sd">    Delete a given tag for a given guest</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">tag_delete</span><span class="p">(</span><span class="n">guest_id</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">))</span>
+
+</div>
+<span class="nd">@get</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests/:guest_id/snapshots&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="snapshot_list"><a class="viewcode-back" href="../../index.html#simplestack.server.snapshot_list">[docs]</a><span class="k">def</span> <span class="nf">snapshot_list</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      GET /:hypervisor/:host/guests/:guest_id/snapshots</span>
+
+<span class="sd">    Get all snapshots for a given guest</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">snapshot_list</span><span class="p">(</span><span class="n">guest_id</span><span class="p">))</span>
+
+</div>
+<span class="nd">@post</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests/:guest_id/snapshots&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="snapshot_create"><a class="viewcode-back" href="../../index.html#simplestack.server.snapshot_create">[docs]</a><span class="k">def</span> <span class="nf">snapshot_create</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      POST /:hypervisor/:host/guests/:guest_id/snapshots</span>
+
+<span class="sd">    Create a snapshot for a given guest</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="s">&#39;No data received&#39;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">snapshot</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">snapshot_create</span><span class="p">(</span><span class="n">guest_id</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">))</span>
+    <span class="n">snapshot_url</span> <span class="o">=</span> <span class="s">&quot;/</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">/guests/</span><span class="si">%s</span><span class="s">/snapshots/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+        <span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">set_header</span><span class="p">(</span><span class="s">&quot;Location&quot;</span><span class="p">,</span> <span class="n">snapshot_url</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">snapshot</span><span class="p">)</span>
+
+</div>
+<span class="nd">@get</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests/:guest_id/snapshots/:snapshot_id&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="snapshot_info"><a class="viewcode-back" href="../../index.html#simplestack.server.snapshot_info">[docs]</a><span class="k">def</span> <span class="nf">snapshot_info</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">,</span> <span class="n">snapshot_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      GET /:hypervisor/:host/guests/:guest_id/snapshots/:snapshot_id</span>
+
+<span class="sd">    Get snapshot informations for a given guest_id and snapshot_id</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">snapshot_info</span><span class="p">(</span><span class="n">guest_id</span><span class="p">,</span> <span class="n">snapshot_id</span><span class="p">))</span>
+
+</div>
+<span class="nd">@put</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests/:guest_id/snapshots/:snapshot_id/revert&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="snapshot_revert"><a class="viewcode-back" href="../../index.html#simplestack.server.snapshot_revert">[docs]</a><span class="k">def</span> <span class="nf">snapshot_revert</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">,</span> <span class="n">snapshot_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      PUT /:hypervisor/:host/guests/:guest_id/snapshots/:snapshot_id/revert</span>
+
+<span class="sd">    Remove a snapshot for a given guest_id and snapshot_id</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">snapshot_revert</span><span class="p">(</span><span class="n">guest_id</span><span class="p">,</span> <span class="n">snapshot_id</span><span class="p">))</span>
+
+</div>
+<span class="nd">@delete</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests/:guest_id/snapshots/:snapshot_id&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="snapshot_delete"><a class="viewcode-back" href="../../index.html#simplestack.server.snapshot_delete">[docs]</a><span class="k">def</span> <span class="nf">snapshot_delete</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">,</span> <span class="n">snapshot_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      DELETE /:hypervisor/:host/guests/:guest_id/snapshots/:snapshot_id</span>
+
+<span class="sd">    Remove a snapshot for a given guest_id and snapshot_id</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">snapshot_delete</span><span class="p">(</span><span class="n">guest_id</span><span class="p">,</span> <span class="n">snapshot_id</span><span class="p">))</span>
+
+</div>
+<span class="nd">@put</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests/:guest_id/reboot&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="reboot_guest"><a class="viewcode-back" href="../../index.html#simplestack.server.reboot_guest">[docs]</a><span class="k">def</span> <span class="nf">reboot_guest</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      PUT /:hypervisor/:host/guests/:guest_id/reboot</span>
+
+<span class="sd">    Reboot a guest based on the given guest_id</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+    <span class="n">force</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">force</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;force&#39;</span><span class="p">)</span>
+
+    <span class="n">manager</span><span class="o">.</span><span class="n">guest_reboot</span><span class="p">(</span><span class="n">guest_id</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s">&quot;action&quot;</span><span class="p">:</span> <span class="s">&quot;reboot&quot;</span><span class="p">,</span> <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;ok&quot;</span><span class="p">})</span>
+
+</div>
+<span class="nd">@put</span><span class="p">(</span><span class="s">&#39;/:hypervisor/:host/guests/:guest_id/power&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="power_guest"><a class="viewcode-back" href="../../index.html#simplestack.server.power_guest">[docs]</a><span class="k">def</span> <span class="nf">power_guest</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">guest_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ::</span>
+
+<span class="sd">      PUT /:hypervisor/:host/guests/:guest_id/power</span>
+
+<span class="sd">    Turn a guest on/off based on a given guest_id</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="s">&quot;application/json&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="s">&#39;No data received&#39;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;state&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="s">&quot;force_stop&quot;</span><span class="p">:</span>
+        <span class="n">manager</span><span class="o">.</span><span class="n">guest_shutdown</span><span class="p">(</span><span class="n">guest_id</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="s">&quot;start&quot;</span><span class="p">:</span>
+        <span class="n">manager</span><span class="o">.</span><span class="n">guest_start</span><span class="p">(</span><span class="n">guest_id</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="s">&quot;stop&quot;</span><span class="p">:</span>
+        <span class="n">manager</span><span class="o">.</span><span class="n">guest_shutdown</span><span class="p">(</span><span class="n">guest_id</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="s">&quot;pause&quot;</span><span class="p">:</span>
+        <span class="n">manager</span><span class="o">.</span><span class="n">guest_suspend</span><span class="p">(</span><span class="n">guest_id</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="s">&quot;resume&quot;</span><span class="p">:</span>
+        <span class="n">manager</span><span class="o">.</span><span class="n">guest_resume</span><span class="p">(</span><span class="n">guest_id</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s">&quot;action&quot;</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span> <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;ok&quot;</span><span class="p">})</span>
+
+</div>
+<span class="k">def</span> <span class="nf">parse_token</span><span class="p">(</span><span class="n">token</span><span class="p">):</span>
+    <span class="n">decoded_token</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">token</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">)</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">decoded_token</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="s">&#39;:&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">decoded_token</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">create_manager</span><span class="p">(</span><span class="n">hypervisor</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
+    <span class="n">hypervisor_token</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;x-simplestack-hypervisor-token&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">hypervisor_token</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="s">&#39;No x-simplestack-hypervisor-token header provided&#39;</span><span class="p">)</span>
+
+    <span class="n">username</span><span class="p">,</span> <span class="n">password</span> <span class="o">=</span> <span class="n">parse_token</span><span class="p">(</span><span class="n">hypervisor_token</span><span class="p">)</span>
+
+    <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="s">&quot;simplestack.hypervisors.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">hypervisor</span><span class="p">)</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">hypervisors</span><span class="p">,</span> <span class="n">hypervisor</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">module</span><span class="o">.</span><span class="n">Stack</span><span class="p">({</span>
+        <span class="s">&quot;api_server&quot;</span><span class="p">:</span> <span class="n">host</span><span class="p">,</span>
+        <span class="s">&quot;username&quot;</span><span class="p">:</span> <span class="n">username</span><span class="p">,</span>
+        <span class="s">&quot;password&quot;</span><span class="p">:</span> <span class="n">password</span>
+    <span class="p">})</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s">&quot;/etc/simplestack.cfg&quot;</span><span class="p">)</span>
+    <span class="n">debug</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s">&quot;server&quot;</span><span class="p">,</span> <span class="s">&quot;debug&quot;</span><span class="p">))</span>
+    <span class="n">port</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s">&quot;server&quot;</span><span class="p">,</span> <span class="s">&quot;port&quot;</span><span class="p">)</span>
+    <span class="n">bind_addr</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;server&quot;</span><span class="p">,</span> <span class="s">&quot;bind_addr&quot;</span><span class="p">)</span>
+    <span class="n">set_logger</span><span class="p">()</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Starting Simplestack server&quot;</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">bind_addr</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">server</span><span class="o">=</span><span class="s">&quot;gevent&quot;</span><span class="p">)</span>
+</pre></div>
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        <a class="uplink" href="../../index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Locaweb team.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
