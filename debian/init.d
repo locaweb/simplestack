@@ -33,6 +33,13 @@ SCRIPTNAME=/etc/init.d/$NAME
 # Define LSB log_* functions.
 . /lib/lsb/init-functions
 
+sendsigs_omit() {
+    OMITDIR=/lib/init/rw/sendsigs.omit.d
+    mkdir -p $OMITDIR
+    rm -f $OMITDIR/rsyslog
+    ln -s $SIMPLESTACK_PIDFILE $OMITDIR/simplestack
+}
+
 create_xconsole() {
     XCONSOLE=/dev/xconsole
     if [ "$(uname -s)" = "GNU/kFreeBSD" ]; then

@@ -17,6 +17,8 @@
 # @author: Thiago Morello (morellon), Locaweb.
 # @author: Willian Molinari (PotHix), Locaweb.
 
+import os
+import pwd
 import json
 import time
 import base64
@@ -437,6 +439,7 @@ def create_manager(hypervisor, host):
 
 
 def main():
+    os.setuid(pwd.getpwnam(config.get("server", "user"))[2])
     debug(config.getboolean("server", "debug"))
     port = config.getint("server", "port")
     bind_addr = config.get("server", "bind_addr")
