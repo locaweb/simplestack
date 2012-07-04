@@ -33,40 +33,6 @@ SCRIPTNAME=/etc/init.d/$NAME
 # Define LSB log_* functions.
 . /lib/lsb/init-functions
 
-do_start()
-{
-    DAEMON="$SIMPLESTACK_BIN"
-    DAEMON_ARGS="$SIMPLESTACK_OPTIONS"
-    PIDFILE="$SIMPLESTACK_PIDFILE"
-
-    # Return
-    #   0 if daemon has been started
-    #   1 if daemon was already running
-    #   other if daemon could not be started or a failure occured
-    start-stop-daemon -u simplestack -b --start --quiet --exec $DAEMON -- $DAEMON_ARGS
-}
-
-do_stop()
-{
-    NAME="$SIMPLESTACK"
-    PIDFILE="$SIMPLESTACK_PIDFILE"
-
-    # Return
-    #   0 if daemon has been stopped
-    #   1 if daemon was already stopped
-    #   other if daemon could not be stopped or a failure occurred
-    start-stop-daemon -u simplestack --stop --quiet --signal KILL --retry=TERM/30/KILL/5 --pidfile $PIDFILE && rm $PIDFILE
-}
-
-#
-# Tell rsyslogd to reload its configuration
-#
-do_reload() {
-    NAME="$SIMPLESTACK"
-    PIDFILE="$SIMPLESTACK_PIDFILE"
-    start-stop-daemon -u simplestack --stop --signal HUP --quiet --pidfile $PIDFILE --name $NAME
-}
-
 create_xconsole() {
     XCONSOLE=/dev/xconsole
     if [ "$(uname -s)" = "GNU/kFreeBSD" ]; then
@@ -80,18 +46,11 @@ create_xconsole() {
     fi
 }
 
-sendsigs_omit() {
-    OMITDIR=/lib/init/rw/sendsigs.omit.d
-    mkdir -p $OMITDIR
-    rm -f $OMITDIR/rsyslog
-    ln -s $SIMPLESTACK_PIDFILE $OMITDIR/rsyslog
-}
-
 case "$1" in
     start)
         log_daemon_msg "Starting $DESC" "$SIMPLESTACK"
         create_xconsole
-        do_start
+        $SIMPLESTACK_BIN -a start
         case "$?" in
             0) sendsigs_omit
                log_end_msg 0 ;;
@@ -102,7 +61,7 @@ case "$1" in
     ;;
     stop)
         log_daemon_msg "Stopping $DESC" "$SIMPLESTACK"
-        do_stop
+        $SIMPLESTACK_BIN -a stop
         case "$?" in
             0) log_end_msg 0 ;;
             1) log_progress_msg "already stopped"
@@ -110,21 +69,16 @@ case "$1" in
             *) log_end_msg 1 ;;
         esac
     ;;
-    reload|force-reload)
-        log_daemon_msg "Reloading $DESC" "$SIMPLESTACK"
-        do_reload
-        log_end_msg $?
-    ;;
     restart)
         $0 stop
         $0 start
     ;;
     status)
-        status_of_proc -p $SIMPLESTACK_PIDFILE $LOCASTACK_BIN $LOCASTACK && exit 0 || exit $?
+         $SIMPLESTACK_BIN -a status
     ;;
     *)
-        echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload|status}" >&2
-        exit 3
+        echo "Usage: $SCRIPTNAME {start|stop|restart|status}"
+        exit 1
     ;;
 esac
 
