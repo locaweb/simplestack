@@ -19,6 +19,7 @@
 # @author: Juliano Martinez (ncode), Locaweb.
 
 import os
+import grp
 import pwd
 import json
 import time
