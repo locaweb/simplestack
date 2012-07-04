@@ -437,7 +437,6 @@ def create_manager(hypervisor, host):
 
 
 def main():
-    config.read("/etc/simplestack.cfg")
     debug(config.getboolean("server", "debug"))
     port = config.getint("server", "port")
     bind_addr = config.get("server", "bind_addr")

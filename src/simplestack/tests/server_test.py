@@ -15,6 +15,7 @@
 #
 # @author: Thiago Morello (morellon), Locaweb.
 # @author: Willian Molinari (PotHix), Locaweb.
+# @author: Juliano Martinez (ncode), Locaweb.
 
 from webtest import TestApp
 from simplestack import server
@@ -28,7 +29,8 @@ class ServerTest(unittest.TestCase):
         return {"x-simplestack-hypervisor-token": "YWRtaW46c2VjcmV0"}
 
     def test_having_any_port_configured(self):
-        self.assertTrue(int(server.get_config("port")))
+        server.config.read('src/conf/simplestack.cfg')
+        self.assertTrue(int(server.config.get("server", "port")))
 
     def test_hypervisor_token(self):
         token = "YWRtaW46c2VjcmV0"
