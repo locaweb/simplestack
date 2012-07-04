@@ -16,6 +16,7 @@
 # @author: Francisco Freire, Locaweb.
 # @author: Thiago Morello (morellon), Locaweb.
 # @author: Willian Molinari (PotHix), Locaweb.
+# @author: Juliano Martinez (ncode), Locaweb.
 
 import os
 import pwd
