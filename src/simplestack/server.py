@@ -32,7 +32,7 @@ from bottle import abort, request, ServerAdapter, response, static_file
 from simplestack.common.config import config, set_logger
 
 from gevent import monkey
-monkey.patch_all()
+monkey.patch_all(thread=False)
 
 app = bottle.app()
 LOG = logging.getLogger('simplestack.server')
