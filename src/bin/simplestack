@@ -16,7 +16,8 @@ if __name__ == '__main__':
         if o in ('-a', '--action'):
             action = a
 
-    daemon = Daemon(name='simplestack', catch_all_log='/var/log/simplestack.log')
+    daemon = Daemon(name='simplestack', catch_all_log='/var/log/simplestack.log'
+                    pid_dir='/var/run/simplestack')
     if action == 'start':
         daemon.start()
         main()

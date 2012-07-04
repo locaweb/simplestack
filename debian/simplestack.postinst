@@ -1,11 +1,18 @@
 #!/bin/bash
 
-chgrp simplestack /etc/simplestack/simplestack.conf 2>/dev/null || addgroup --system simplestack
-chown simplestack /etc/simplestack/simplestack.conf 2>/dev/null || adduser --system --disabled-login --home /var/run/simplestack --no-create-home --disabled-password --ingroup simplestack simplestack
+run_dir="/var/run/simplestack"
+if [ ! -d "/var/run/simplestack" ] ; then
+    mkdir /var/run/simplestack
+fi
+
+chgrp simplestack $run_dir 2>/dev/null || addgroup --system simplestack
+chown simplestack $run_dir 2>/dev/null || adduser --system --disabled-login --home /var/run/simplestack --no-create-home --disabled-password --ingroup simplestack simplestack
+
+chown simplestack:simplestack $run_dir
 
 # Automatically added by dh_pysupport
 if which update-python-modules >/dev/null 2>&1; then
-	update-python-modules  simplestack.public
+	update-python-modules simplestack.public
 fi
 # End automatically added section
 

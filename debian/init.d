@@ -17,15 +17,15 @@ PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="python simplestack service"
 NAME=simplestack
 
-LOCASTACK=simplestack
-LOCASTACK_BIN=/usr/sbin/simplestack
-LOCASTACK_OPTIONS=""
-LOCASTACK_PIDFILE=/var/run/simplestack.pid
+SIMPLESTACK=simplestack
+SIMPLESTACK_BIN=/usr/sbin/simplestack
+SIMPLESTACK_OPTIONS=""
+SIMPLESTACK_PIDFILE=/var/run/simplestack/simplestack.pid
 
 SCRIPTNAME=/etc/init.d/$NAME
 
 # Exit if the package is not installed
-[ -x "$LOCASTACK_BIN" ] || exit 0
+[ -x "$SIMPLESTACK_BIN" ] || exit 0
 
 # Read configuration variable file if it is present
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
@@ -35,9 +35,9 @@ SCRIPTNAME=/etc/init.d/$NAME
 
 do_start()
 {
-    DAEMON="$LOCASTACK_BIN"
-    DAEMON_ARGS="$LOCASTACK_OPTIONS"
-    PIDFILE="$LOCASTACK_PIDFILE"
+    DAEMON="$SIMPLESTACK_BIN"
+    DAEMON_ARGS="$SIMPLESTACK_OPTIONS"
+    PIDFILE="$SIMPLESTACK_PIDFILE"
 
     # Return
     #   0 if daemon has been started
@@ -48,8 +48,8 @@ do_start()
 
 do_stop()
 {
-    NAME="$LOCASTACK"
-    PIDFILE="$LOCASTACK_PIDFILE"
+    NAME="$SIMPLESTACK"
+    PIDFILE="$SIMPLESTACK_PIDFILE"
 
     # Return
     #   0 if daemon has been stopped
@@ -62,8 +62,8 @@ do_stop()
 # Tell rsyslogd to reload its configuration
 #
 do_reload() {
-    NAME="$LOCASTACK"
-    PIDFILE="$LOCASTACK_PIDFILE"
+    NAME="$SIMPLESTACK"
+    PIDFILE="$SIMPLESTACK_PIDFILE"
     start-stop-daemon -u simplestack --stop --signal HUP --quiet --pidfile $PIDFILE --name $NAME
 }
 
@@ -84,12 +84,12 @@ sendsigs_omit() {
     OMITDIR=/lib/init/rw/sendsigs.omit.d
     mkdir -p $OMITDIR
     rm -f $OMITDIR/rsyslog
-    ln -s $LOCASTACK_PIDFILE $OMITDIR/rsyslog
+    ln -s $SIMPLESTACK_PIDFILE $OMITDIR/rsyslog
 }
 
 case "$1" in
     start)
-        log_daemon_msg "Starting $DESC" "$LOCASTACK"
+        log_daemon_msg "Starting $DESC" "$SIMPLESTACK"
         create_xconsole
         do_start
         case "$?" in
@@ -101,7 +101,7 @@ case "$1" in
         esac
     ;;
     stop)
-        log_daemon_msg "Stopping $DESC" "$LOCASTACK"
+        log_daemon_msg "Stopping $DESC" "$SIMPLESTACK"
         do_stop
         case "$?" in
             0) log_end_msg 0 ;;
@@ -111,7 +111,7 @@ case "$1" in
         esac
     ;;
     reload|force-reload)
-        log_daemon_msg "Reloading $DESC" "$LOCASTACK"
+        log_daemon_msg "Reloading $DESC" "$SIMPLESTACK"
         do_reload
         log_end_msg $?
     ;;
@@ -120,7 +120,7 @@ case "$1" in
         $0 start
     ;;
     status)
-        status_of_proc -p $LOCASTACK_PIDFILE $LOCASTACK_BIN $LOCASTACK && exit 0 || exit $?
+        status_of_proc -p $SIMPLESTACK_PIDFILE $LOCASTACK_BIN $LOCASTACK && exit 0 || exit $?
     ;;
     *)
         echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload|status}" >&2
