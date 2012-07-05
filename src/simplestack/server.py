@@ -39,6 +39,14 @@ app = bottle.app()
 LOG = logging.getLogger('simplestack.server')
 
 
+@error(500)
+def custom500(error):
+    return json.dumps({
+        "error": error.__class__.__name__,
+        "message": str(error)
+    })
+
+
 @get('/:hypervisor/:host')
 def pool_info(hypervisor, host):
     """
