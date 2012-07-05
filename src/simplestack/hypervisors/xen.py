@@ -295,7 +295,10 @@ class Stack(SimpleStack):
 
     def _vm_info(self, vm_ref):
         vm = self.connection.xenapi.VM.get_record(vm_ref)
+
         tools_up_to_date = None
+        if vm["guest_metrics"] != "OpaqueRef:NULL":
+            tools_up_to_date = xapi.VM_guest_metrics.get_PV_drivers_up_to_date(vm["guest_metrics"])
 
         return(
             self.format_for.guest(
