@@ -46,8 +46,8 @@ def custom500(error):
 
     traceback = None
     if type(error) is HTTPError:
-        error = error.exception
         traceback = error.traceback
+        error = error.exception
     error_class = error.__class__.__name__
 
     LOG.error("%s: %s", error_class, error)
