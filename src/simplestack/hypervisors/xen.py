@@ -298,7 +298,7 @@ class Stack(SimpleStack):
 
         tools_up_to_date = None
         if vm["guest_metrics"] != "OpaqueRef:NULL":
-            tools_up_to_date = xapi.VM_guest_metrics.get_PV_drivers_up_to_date(vm["guest_metrics"])
+            tools_up_to_date = self.connection.xapi.VM_guest_metrics.get_PV_drivers_up_to_date(vm["guest_metrics"])
 
         return(
             self.format_for.guest(
