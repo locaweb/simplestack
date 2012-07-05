@@ -27,7 +27,7 @@ import base64
 import logging
 
 import bottle
-from bottle import delete, put, get, post, redirect, run, debug
+from bottle import delete, put, get, post, error, redirect, run, debug
 from bottle import abort, request, ServerAdapter, response, static_file
 
 from simplestack.common.config import config, set_logger
