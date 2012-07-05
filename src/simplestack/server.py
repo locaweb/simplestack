@@ -29,6 +29,7 @@ import logging
 import bottle
 from bottle import delete, put, get, post, error, redirect, run, debug
 from bottle import abort, request, ServerAdapter, response, static_file
+from bottle import error, HTTPError
 
 from simplestack.common.config import config, set_logger
 
@@ -41,9 +42,20 @@ LOG = logging.getLogger('simplestack.server')
 
 @error(500)
 def custom500(error):
+    response.content_type = "application/json"
+
+    traceback = None
+    if type(error) is HTTPError:
+        error = error.exception
+        traceback = traceback
+    error_class = error.__class__.__name__
+
+    LOG.error("%s: %s", error_class, error)
+
     return json.dumps({
-        "error": error.__class__.__name__,
-        "message": str(error)
+        "error": error_class,
+        "message": str(error),
+        "traceback": traceback
     })
 
 
