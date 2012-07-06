@@ -221,7 +221,6 @@ class Stack(SimpleStack):
         null_ref = 'OpaqueRef:NULL'
         if self.connection.xenapi.VBD.get_record(cd_ref)["VDI"] != null_ref:
             self.connection.xenapi.VBD.eject(cd_ref)
-        self.connection.xenapi.VM.set_HVM_boot_policy(vm_ref, "")
 
     def media_info(self, guest_id):
         vm_ref = self._vm_ref(guest_id)
