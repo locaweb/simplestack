@@ -151,8 +151,10 @@ class Stack(SimpleStack):
             self.connection.xenapi.VM.set_VCPUs_params(vm_ref, parameters)
         if guestdata.get("hdd"):
             disk = self.get_disks(vm_ref)[-1]
+            disks_size = self.get_disks_size(vm_ref)
             hdd = guestdata.get("hdd") * 1024 * 1024 * 1024
-            self.connection.xenapi.VDI.resize(disk["ref"], str(hdd))
+            new_disk_size = hdd - disks_size + int(disk["virtual_size"])
+            self.connection.xenapi.VDI.resize(disk["ref"], str(new_disk_size))
 
         return self._vm_info(self._vm_ref(guest_id))
 
