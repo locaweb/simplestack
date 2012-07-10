@@ -8,6 +8,6 @@ Homepage: https://github.com/locaweb/simplestack
 
 Package: simplestack
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, python-bottle, python-supay, python-paste, python-libvirt, python
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-bottle, python-supay, python-gevent, python-libvirt, python
 Description: A simple abstraction layer to deal with different hypervisors
  Deal with different hypervisors though a simple REST API.

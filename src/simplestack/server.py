@@ -18,6 +18,8 @@
 # @author: Willian Molinari (PotHix), Locaweb.
 # @author: Juliano Martinez (ncode), Locaweb.
 
+from gevent import monkey; monkey.patch_all()
+
 import os
 import grp
 import pwd
@@ -465,4 +467,4 @@ def main():
     bind_addr = config.get("server", "bind_addr")
     set_logger()
     LOG.info("Starting Simplestack server")
-    run(host=bind_addr, port=port, server="paste")
+    run(host=bind_addr, port=port, server="gevent")
