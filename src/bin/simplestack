@@ -1,9 +1,9 @@
 #!/usr/bin/python
+from simplestack.server import main
 import sys
 import getopt
 
 from supay import Daemon
-from simplestack.server import main
 
 if __name__ == '__main__':
     try:
