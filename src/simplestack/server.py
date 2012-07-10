@@ -33,9 +33,6 @@ from bottle import error, HTTPError
 
 from simplestack.common.config import config, set_logger
 
-from gevent import monkey
-monkey.patch_all(thread=False)
-
 app = bottle.app()
 LOG = logging.getLogger('simplestack.server')
 
@@ -468,4 +465,4 @@ def main():
     bind_addr = config.get("server", "bind_addr")
     set_logger()
     LOG.info("Starting Simplestack server")
-    run(host=bind_addr, port=port, server="gevent")
+    run(host=bind_addr, port=port, server="paste")
