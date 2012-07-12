@@ -23,6 +23,9 @@ from simplestack.views.format_view import FormatView
 
 import re
 import httplib
+import logging
+
+LOG = logging.getLogger('simplestack.server')
 
 
 class Stack(SimpleStack):
@@ -291,8 +294,30 @@ class Stack(SimpleStack):
         vm_ref = self._vm_ref(guest_id)
         self.connection.xenapi.VM.remove_tags(vm_ref, tag_name)
 
+    def get_disks(self, vm_ref):
+        disks = []
+        vm = self.connection.xenapi.VM.get_record(vm_ref)
+        for vbd_ref in vm['VBDs']:
+            vbd = self.connection.xenapi.VBD.get_record(vbd_ref)
+            if vbd["type"] == "Disk":
+                vdi = self.connection.xenapi.VDI.get_record(vbd['VDI'])
+                vdi['ref'] = vbd['VDI']
+                disks.append(vdi)
+        return disks
+
+    def get_disks_size(self, vm_ref):
+        size = 0
+        for vdi in self.get_disks(vm_ref):
+            size += int(vdi["virtual_size"])
+        return size
+
     def _vm_ref(self, uuid):
-        return self.connection.xenapi.VM.get_by_uuid(uuid)
+        try:
+            return self.connection.xenapi.VM.get_by_uuid(uuid)
+        except:
+            LOG.warning("uuid=%s action=not_found" % uuid)
+            return []
+
 
     def _vm_info(self, vm_ref):
         vm = self.connection.xenapi.VM.get_record(vm_ref)
@@ -339,6 +364,10 @@ class Stack(SimpleStack):
 
     def _delete_vm(self, vm_id):
         vm_ref = self._vm_ref(vm_id)
+
+        if not vm_ref:
+            return
+
         for snap_ref in self.connection.xenapi.VM.get_snapshots(vm_ref):
             snap = self.connection.xenapi.VM.get_record(snap_ref)
             self._delete_vm(snap["uuid"])
@@ -351,23 +380,6 @@ class Stack(SimpleStack):
             vbd = self.connection.xenapi.VBD.get_record(vbd_ref)
             if vbd["type"] == "CD":
                 return vbd_ref
-
-    def get_disks(self, vm_ref):
-        disks = []
-        vm = self.connection.xenapi.VM.get_record(vm_ref)
-        for vbd_ref in vm['VBDs']:
-            vbd = self.connection.xenapi.VBD.get_record(vbd_ref)
-            if vbd["type"] == "Disk":
-                vdi = self.connection.xenapi.VDI.get_record(vbd['VDI'])
-                vdi['ref'] = vbd['VDI']
-                disks.append(vdi)
-        return disks
-
-    def get_disks_size(self, vm_ref):
-        size = 0
-        for vdi in self.get_disks(vm_ref):
-            size += int(vdi["virtual_size"])
-        return size
 
     def _delete_disks(self, vm_ref):
         for vdi in self.get_disks(vm_ref):
