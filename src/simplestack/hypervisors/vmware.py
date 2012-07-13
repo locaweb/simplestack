@@ -120,6 +120,22 @@ class Stack(SimpleStack):
         else:
             return {"name": None}
 
+    def network_interface_list(self, guest_id):
+        vm = self._vm_ref(guest_id)
+        vifs = vmware.get_network_interfaces(vm)
+        return [self._network_interface_info(n) for n in vifs]
+
+    def network_interface_info(self, guest_id, network_interface_id):
+        vm = self._vm_ref(guest_id)
+        vifs = vmware.get_network_interfaces(vm)
+
+        for vif in vifs:
+            if vif.macAddress == network_interface_id:
+                return self._network_interface_info(vif)
+
+        entity_info = "%s - on Guest %s" % (network_interface_id, guest_id)
+        raise EntityNotFound("NetworkInterface", entity_info)
+
     def snapshot_list(self, guest_id):
         vm = self._vm_ref(guest_id)
         snaps = [self._snapshot_info(s) for s in vm.get_snapshots()]
@@ -184,6 +200,16 @@ class Stack(SimpleStack):
                 vmware.get_disk_size(vm) / (1024 * 1024),
                 vm.properties.guest.toolsStatus == "toolsOk",
                 self.state_translation[vm.get_status()]
+            )
+        )
+
+    def _network_interface_info(self, vif):
+        return(
+            self.format_for.network_interface(
+                vif.macAddress,
+                vif.unitNumber,
+                vif.macAddress,
+                vif.backing.network.name
             )
         )
 

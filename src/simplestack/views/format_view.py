@@ -40,9 +40,10 @@ class FormatView(object):
 
         }
 
-    def network(self, device, mac, name_label):
+    def network_interface(self, vif_id, device, mac, name_label):
         return {
-            'id': device,
+            'id': vif_id,
+            'number': device,
             'mac': mac,
             'network': name_label
         }

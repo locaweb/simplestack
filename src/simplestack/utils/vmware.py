@@ -178,6 +178,18 @@ def get_disk_size(vm_obj):
     return size
 
 
+def get_network_interfaces(vm_obj):
+    vif_types = [
+        "VirtualEthernetCard", "VirtualE1000", "VirtualE1000e",
+        "VirtualPCNet32", "VirtualVmxnet"
+    ]
+    vifs = []
+    for device in vm_obj.properties.config.hardware.device:
+        if device._type in vif_types:
+            vifs.append(device)
+    return vifs
+
+
 def create_snapshot(server, vm_obj, snapshot_name):
     snapshot_id = str(uuid.uuid4())
     request = VI.CreateSnapshot_TaskRequestMsg()

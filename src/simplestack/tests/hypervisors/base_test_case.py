@@ -20,6 +20,7 @@ import random
 
 
 class HypervisorBaseTest(object):
+    # debugging: import sys; sys.stdout = sys.__stdout__; import ipdb; ipdb.set_trace()
 
     def test_pool_info(self):
         pool = self.stack.pool_info()
@@ -94,10 +95,11 @@ class HypervisorBaseTest(object):
         self.assertEqual(len(nw_interfaces), 1)
 
     def test_network_interface_info(self):
+        nw_interfaces = self.stack.network_interface_list(self._get_vm_id())
         nw_interface = self.stack.network_interface_info(
-            self._get_vm_id(), self._get_nw_interface_id()
+            self._get_vm_id(), nw_interfaces[0]['id']
         )
-        self.assertEqual(nw_interface['id'], self._get_nw_interface_id())
+        self.assertEqual(nw_interface['id'], nw_interfaces[0]['id'])
 
     def test_snapshot_list(self):
         snap_name = "Snapshot:%f" % random.random()

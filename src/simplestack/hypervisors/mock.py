@@ -37,7 +37,8 @@ class Stack(SimpleStack):
         "cd": None,
         "network_interfaces": [
             {
-                "id": "0",
+                "id": "00:11:22:33:44:55",
+                "number": "0",
                 "mac": "00:11:22:33:44:55",
                 "network": "network1"
             }

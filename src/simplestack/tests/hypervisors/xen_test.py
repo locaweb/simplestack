@@ -75,9 +75,6 @@ class XenTest(unittest.TestCase, HypervisorBaseTest):
     def _get_vm_id(self):
         return self.vm['uuid']
 
-    def _get_nw_interface_id(self):
-        return "0"
-
     def _stop_vm(self):
         self.__class__._stopVmClass()
 

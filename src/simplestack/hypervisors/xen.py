@@ -249,7 +249,7 @@ class Stack(SimpleStack):
 
         for vif_ref in vif_refs:
             vif_rec = self.connection.xenapi.VIF.get_record(vif_ref)
-            if vif_rec["device"] == network_interface_id:
+            if vif_rec["MAC"] == network_interface_id:
                 return self._network_interface_info(vif_ref)
 
         entity_info = "%s - on Guest %s" % (network_interface_id, guest_id)
@@ -316,8 +316,7 @@ class Stack(SimpleStack):
             return self.connection.xenapi.VM.get_by_uuid(uuid)
         except:
             LOG.warning("uuid=%s action=not_found" % uuid)
-            return []
-
+            return None
 
     def _vm_info(self, vm_ref):
         vm = self.connection.xenapi.VM.get_record(vm_ref)
@@ -355,7 +354,8 @@ class Stack(SimpleStack):
         )
 
         return(
-            self.format_for.network(
+            self.format_for.network_interface(
+                vif_rec["MAC"],
                 vif_rec["device"],
                 vif_rec["MAC"],
                 network_rec["name_label"]
