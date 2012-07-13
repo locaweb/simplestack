@@ -35,14 +35,14 @@ class Stack(SimpleStack):
         "tags": [],
         "tools_up_to_date": False,
         "cd": None,
-        "network_interfaces": [
-            {
+        "network_interfaces": {
+            "00:11:22:33:44:55": {
                 "id": "00:11:22:33:44:55",
                 "number": "0",
                 "mac": "00:11:22:33:44:55",
                 "network": "network1"
             }
-        ]
+        }
     }
 
     guests = {}
@@ -121,14 +121,22 @@ class Stack(SimpleStack):
         if not self.guests.get(guest_id):
             raise EntityNotFound("Guest", guest_id)
 
-        return self.guests[guest_id]['network_interfaces']
+        return self.guests[guest_id]['network_interfaces'].values()
 
-    def network_interface_info(self, guest_id, network_interface_id):
-        for nw_int in self.guests[guest_id]['network_interfaces']:
-            if nw_int['id'] == network_interface_id:
-                return nw_int
-        entity_info = "%s - on Guest %s" % (network_interface_id, guest_id)
-        raise EntityNotFound("NetworkInterface", entity_info)
+    def network_interface_info(self, guest_id, interface_id):
+        if not self.guests.get(guest_id):
+            raise EntityNotFound("Guest", guest_id)
+
+        return self.guests[guest_id]['network_interfaces'][interface_id]
+
+    def network_interface_update(self, guest_id, interface_id, data):
+        if not self.guests.get(guest_id):
+            raise EntityNotFound("Guest", guest_id)
+
+        nw_int = self.guests[guest_id]['network_interfaces'][interface_id]
+        if data.get("network"):
+            nw_int["network"] = data["network"]
+        return nw_int
 
     def snapshot_list(self, guest_id):
         return self.guests[guest_id]['snapshots'].values()

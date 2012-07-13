@@ -101,6 +101,15 @@ class HypervisorBaseTest(object):
         )
         self.assertEqual(nw_interface['id'], nw_interfaces[0]['id'])
 
+    def test_network_interface_update(self):
+        # TODO: change network
+        self.stack.guest_shutdown(self._get_vm_id(), True)
+        nw_interfaces = self.stack.network_interface_list(self._get_vm_id())
+        nw_interface = self.stack.network_interface_update(
+            self._get_vm_id(), nw_interfaces[0]['id'], {}
+        )
+        self.assertEqual(nw_interface['id'], nw_interfaces[0]['id'])
+
     def test_snapshot_list(self):
         snap_name = "Snapshot:%f" % random.random()
         snap = self.stack.snapshot_create(self._get_vm_id(), snap_name)

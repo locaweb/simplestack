@@ -119,6 +119,9 @@ class SimpleStack(object):
     def network_interface_info(self, guest_id, network_interface_id):
         raise FeatureNotImplemented()
 
+    def network_interface_update(self, guest_id, network_interface_id, data):
+        raise FeatureNotImplemented()
+
     def snapshot_list(self, guest_id):
         if not self.has_libvirt():
             raise FeatureNotImplemented()

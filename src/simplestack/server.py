@@ -247,11 +247,32 @@ def network_interface_info(hypervisor, host, guest_id, interface_id):
 
       GET /:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id
 
-    Get a network interfaces in a given guest
+    Get a network interface in a given guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    return json.dumps(manager.network_interface_info(guest_id))
+    nwi_info = manager.network_interface_info(guest_id, interface_id)
+    return json.dumps(nwi_info)
+
+
+@put('/:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id')
+def network_interface_update(hypervisor, host, guest_id, interface_id):
+    """
+    ::
+
+      PUT /:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id
+
+    Update a network interface in a given guest
+    """
+    response.content_type = "application/json"
+    manager = create_manager(hypervisor, host)
+    data = request.body.readline()
+    if not data:
+        abort(400, 'No data received')
+    data = json.loads(data)
+    manager = create_manager(hypervisor, host)
+    nwi_info = manager.network_interface_update(guest_id, interface_id, data)
+    return json.dumps(nwi_info)
 
 
 @get('/:hypervisor/:host/guests/:guest_id/tags')

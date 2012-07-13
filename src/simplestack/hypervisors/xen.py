@@ -245,15 +245,20 @@ class Stack(SimpleStack):
 
     def network_interface_info(self, guest_id, network_interface_id):
         vm_ref = self._vm_ref(guest_id)
-        vif_refs = self.connection.xenapi.VM.get_VIFs(vm_ref)
+        vif_ref = self._network_interface_ref(vm_ref, network_interface_id)
+        return self._network_interface_info(vif_ref)
 
-        for vif_ref in vif_refs:
-            vif_rec = self.connection.xenapi.VIF.get_record(vif_ref)
-            if vif_rec["MAC"] == network_interface_id:
-                return self._network_interface_info(vif_ref)
+    def network_interface_update(self, guest_id, network_interface_id, data):
+        vm_ref = self._vm_ref(guest_id)
+        vif_ref = self._network_interface_ref(vm_ref, network_interface_id)
+        vif_record = self.connection.xenapi.VIF.get_record(vif_ref)
 
-        entity_info = "%s - on Guest %s" % (network_interface_id, guest_id)
-        raise EntityNotFound("NetworkInterface", entity_info)
+        if data.get("network"):
+            vif_record["network"] = self.connection.xenapi.pool\
+                                    .network_by_name_label(data["network"])
+        self.connection.xenapi.VIF.destroy(vif_ref)
+        vif_ref = self.connection.xenapi.VIF.create(vif_record)
+        return self._network_interface_info(vif_ref)
 
     def snapshot_list(self, guest_id):
         snaps = [
@@ -310,6 +315,17 @@ class Stack(SimpleStack):
         for vdi in self.get_disks(vm_ref):
             size += int(vdi["virtual_size"])
         return size
+
+    def _network_interface_ref(self, vm_ref, network_interface_id):
+        vif_refs = self.connection.xenapi.VM.get_VIFs(vm_ref)
+
+        for vif_ref in vif_refs:
+            vif_rec = self.connection.xenapi.VIF.get_record(vif_ref)
+            if vif_rec["MAC"] == network_interface_id:
+                return vif_ref
+
+        entity_info = "%s - on Guest %s" % (network_interface_id, guest_id)
+        raise EntityNotFound("NetworkInterface", entity_info)
 
     def _vm_ref(self, uuid):
         try:
