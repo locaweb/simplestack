@@ -172,7 +172,8 @@ class Stack(SimpleStack):
         return self.guests[guest_id]['tags']
 
     def tag_delete(self, guest_id, tag_name):
-        self.guests[guest_id]['tags'].pop(
-           self.guests[guest_id]['tags'].index(tag_name)
-        )
+        for tag in self.guests[guest_id]['tags'][:]:
+            if tag == tag_name:
+                self.guests[guest_id]['tags'].remove(tag_name)
+
         return self.guests[guest_id]['tags']

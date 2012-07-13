@@ -145,9 +145,12 @@ def get_tags(vm_obj):
     return vm_obj.properties.config.annotation.splitlines()
 
 
-def delete_tag(tag, vm_obj):
+def delete_tag(tag_name, vm_obj):
     tags = get_tags(vm_obj)
-    tags.remove(tag)
+    for tag in tags[:]:
+        if tag == tag_name:
+            tags.remove(tag_name)
+
     return tags
 
 

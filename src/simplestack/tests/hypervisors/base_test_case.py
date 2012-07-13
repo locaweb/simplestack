@@ -146,8 +146,6 @@ class HypervisorBaseTest(object):
         self.assertEqual(guest_tags, tags_list)
 
     def test_tag_create(self):
-        # Waiting for vmware implementation
-        return
         tag_name = "v0.0.1"
         guest_tags = self.stack.tag_create(self._get_vm_id(), tag_name)
         tags_list = self.stack.tag_list(self._get_vm_id())
