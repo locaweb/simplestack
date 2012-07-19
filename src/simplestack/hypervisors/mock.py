@@ -22,6 +22,7 @@ from simplestack.hypervisors.base import SimpleStack
 from simplestack.views.format_view import FormatView
 
 import uuid
+import random
 import datetime
 
 
@@ -123,6 +124,24 @@ class Stack(SimpleStack):
 
         return self.guests[guest_id]['network_interfaces'].values()
 
+    def network_interface_create(self, guest_id, data):
+        if not self.guests.get(guest_id):
+            raise EntityNotFound("Guest", guest_id)
+        mac = "%02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x" % (
+            random.randint(0, 255), random.randint(0, 255),
+            random.randint(0, 255), random.randint(0, 255),
+            random.randint(0, 255), random.randint(0, 255),
+            random.randint(0, 255), random.randint(0, 255)
+        )
+        self.guests[guest_id]['network_interfaces'][mac] = {
+            "id": mac,
+            "number": "0",
+            "mac": mac,
+            "network": "network1"
+        }
+
+        return self.guests[guest_id]['network_interfaces'][mac]
+
     def network_interface_info(self, guest_id, interface_id):
         if not self.guests.get(guest_id):
             raise EntityNotFound("Guest", guest_id)
@@ -137,6 +156,9 @@ class Stack(SimpleStack):
         if data.get("network"):
             nw_int["network"] = data["network"]
         return nw_int
+
+    def network_interface_delete(self, guest_id, interface_id):
+        del self.guests[guest_id]['network_interfaces'][interface_id]
 
     def snapshot_list(self, guest_id):
         return self.guests[guest_id]['snapshots'].values()

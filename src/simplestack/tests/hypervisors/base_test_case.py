@@ -92,14 +92,14 @@ class HypervisorBaseTest(object):
 
     def test_network_interface_list(self):
         nw_interfaces = self.stack.network_interface_list(self._get_vm_id())
-        self.assertEqual(len(nw_interfaces), 1)
+        self.assertNotEqual(len(nw_interfaces), 0)
 
     def test_network_interface_create(self):
         # TODO: change network
         self.stack.guest_shutdown(self._get_vm_id(), True)
 
         created_nw = self.stack.network_interface_create(
-            self._get_vm_id(), {}
+            self._get_vm_id(), {"network": self._network_name()}
         )
         nw_interface = self.stack.network_interface_info(
             self._get_vm_id(),
@@ -127,7 +127,7 @@ class HypervisorBaseTest(object):
         self.stack.guest_shutdown(self._get_vm_id(), True)
 
         created_nw = self.stack.network_interface_create(
-            self._get_vm_id(), {}
+            self._get_vm_id(), {"network": self._network_name()}
         )
         self.stack.network_interface_delete(
             self._get_vm_id(),

@@ -240,7 +240,7 @@ def network_interface_list(hypervisor, host, guest_id):
     return json.dumps(manager.network_interface_list(guest_id))
 
 @post('/:hypervisor/:host/guests/:guest_id/network_interfaces')
-def network_interface_create(self, guest_id, data):
+def network_interface_create(hypervisor, host, guest_id):
     """
     ::
 
@@ -250,6 +250,10 @@ def network_interface_create(self, guest_id, data):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
+    data = request.body.readline()
+    if not data:
+        abort(400, 'No data received')
+    data = json.loads(data)
     return json.dumps(manager.network_interface_create(guest_id, data))
 
 @get('/:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id')
@@ -282,7 +286,6 @@ def network_interface_update(hypervisor, host, guest_id, interface_id):
     if not data:
         abort(400, 'No data received')
     data = json.loads(data)
-    manager = create_manager(hypervisor, host)
     nwi_info = manager.network_interface_update(guest_id, interface_id, data)
     return json.dumps(nwi_info)
 

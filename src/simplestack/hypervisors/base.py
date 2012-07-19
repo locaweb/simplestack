@@ -116,10 +116,16 @@ class SimpleStack(object):
     def network_interface_list(self, guest_id):
         raise FeatureNotImplemented()
 
+    def network_interface_create(self, guest_id, data):
+        raise FeatureNotImplemented()
+
     def network_interface_info(self, guest_id, network_interface_id):
         raise FeatureNotImplemented()
 
     def network_interface_update(self, guest_id, network_interface_id, data):
+        raise FeatureNotImplemented()
+
+    def network_interface_delete(self, guest_id, network_interface_id):
         raise FeatureNotImplemented()
 
     def snapshot_list(self, guest_id):

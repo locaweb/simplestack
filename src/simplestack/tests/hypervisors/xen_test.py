@@ -78,6 +78,9 @@ class XenTest(unittest.TestCase, HypervisorBaseTest):
     def _stop_vm(self):
         self.__class__._stopVmClass()
 
+    def _network_name(self):
+        return "Production"
+
     def _media_name(self):
         return "xs-tools.iso"
 

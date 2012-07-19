@@ -66,6 +66,9 @@ class VMwareTest(unittest.TestCase, HypervisorBaseTest):
     def _get_vm_id(self):
         return self.vm.properties.config.uuid
 
+    def _network_name(self):
+        return "VM Network"
+
     def _stop_vm(self):
         self.__class__._stopVmClass()
 

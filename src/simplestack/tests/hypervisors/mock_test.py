@@ -47,6 +47,9 @@ class MockTest(unittest.TestCase, HypervisorBaseTest):
     def _get_vm_id(self):
         return self.vm["id"]
 
+    def _network_name(self):
+        return "Network 0"
+
     def _stop_vm(self):
         self.__class__._stopVmClass()
 
