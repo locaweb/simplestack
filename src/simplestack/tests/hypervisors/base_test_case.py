@@ -94,6 +94,19 @@ class HypervisorBaseTest(object):
         nw_interfaces = self.stack.network_interface_list(self._get_vm_id())
         self.assertEqual(len(nw_interfaces), 1)
 
+    def test_network_interface_create(self):
+        # TODO: change network
+        self.stack.guest_shutdown(self._get_vm_id(), True)
+
+        created_nw = self.stack.network_interface_create(
+            self._get_vm_id(), {}
+        )
+        nw_interface = self.stack.network_interface_info(
+            self._get_vm_id(),
+            created_nw['id']
+        )
+        self.assertEqual(created_nw['id'], nw_interface['id'])
+
     def test_network_interface_info(self):
         nw_interfaces = self.stack.network_interface_list(self._get_vm_id())
         nw_interface = self.stack.network_interface_info(
@@ -109,6 +122,20 @@ class HypervisorBaseTest(object):
             self._get_vm_id(), nw_interfaces[0]['id'], {}
         )
         self.assertEqual(nw_interface['id'], nw_interfaces[0]['id'])
+
+    def test_network_interface_delete(self):
+        self.stack.guest_shutdown(self._get_vm_id(), True)
+
+        created_nw = self.stack.network_interface_create(
+            self._get_vm_id(), {}
+        )
+        self.stack.network_interface_delete(
+            self._get_vm_id(),
+            created_nw['id']
+        )
+        nw_interfaces = self.stack.network_interface_list(self._get_vm_id())
+        for nw_interface in nw_interfaces:
+            self.assertNotEqual(created_nw['id'], nw_interface['id'])
 
     def test_snapshot_list(self):
         snap_name = "Snapshot:%f" % random.random()

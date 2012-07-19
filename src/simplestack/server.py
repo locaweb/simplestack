@@ -239,6 +239,18 @@ def network_interface_list(hypervisor, host, guest_id):
     manager = create_manager(hypervisor, host)
     return json.dumps(manager.network_interface_list(guest_id))
 
+@post('/:hypervisor/:host/guests/:guest_id/network_interfaces')
+def network_interface_create(self, guest_id, data):
+    """
+    ::
+
+      POST /:hypervisor/:host/guests/:guest_id/network_interfaces
+
+    Create a network interface for a given guest
+    """
+    response.content_type = "application/json"
+    manager = create_manager(hypervisor, host)
+    return json.dumps(manager.network_interface_create(guest_id, data))
 
 @get('/:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id')
 def network_interface_info(hypervisor, host, guest_id, interface_id):
@@ -273,6 +285,20 @@ def network_interface_update(hypervisor, host, guest_id, interface_id):
     manager = create_manager(hypervisor, host)
     nwi_info = manager.network_interface_update(guest_id, interface_id, data)
     return json.dumps(nwi_info)
+
+
+@delete('/:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id')
+def network_interface_delete(hypervisor, host, guest_id, interface_id):
+    """
+    ::
+
+      DELETE /:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id
+
+    Delete a network interface from a given guest
+    """
+    response.content_type = "application/json"
+    manager = create_manager(hypervisor, host)
+    manager.network_interface_delete(guest_id, interface_id)
 
 
 @get('/:hypervisor/:host/guests/:guest_id/tags')
