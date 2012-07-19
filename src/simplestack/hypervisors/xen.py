@@ -380,7 +380,7 @@ class Stack(SimpleStack):
             vbd = self.connection.xenapi.VBD.get_record(vbd_ref)
             if vbd["type"] == "Disk":
                 vdi = self.connection.xenapi.VDI.get_record(vbd['VDI'])
-                vdi['device'] = vbd['device']
+                vdi['userdevice'] = vbd['userdevice']
                 vdi['ref'] = vbd['VDI']
                 disks.append(vdi)
         return disks
@@ -393,7 +393,7 @@ class Stack(SimpleStack):
 
     def _disk_rec(self, vm_ref, disk_id):
         for disk in self.get_disks(vm_ref):
-            if disk["device"] == disk_id:
+            if disk["userdevice"] == disk_id:
                 return disk
 
         entity_info = "%s - on Guest %s" % (disk_id, guest_id)
@@ -439,9 +439,9 @@ class Stack(SimpleStack):
     def _disk_info(self, disk_rec):
         return(
             self.format_for.disk(
-                disk_rec.get('device'),
+                disk_rec.get('userdevice'),
                 disk_rec.get('name_label'),
-                disk_rec.get('device'),
+                disk_rec.get('userdevice'),
                 int(disk_rec.get('virtual_size')) / (1024 * 1024 * 1024),
                 disk_rec.get("uuid")
             )
