@@ -84,6 +84,11 @@ class HypervisorBaseTest(object):
         disks = self.stack.disk_list(self._get_vm_id())
         self.assertNotEqual(len(disks), 0)
 
+    def test_disk_create(self):
+        size = 1
+        disk = self.stack.disk_create(self._get_vm_id(), {"size": size})
+        self.assertEqual(disk["size"], 1)
+
     def test_disk_info(self):
         disks = self.stack.disk_list(self._get_vm_id())
         disk = self.stack.disk_info(

@@ -18,6 +18,7 @@
 # @author: Willian Molinari (PotHix), Locaweb.
 
 from simplestack.utils import XenAPI
+from simplestack.exceptions import FeatureNotImplemented, EntityNotFound
 from simplestack.hypervisors.base import SimpleStack
 from simplestack.views.format_view import FormatView
 
@@ -217,6 +218,60 @@ class Stack(SimpleStack):
         disks = self.get_disks(vm_ref)
         return [self._disk_info(d) for d in disks]
 
+    def disk_create(self, guest_id, data):
+        vm_ref = self._vm_ref(guest_id)
+
+        devices = []
+        for vbd in self.connection.xenapi.VM.get_VBDs(vm_ref):
+            devices.append(int(self.connection.xenapi.VBD.get_userdevice(vbd)))
+        next_device = max(devices) + 1
+        for device in range(next_device):
+            if device not in devices:
+                next_device = device
+                break
+
+        vbd_rec = {
+            "VM": vm_ref,
+            "userdevice": str(next_device),
+            "bootable": False,
+            "mode": "RW",
+            "type": "Disk",
+            "unpluggable": False,
+            "empty": False,
+            "other_config": {},
+            "qos_algorithm_type": "",
+            "qos_algorithm_params": {}
+        }
+
+        vdi_rec = ({
+            "virtual_size": str(data["size"] * 1024 * 1024 * 1024),
+            "type": "system",
+            "sharable": False,
+            "read_only": False,
+            "other_config": {},
+            "xenstore_data": {},
+            "sm_config": {},
+            "tags": []
+        })
+
+        if data.get("storage_id"):
+            raise FeatureNotImplemented()
+        else:
+            disks = self.get_disks(vm_ref)
+            vdi_rec["SR"] = disks[0]["SR"]
+
+        if data.get("name"):
+            vdi_rec["name_label"] = data["name"]
+            vdi_rec["name_description"] = data["name"]
+
+        vdi_ref = self.connection.xenapi.VDI.create(vdi_rec)
+        vbd_rec["VDI"] = vdi_ref
+        self.connection.xenapi.VBD.create(vbd_rec)
+
+        disk_rec = self._disk_rec(vm_ref, next_device)
+        return self._disk_info(disk_rec)
+
+
     def disk_info(self, guest_id, disk_id):
         vm_ref = self._vm_ref(guest_id)
         disk_rec = self._disk_rec(vm_ref, disk_id)
@@ -392,11 +447,12 @@ class Stack(SimpleStack):
         return size
 
     def _disk_rec(self, vm_ref, disk_id):
+        disk_id = str(disk_id)
         for disk in self.get_disks(vm_ref):
             if disk["userdevice"] == disk_id:
                 return disk
 
-        entity_info = "%s - on Guest %s" % (disk_id, guest_id)
+        entity_info = "%s - on Guest" % (disk_id)
         raise EntityNotFound("Disk", entity_info)
 
     def _network_interface_ref(self, vm_ref, network_interface_id):
@@ -407,7 +463,7 @@ class Stack(SimpleStack):
             if vif_rec["MAC"] == network_interface_id:
                 return vif_ref
 
-        entity_info = "%s - on Guest %s" % (network_interface_id, guest_id)
+        entity_info = "%s - on Guest" % (network_interface_id)
         raise EntityNotFound("NetworkInterface", entity_info)
 
     def _vm_ref(self, uuid):
