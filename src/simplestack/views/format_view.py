@@ -30,6 +30,15 @@ class FormatView(object):
             'state': state
         }
 
+    def disk(self, disk_id, name, device, size, extra_info):
+        return {
+            'id': disk_id,
+            'name': name,
+            'number': device,
+            'size': size,
+            'extra_info': extra_info
+        }
+
     def snapshot(self, snap_id, name, state=None, path=None, created=None):
         return {
             'id': snap_id,

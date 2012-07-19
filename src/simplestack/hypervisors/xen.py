@@ -152,6 +152,13 @@ class Stack(SimpleStack):
             parameters = self.connection.xenapi.VM.get_VCPUs_params(vm_ref)
             parameters.update(guestdata["vcpu_settings"])
             self.connection.xenapi.VM.set_VCPUs_params(vm_ref, parameters)
+        if guestdata.get("ha_enabled") != None:
+            if guestdata["ha_enabled"]:
+                self.connection.xenapi.VM.set_ha_restart_priority(
+                    vm_ref, "best-effort"
+                )
+            else:
+                self.connection.xenapi.VM.set_ha_restart_priority(vm_ref, "")
         if guestdata.get("hdd"):
             disk = self.get_disks(vm_ref)[-1]
             disks_size = self.get_disks_size(vm_ref)
@@ -204,6 +211,31 @@ class Stack(SimpleStack):
         response_size = response.getheader("Content-Length")
 
         return (response, response_size)
+
+    def disk_list(self, guest_id):
+        vm_ref = self._vm_ref(guest_id)
+        disks = self.get_disks(vm_ref)
+        return [self._disk_info(d) for d in disks]
+
+    def disk_info(self, guest_id, disk_id):
+        vm_ref = self._vm_ref(guest_id)
+        disk_rec = self._disk_rec(vm_ref, disk_id)
+        return self._disk_info(disk_rec)
+
+    def disk_update(self, guest_id, disk_id, data):
+        vm_ref = self._vm_ref(guest_id)
+        disk_rec = self._disk_rec(vm_ref, disk_id)
+
+        if data.get("name"):
+            self.connection.xenapi.VDI.set_name_label(
+                disk_rec["ref"], data["name"]
+            )
+            self.connection.xenapi.VDI.set_name_description(
+                disk_rec["ref"], data["name"]
+            )
+
+        disk_rec = self._disk_rec(vm_ref, disk_id)
+        return self._disk_info(disk_rec)
 
     def media_mount(self, guest_id, media_data):
         vm_ref = self._vm_ref(guest_id)
@@ -296,6 +328,10 @@ class Stack(SimpleStack):
     def network_interface_delete(self, guest_id, network_interface_id):
         vm_ref = self._vm_ref(guest_id)
         vif_ref = self._network_interface_ref(vm_ref, network_interface_id)
+        try:
+            self.connection.xenapi.VIF.unplug(vif_ref)
+        except:
+            pass
         self.connection.xenapi.VIF.destroy(vif_ref)
 
     def snapshot_list(self, guest_id):
@@ -344,6 +380,7 @@ class Stack(SimpleStack):
             vbd = self.connection.xenapi.VBD.get_record(vbd_ref)
             if vbd["type"] == "Disk":
                 vdi = self.connection.xenapi.VDI.get_record(vbd['VDI'])
+                vdi['device'] = vbd['device']
                 vdi['ref'] = vbd['VDI']
                 disks.append(vdi)
         return disks
@@ -353,6 +390,14 @@ class Stack(SimpleStack):
         for vdi in self.get_disks(vm_ref):
             size += int(vdi["virtual_size"])
         return size
+
+    def _disk_rec(self, vm_ref, disk_id):
+        for disk in self.get_disks(vm_ref):
+            if disk["device"] == disk_id:
+                return disk
+
+        entity_info = "%s - on Guest %s" % (disk_id, guest_id)
+        raise EntityNotFound("Disk", entity_info)
 
     def _network_interface_ref(self, vm_ref, network_interface_id):
         vif_refs = self.connection.xenapi.VM.get_VIFs(vm_ref)
@@ -388,6 +433,17 @@ class Stack(SimpleStack):
                 self.get_disks_size(vm_ref) / (1024 * 1024 * 1024),
                 tools_up_to_date,
                 self.state_translation[vm.get('power_state')]
+            )
+        )
+
+    def _disk_info(self, disk_rec):
+        return(
+            self.format_for.disk(
+                disk_rec.get('device'),
+                disk_rec.get('name_label'),
+                disk_rec.get('device'),
+                int(disk_rec.get('virtual_size')) / (1024 * 1024 * 1024),
+                disk_rec.get("uuid")
             )
         )
 

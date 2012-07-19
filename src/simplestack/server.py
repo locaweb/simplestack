@@ -190,6 +190,84 @@ def guest_delete(hypervisor, host, guest_id):
     return json.dumps(manager.guest_delete(guest_id))
 
 
+@get('/:hypervisor/:host/guests/:guest_id/disks')
+def disk_list(hypervisor, host, guest_id):
+    """
+    ::
+
+      GET /:hypervisor/:host/guests/:guest_id/disks
+
+    Get all disks for a given guest
+    """
+    response.content_type = "application/json"
+    manager = create_manager(hypervisor, host)
+    return json.dumps(manager.disk_list(guest_id))
+
+@post('/:hypervisor/:host/guests/:guest_id/disks')
+def disk_create(hypervisor, host, guest_id):
+    """
+    ::
+
+      POST /:hypervisor/:host/guests/:guest_id/disks
+
+    Create a disk for a given guest
+    """
+    response.content_type = "application/json"
+    manager = create_manager(hypervisor, host)
+    data = request.body.readline()
+    if not data:
+        abort(400, 'No data received')
+    data = json.loads(data)
+    return json.dumps(manager.disk_create(guest_id, data))
+
+@get('/:hypervisor/:host/guests/:guest_id/disks/:disk_id')
+def disk_info(hypervisor, host, guest_id, disk_id):
+    """
+    ::
+
+      GET /:hypervisor/:host/guests/:guest_id/disks/:disk_id
+
+    Get a disk in a given guest
+    """
+    response.content_type = "application/json"
+    manager = create_manager(hypervisor, host)
+    nwi_info = manager.disk_info(guest_id, disk_id)
+    return json.dumps(nwi_info)
+
+
+@put('/:hypervisor/:host/guests/:guest_id/disks/:disk_id')
+def disk_update(hypervisor, host, guest_id, disk_id):
+    """
+    ::
+
+      PUT /:hypervisor/:host/guests/:guest_id/disks/:disk_id
+
+    Update a disk in a given guest
+    """
+    response.content_type = "application/json"
+    manager = create_manager(hypervisor, host)
+    data = request.body.readline()
+    if not data:
+        abort(400, 'No data received')
+    data = json.loads(data)
+    nwi_info = manager.disk_update(guest_id, disk_id, data)
+    return json.dumps(nwi_info)
+
+
+@delete('/:hypervisor/:host/guests/:guest_id/disks/:disk_id')
+def disk_delete(hypervisor, host, guest_id, disk_id):
+    """
+    ::
+
+      DELETE /:hypervisor/:host/guests/:guest_id/disks/:disk_id
+
+    Delete a disk from a given guest
+    """
+    response.content_type = "application/json"
+    manager = create_manager(hypervisor, host)
+    manager.disk_delete(guest_id, disk_id)
+
+
 @put('/:hypervisor/:host/guests/:guest_id/media_device')
 def media_mount(hypervisor, host, guest_id):
     """

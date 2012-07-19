@@ -80,6 +80,26 @@ class HypervisorBaseTest(object):
         self.assertEqual(guest["name"], guest_data["name"])
         self.assertEqual(guest["hdd"], guest_data["hdd"])
 
+    def test_disk_list(self):
+        disks = self.stack.disk_list(self._get_vm_id())
+        self.assertNotEqual(len(disks), 0)
+
+    def test_disk_info(self):
+        disks = self.stack.disk_list(self._get_vm_id())
+        disk = self.stack.disk_info(
+            self._get_vm_id(), disks[0]['id']
+        )
+        self.assertEqual(disk['id'], disks[0]['id'])
+
+    def test_disk_update(self):
+        name = "DISK"
+        self.stack.guest_shutdown(self._get_vm_id(), True)
+        disks = self.stack.disk_list(self._get_vm_id())
+        disk = self.stack.disk_update(
+            self._get_vm_id(), disks[0]['id'], {"name": name}
+        )
+        self.assertEqual(disk['name'], name)
+
     def test_media_unmount(self):
         self.stack.media_mount(self._get_vm_id(), {"name": None})
         media = self.stack.media_info(self._get_vm_id())

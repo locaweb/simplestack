@@ -107,6 +107,21 @@ class SimpleStack(object):
     def guest_delete(self, guest_id):
         raise FeatureNotImplemented()
 
+    def disk_list(self, guest_id):
+        raise FeatureNotImplemented()
+
+    def disk_create(self, guest_id, data):
+        raise FeatureNotImplemented()
+
+    def disk_info(self, guest_id, disk_id):
+        raise FeatureNotImplemented()
+
+    def disk_update(self, guest_id, disk_id, data):
+        raise FeatureNotImplemented()
+
+    def disk_delete(self, guest_id, disk_id):
+        raise FeatureNotImplemented()
+
     def media_mount(self, guest_id, media_data):
         raise FeatureNotImplemented()
 
