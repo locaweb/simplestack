@@ -104,8 +104,8 @@ def guest_create(hypervisor, host):
         abort(400, 'No data received')
     data = json.loads(data)
     guest = manager.guest_create(data)
-    guest_url = "/%s/%s/guests/%s" % (hypervisor, host, guest["id"])
-    response.set_header("Location", guest_url)
+    location = "/%s/%s/guests/%s" % (hypervisor, host, guest["id"])
+    response.set_header("Location", location)
     return json.dumps(guest)
 
 
@@ -121,8 +121,8 @@ def guest_import(hypervisor, host):
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
     guest = manager.guest_import(request.body)
-    guest_url = "/%s/%s/guests/%s" % (hypervisor, host, guest["id"])
-    response.set_header("Location", guest_url)
+    location = "/%s/%s/guests/%s" % (hypervisor, host, guest["id"])
+    response.set_header("Location", location)
     return json.dumps(guest)
 
 
@@ -157,6 +157,26 @@ def guest_update(hypervisor, host, guest_id):
     data = json.loads(data)
     return json.dumps(manager.guest_update(guest_id, data))
 
+
+@post('/:hypervisor/:host/guests/:guest_id/clone')
+def guest_clone(hypervisor, host, guest_id):
+    """
+    ::
+
+      POST /:hypervisor/:host/guests/:guest_id/clone
+
+    Clone a guest
+    """
+    response.content_type = "application/json"
+    manager = create_manager(hypervisor, host)
+    data = request.body.readline()
+    if not data:
+        abort(400, 'No data received')
+    data = json.loads(data)
+    guest = manager.guest_clone(guest_id, data)
+    location = "/%s/%s/guests/%s" % (hypervisor, host, guest["id"])
+    response.set_header("Location", location)
+    return json.dumps(guest)
 
 @get('/:hypervisor/:host/guests/:guest_id/export')
 def guest_export(hypervisor, host, guest_id):
@@ -218,7 +238,12 @@ def disk_create(hypervisor, host, guest_id):
     if not data:
         abort(400, 'No data received')
     data = json.loads(data)
-    return json.dumps(manager.disk_create(guest_id, data))
+    disk = manager.disk_create(guest_id, data)
+    location = "/%s/%s/guests/%s/disks/%s" % (
+        hypervisor, host, guest_id, disk["id"]
+    )
+    response.set_header("Location", location)
+    return json.dumps(disk)
 
 @get('/:hypervisor/:host/guests/:guest_id/disks/:disk_id')
 def disk_info(hypervisor, host, guest_id, disk_id):
@@ -332,7 +357,12 @@ def network_interface_create(hypervisor, host, guest_id):
     if not data:
         abort(400, 'No data received')
     data = json.loads(data)
-    return json.dumps(manager.network_interface_create(guest_id, data))
+    network_interface = manager.network_interface_create(guest_id, data)
+    location = "/%s/%s/guests/%s/network_interfaces/%s" % (
+        hypervisor, host, guest_id, network_interface["id"]
+    )
+    response.set_header("Location", location)
+    return json.dumps(network_interface)
 
 @get('/:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id')
 def network_interface_info(hypervisor, host, guest_id, interface_id):
@@ -413,8 +443,10 @@ def tag_create(hypervisor, host, guest_id):
     data = json.loads(data)
     tag = manager.tag_create(guest_id, data.get('name'))
     #TODO: Should we return the Location for the first tag?
-    tag_url = "/%s/%s/guests/%s/tags/%s" % (hypervisor, host, guest_id, tag[0])
-    response.set_header("Location", tag_url)
+    location = "/%s/%s/guests/%s/tags/%s" % (
+        hypervisor, host, guest_id, tag[0]
+    )
+    response.set_header("Location", location)
     return json.dumps(tag)
 
 
@@ -462,10 +494,10 @@ def snapshot_create(hypervisor, host, guest_id):
         abort(400, 'No data received')
     data = json.loads(data)
     snapshot = manager.snapshot_create(guest_id, data.get('name'))
-    snapshot_url = "/%s/%s/guests/%s/snapshots/%s" % (
+    location = "/%s/%s/guests/%s/snapshots/%s" % (
         hypervisor, host, guest_id, snapshot["id"]
     )
-    response.set_header("Location", snapshot_url)
+    response.set_header("Location", location)
     return json.dumps(snapshot)
 
 

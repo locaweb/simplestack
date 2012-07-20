@@ -160,6 +160,10 @@ class Stack(SimpleStack):
                 )
             else:
                 self.connection.xenapi.VM.set_ha_restart_priority(vm_ref, "")
+        if guestdata.get("template") != None:
+            self.connection.xenapi.VM.set_is_a_template(
+                vm_ref, guestdata["template"]
+            )
         if guestdata.get("hdd"):
             disk = self.get_disks(vm_ref)[-1]
             disks_size = self.get_disks_size(vm_ref)
