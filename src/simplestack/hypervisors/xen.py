@@ -442,7 +442,7 @@ class Stack(SimpleStack):
                 vdi['userdevice'] = vbd['userdevice']
                 vdi['ref'] = vbd['VDI']
                 disks.append(vdi)
-        return disks
+        return sorted(disks, key=lambda vdi: int(vdi['userdevice']))
 
     def get_disks_size(self, vm_ref):
         size = 0
