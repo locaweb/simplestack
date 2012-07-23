@@ -384,8 +384,12 @@ class Stack(SimpleStack):
         vif_record = self.connection.xenapi.VIF.get_record(vif_ref)
 
         if data.get("network"):
-            vif_record["network"] = self.connection.xenapi.pool\
-                                    .network_by_name_label(data["network"])
+            net_refs = self.connection.xenapi.network\
+                                    .get_by_name_label(data["network"])
+            if len(net_refs) == 0:
+                raise Exception("Unknown network: %s" % data["network"])
+            vif_record["network"] = net_refs[0]
+
         self.connection.xenapi.VIF.destroy(vif_ref)
         vif_ref = self.connection.xenapi.VIF.create(vif_record)
         return self._network_interface_info(vif_ref)
