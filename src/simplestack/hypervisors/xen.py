@@ -131,6 +131,12 @@ class Stack(SimpleStack):
             self._vm_ref(guest_id), False, False
         )
 
+    def guest_clone(self, guest_id, data):
+        vm = self.connection.xenapi.VM.clone(
+            self._vm_ref(guest_id), data["name"]
+        )
+        return self._vm_info(vm)
+
     def guest_update(self, guest_id, guestdata):
         vm_ref = self._vm_ref(guest_id)
         if guestdata.get("name"):
