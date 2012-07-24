@@ -19,7 +19,7 @@
 
 class FormatView(object):
 
-    def guest(self, vm_id, name, cpus, memory, hdd, tools, state):
+    def guest(self, vm_id, name, cpus, memory, hdd, tools, state, host):
         return {
             'id': vm_id,
             'name': name,
@@ -27,7 +27,8 @@ class FormatView(object):
             'memory': int(memory),
             'hdd': hdd,
             'tools_up_to_date': tools,
-            'state': state
+            'state': state,
+            'host': host
         }
 
     def disk(self, disk_id, name, device, size, extra_info):

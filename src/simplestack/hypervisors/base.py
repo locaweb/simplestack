@@ -206,6 +206,7 @@ class SimpleStack(object):
                 infos[1] / 1024,
                 None, None,
                 self.state_translation[infos[0]],
+                None
             )
         )
 

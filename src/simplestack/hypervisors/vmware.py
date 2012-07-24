@@ -199,7 +199,8 @@ class Stack(SimpleStack):
                 vm_info.get('memory_mb'),
                 vmware.get_disk_size(vm) / (1024 * 1024),
                 vm.properties.guest.toolsStatus == "toolsOk",
-                self.state_translation[vm.get_status()]
+                self.state_translation[vm.get_status()],
+                None
             )
         )
 
