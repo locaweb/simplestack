@@ -30,6 +30,7 @@ import re
 import uuid
 
 VCdIsoBackingInfo = VITypes.ns0.VirtualCdromIsoBackingInfo_Def(None).pyclass
+VirtualMachineVMIROM = VITypes.ns0.VirtualMachineVMIROM_Def(None).pyclass
 
 
 def get_vm_by_uuid(server, guest_id):
@@ -123,6 +124,65 @@ def update_vm(server, vm_obj, guestdata):
     status = task.wait_for_state([task.STATE_SUCCESS, task.STATE_ERROR])
     if status != task.STATE_SUCCESS:
         raise HypervisorError("Guest:update %s" % task.get_error_message())
+
+
+def enable_vmi(server, vm_obj):
+    request = VI.ReconfigVM_TaskRequestMsg()
+    _this = request.new__this(vm_obj._mor)
+    _this.set_attribute_type(vm_obj._mor.get_attribute_type())
+    request.set_element__this(_this)
+    spec = request.new_spec()
+
+    device_config_specs = []
+
+    media_device = VirtualMachineVMIROM()
+    media_device.set_element_key(11000)
+    device_config_spec = spec.new_deviceChange()
+    device_config_spec.set_element_operation('add')
+    device_config_spec.set_element_device(media_device)
+    device_config_specs.append(device_config_spec)
+
+    spec.set_element_deviceChange(device_config_specs)
+
+    request.set_element_spec(spec)
+    ret = server._proxy.ReconfigVM_Task(request)._returnval
+
+    # Wait for the task to finish
+    task = VITask(ret, server)
+    status = task.wait_for_state([task.STATE_SUCCESS, task.STATE_ERROR])
+    if status != task.STATE_SUCCESS:
+        raise HypervisorError("Guest:update %s" % task.get_error_message())
+
+
+def export(server, vm_obj):
+    # Request an export
+    request = VI.ExportVmRequestMsg()
+    _this = request.new__this(vm_obj._mor)
+    _this.set_attribute_type(vm_obj._mor.get_attribute_type())
+    request.set_element__this(_this)
+    ret = server._proxy.ExportVm(request)
+
+    # List of urls to download
+    mor = ret._returnval
+    http = VIProperty(connection, ret._returnval)
+    url = http.info.deviceUrl[0].url
+
+    # TODO: actually download them.
+
+    # Set to 100%
+    request = VI.HttpNfcLeaseProgressRequestMsg()
+    _this = request.new__this(mor)
+    _this.set_attribute_type(MORTypes.HttpNfcLease)
+    request.set_element__this(_this)
+    request.set_element_percent(100)
+    server._proxy.HttpNfcLeaseProgress(request)
+
+    # Completes the request
+    request = VI.HttpNfcLeaseCompleteRequestMsg()
+    _this = request.new__this(mor)
+    _this.set_attribute_type(MORTypes.HttpNfcLease)
+    request.set_element__this(_this)
+    server._proxy.HttpNfcLeaseComplete(request)
 
 
 def delete_vm(server, vm_obj):
