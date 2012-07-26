@@ -120,7 +120,7 @@ def guest_import(hypervisor, host):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    guest = manager.guest_import(request.body)
+    guest = manager.guest_import(request.environ['wsgi.input'])
     location = "/%s/%s/guests/%s" % (hypervisor, host, guest["id"])
     response.set_header("Location", location)
     return json.dumps(guest)
