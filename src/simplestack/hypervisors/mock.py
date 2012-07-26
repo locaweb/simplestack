@@ -29,7 +29,7 @@ import datetime
 class Stack(SimpleStack):
 
     defaultdata = {
-        "host": "localhost"
+        "host": "localhost",
         "state": "STARTED",
         "cpus": "4",
         "memory": "1024",

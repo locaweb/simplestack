@@ -23,10 +23,11 @@ from simplestack.hypervisors.base import SimpleStack
 from simplestack.views.format_view import FormatView
 
 import re
+import errno
 import httplib
 import logging
 
-LOG = logging.getLogger('simplestack.server')
+LOG = logging.getLogger('simplestack.hypervisors.xen')
 
 
 class Stack(SimpleStack):
@@ -55,16 +56,10 @@ class Stack(SimpleStack):
         except Exception, error:
             # If host is slave, connect to master
             if 'HOST_IS_SLAVE' in str(error):
-                self.connection = XenAPI.Session(
-                    "https://%s/" % str(error).split("'")[3]
-                )
-                self.connection.xenapi.login_with_password(
-                    self.poolinfo.get("username"),
-                    self.poolinfo.get("password")
-                )
+                self.poolinfo["api_server"] = str(error).split("'")[3]
+                self.connect()
             else:
                 raise error
-        return
 
     def pool_info(self):
         used_memory = 0
@@ -184,7 +179,6 @@ class Stack(SimpleStack):
 
     def guest_import(self, vm_stream, vm_size):
         session_ref = self.connection._session
-        # FIXME: get real master
         master = self.poolinfo.get("api_server")
         task_ref = self.connection.xenapi.task.create(
             "import vm", "import job"
@@ -193,17 +187,21 @@ class Stack(SimpleStack):
             session_ref, task_ref
         )
 
-        conn = httplib.HTTPConnection(master)
-        conn.request(
-            "PUT", path, vm_stream, {"Content-Length": vm_size}
-        )
-        response = conn.getresponse()
-        response.status
-        response.read()
+        try:
+            conn = httplib.HTTPConnection(master)
+            conn.request(
+                "PUT", path, vm_stream, {"Content-Length": vm_size}
+            )
+            response = conn.getresponse()
+            response.status
+            response.read()
+        except errno.ECONNRESET:
+            LOG.warning("error=CONNRESET action=import message='BUG?'")
 
         task_rec = self.connection.xenapi.task.get_record(task_ref)
         vm_ref = re.sub(r'<.*?>', "", task_rec["result"])
-        return self._vm_info(self._vm_ref(guest_id))
+        self.connection.xenapi.task.destroy(task_ref)
+        return self._vm_info(vm_ref)
 
     def guest_export(self, guest_id):
         vm_ref = self._vm_ref(guest_id)
