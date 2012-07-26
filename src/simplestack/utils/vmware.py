@@ -54,6 +54,7 @@ def update_vm(server, vm_obj, guestdata):
     new_iso = guestdata.get("iso")
     new_memory = guestdata.get("memory")
     new_name = guestdata.get("name")
+    enable_vmi = guestdata.get("paravirtualized")
 
     request = VI.ReconfigVM_TaskRequestMsg()
     _this = request.new__this(vm_obj._mor)
@@ -107,8 +108,23 @@ def update_vm(server, vm_obj, guestdata):
         device_config_spec = spec.new_deviceChange()
         device_config_spec.set_element_operation('edit')
         device_config_spec.set_element_device(media_device._obj)
-
         device_config_specs.append(device_config_spec)
+
+    if enable_vmi != None:
+        vmi_driver = get_vmi_driver(vm_obj)
+        if enable_vmi and not vmi_driver:
+            vmi_driver = VirtualMachineVMIROM()
+            vmi_driver.set_element_key(11000)
+
+            device_config_spec = spec.new_deviceChange()
+            device_config_spec.set_element_operation('add')
+            device_config_spec.set_element_device(vmi_driver)
+            device_config_specs.append(device_config_spec)
+        elif not enable_vmi and vmi_driver:
+            device_config_spec = spec.new_deviceChange()
+            device_config_spec.set_element_operation('remove')
+            device_config_spec.set_element_device(vmi_driver._obj)
+            device_config_specs.append(device_config_spec)
 
     if len(device_config_specs) != 0:
         spec.set_element_deviceChange(device_config_specs)
@@ -219,6 +235,12 @@ def create_tag(tag, vm_obj):
     tags.append(tag)
     return tags
 
+
+def get_vmi_driver(vm_obj):
+    for device in vm_obj.properties.config.hardware.device:
+        if device._type == "VirtualMachineVMIROM":
+            return device
+    return None
 
 def get_cd(vm_obj):
     for device in vm_obj.properties.config.hardware.device:

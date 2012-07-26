@@ -204,7 +204,9 @@ class SimpleStack(object):
                 dom.name(),
                 infos[3],
                 infos[1] / 1024,
-                None, None,
+                None,
+                None,
+                None,
                 self.state_translation[infos[0]],
                 None
             )

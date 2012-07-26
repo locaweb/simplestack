@@ -35,6 +35,7 @@ class Stack(SimpleStack):
         "memory": "1024",
         "snapshots": {},
         "tags": [],
+        "paravirtualized": True,
         "tools_up_to_date": False,
         "cd": None,
         "network_interfaces": {

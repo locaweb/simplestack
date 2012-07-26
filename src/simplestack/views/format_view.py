@@ -19,13 +19,14 @@
 
 class FormatView(object):
 
-    def guest(self, vm_id, name, cpus, memory, hdd, tools, state, host):
+    def guest(self, vm_id, name, cpus, memory, hdd, paravirt, tools, state, host):
         return {
             'id': vm_id,
             'name': name,
             'cpus': int(cpus),
             'memory': int(memory),
             'hdd': hdd,
+            'paravirtualized': paravirt,
             'tools_up_to_date': tools,
             'state': state,
             'host': host

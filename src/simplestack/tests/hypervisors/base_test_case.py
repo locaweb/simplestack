@@ -72,13 +72,23 @@ class HypervisorBaseTest(object):
 
     def test_guest_update(self):
         vm = "vm%f" % random.random()
-        guest_data = {"memory": 128, "cpus": 2, "name": vm, "hdd": 50}
+        guest_data = {
+            "memory": 128, "cpus": 2, "name": vm, "hdd": 50,
+            "paravirtualized": "-- quiet console=hvc0"
+        }
         self.stack.guest_shutdown(self._get_vm_id(), True)
         guest = self.stack.guest_update(self._get_vm_id(), guest_data)
         self.assertEqual(guest["memory"], guest_data["memory"])
         self.assertEqual(guest["cpus"], guest_data["cpus"])
         self.assertEqual(guest["name"], guest_data["name"])
         self.assertEqual(guest["hdd"], guest_data["hdd"])
+        self.assertTrue(guest["paravirtualized"])
+
+        guest_data = {
+            "paravirtualized": False
+        }
+        guest = self.stack.guest_update(self._get_vm_id(), guest_data)
+        self.assertFalse(guest["paravirtualized"])
 
     def test_disk_list(self):
         disks = self.stack.disk_list(self._get_vm_id())

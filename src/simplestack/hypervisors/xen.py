@@ -166,6 +166,17 @@ class Stack(SimpleStack):
             self.connection.xenapi.VM.set_is_a_template(
                 vm_ref, guestdata["template"]
             )
+        if guestdata.get("paravirtualized") != None:
+            if guestdata["paravirtualized"]:
+                self.connection.xenapi.VM.set_HVM_boot_policy(vm_ref, "")
+                self.connection.xenapi.VM.set_PV_args(
+                    vm_ref, guestdata["paravirtualized"]
+                )
+            else:
+                self.connection.xenapi.VM.set_HVM_boot_params(
+                    vm_ref, {"order": "dc"}
+                )
+                self.connection.xenapi.VM.set_HVM_boot_policy(vm_ref, "BIOS order")
         if guestdata.get("hdd"):
             disk = self.get_disks(vm_ref)[-1]
             disks_size = self.get_disks_size(vm_ref)
@@ -511,6 +522,7 @@ class Stack(SimpleStack):
                 int(vm.get('VCPUs_at_startup')),
                 int(vm.get('memory_static_max')) / (1024 * 1024),
                 self.get_disks_size(vm_ref) / (1024 * 1024 * 1024),
+                vm["PV_args"],
                 tools_up_to_date,
                 self.state_translation[vm.get('power_state')],
                 host
