@@ -85,6 +85,17 @@ class Stack(SimpleStack):
             )
         )
 
+    def storage_list(self):
+        storages = []
+        for sr in self.connection.xenapi.SR.get_all_records().values():
+            if sr["PBDs"] != None and len(sr["PBDs"]) > 0:
+                storages.append({'id': sr["uuid"]})
+        return storages
+
+    def storage_info(self, storage_id):
+        sr_ref = self.connection.xenapi.SR.get_by_uuid(storage_id)
+        return self._storage_info(sr_ref)
+
     def guest_list(self):
         guests = []
         for vm in self.connection.xenapi.VM.get_all_records().values():
@@ -519,6 +530,19 @@ class Stack(SimpleStack):
         except:
             LOG.warning("uuid=%s action=not_found" % uuid)
             return None
+
+    def _storage_info(self, sr_ref):
+        sr = self.connection.xenapi.SR.get_record(sr_ref)
+        return(
+            self.format_for.storage(
+                sr['uuid'],
+                sr['name_label'],
+                sr['type'],
+                int(sr['physical_utilisation']) / (1024 * 1024 * 1024),
+                int(sr['virtual_allocation']) / (1024 * 1024 * 1024),
+                int(sr['physical_size']) / (1024 * 1024 * 1024)
+            )
+        )
 
     def _vm_info(self, vm_ref):
         vm = self.connection.xenapi.VM.get_record(vm_ref)

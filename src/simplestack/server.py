@@ -74,8 +74,35 @@ def pool_info(hypervisor, host):
     return json.dumps(manager.pool_info())
 
 
+@get('/:hypervisor/:host/storages')
+def storage_list(hypervisor, host):
+    """
+    ::
+
+      GET /:hypervisor/:host/storages
+
+    Get storages for a given pool
+    """
+    response.content_type = "application/json"
+    manager = create_manager(hypervisor, host)
+    return json.dumps(manager.storage_list())
+
+
+@get('/:hypervisor/:host/storages/:storage_id')
+def storage_info(hypervisor, host, storage_id):
+    """
+    ::
+
+      GET /:hypervisor/:host/storages/:storage_id
+
+    Get storage info
+    """
+    response.content_type = "application/json"
+    manager = create_manager(hypervisor, host)
+    return json.dumps(manager.storage_info(storage_id))
+
 @get('/:hypervisor/:host/guests')
-def pool_guests(hypervisor, host):
+def guest_list(hypervisor, host):
     """
     ::
 
