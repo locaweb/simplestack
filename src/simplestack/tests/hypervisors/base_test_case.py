@@ -154,7 +154,11 @@ class HypervisorBaseTest(object):
         self.stack.guest_shutdown(self._get_vm_id(), True)
         nw_interfaces = self.stack.network_interface_list(self._get_vm_id())
         nw_interface = self.stack.network_interface_update(
-            self._get_vm_id(), nw_interfaces[0]['id'], {}
+            self._get_vm_id(), nw_interfaces[0]['id'], {"ratelimit": 10 * 1024 * 1024}
+        )
+        import sys; sys.stdout = sys.__stdout__; import ipdb; ipdb.set_trace()
+        nw_interface = self.stack.network_interface_update(
+            self._get_vm_id(), nw_interfaces[0]['id'], {"ratelimit": False}
         )
         self.assertEqual(nw_interface['id'], nw_interfaces[0]['id'])
 

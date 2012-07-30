@@ -135,14 +135,14 @@ class Stack(SimpleStack):
 
     def guest_update(self, guest_id, guestdata):
         vm_ref = self._vm_ref(guest_id)
-        if guestdata.get("name"):
+        if "name" in guestdata:
             self.connection.xenapi.VM.set_name_label(vm_ref, guestdata["name"])
-        if guestdata.get("memory"):
+        if "memory" in guestdata:
             memory = str(int(guestdata["memory"]) * 1024 * 1024)
             self.connection.xenapi.VM.set_memory_limits(
                 vm_ref, memory, memory, memory, memory
             )
-        if guestdata.get("cpus"):
+        if "cpus" in guestdata:
             max_cpus = self.connection.xenapi.VM.get_VCPUs_max(vm_ref)
             cpus = str(guestdata["cpus"])
             if int(cpus) > int(max_cpus):
@@ -151,33 +151,37 @@ class Stack(SimpleStack):
             else:
                 self.connection.xenapi.VM.set_VCPUs_at_startup(vm_ref, cpus)
                 self.connection.xenapi.VM.set_VCPUs_max(vm_ref, cpus)
-        if guestdata.get("vcpu_settings"):
+        if "vcpu_settings" in guestdata:
             parameters = self.connection.xenapi.VM.get_VCPUs_params(vm_ref)
             parameters.update(guestdata["vcpu_settings"])
             self.connection.xenapi.VM.set_VCPUs_params(vm_ref, parameters)
-        if guestdata.get("ha_enabled") != None:
+        if "ha_enabled" in guestdata:
             if guestdata["ha_enabled"]:
                 self.connection.xenapi.VM.set_ha_restart_priority(
                     vm_ref, "best-effort"
                 )
             else:
                 self.connection.xenapi.VM.set_ha_restart_priority(vm_ref, "")
-        if guestdata.get("template") != None:
+        if "template" in guestdata:
             self.connection.xenapi.VM.set_is_a_template(
                 vm_ref, guestdata["template"]
             )
-        if guestdata.get("paravirtualized") != None:
+        if "paravirtualized" in guestdata:
             if guestdata["paravirtualized"]:
+                if guestdata["paravirtualized"] == True:
+                    pv_args = "-- quiet console=hvc0"
+                else:
+                    pv_args = guestdata["paravirtualized"]
+
                 self.connection.xenapi.VM.set_HVM_boot_policy(vm_ref, "")
-                self.connection.xenapi.VM.set_PV_args(
-                    vm_ref, guestdata["paravirtualized"]
-                )
+                self.connection.xenapi.VM.set_PV_args(vm_ref, pv_args)
             else:
+                self.connection.xenapi.VM.set_PV_args(vm_ref, "")
                 self.connection.xenapi.VM.set_HVM_boot_params(
                     vm_ref, {"order": "dc"}
                 )
                 self.connection.xenapi.VM.set_HVM_boot_policy(vm_ref, "BIOS order")
-        if guestdata.get("hdd"):
+        if "hdd" in guestdata:
             disk = self.get_disks(vm_ref)[-1]
             disks_size = self.get_disks_size(vm_ref)
             hdd = guestdata.get("hdd") * 1024 * 1024 * 1024
@@ -287,7 +291,7 @@ class Stack(SimpleStack):
             disks = self.get_disks(vm_ref)
             vdi_rec["SR"] = disks[0]["SR"]
 
-        if data.get("name"):
+        if "name" in data:
             vdi_rec["name_label"] = data["name"]
             vdi_rec["name_description"] = data["name"]
 
@@ -308,7 +312,7 @@ class Stack(SimpleStack):
         vm_ref = self._vm_ref(guest_id)
         disk_rec = self._disk_rec(vm_ref, disk_id)
 
-        if data.get("name"):
+        if "name" in data:
             self.connection.xenapi.VDI.set_name_label(
                 disk_rec["ref"], data["name"]
             )
@@ -380,7 +384,7 @@ class Stack(SimpleStack):
           "qos_algorithm_params": {}
         }
 
-        if data.get("network"):
+        if "network" in data:
             net_refs = self.connection.xenapi.network.\
                                     get_by_name_label(data["network"])
             if len(net_refs) == 0:
@@ -400,7 +404,7 @@ class Stack(SimpleStack):
         vif_ref = self._network_interface_ref(vm_ref, network_interface_id)
         vif_record = self.connection.xenapi.VIF.get_record(vif_ref)
 
-        if data.get("network"):
+        if "network" in data:
             net_refs = self.connection.xenapi.network\
                                     .get_by_name_label(data["network"])
             if len(net_refs) == 0:
@@ -409,6 +413,16 @@ class Stack(SimpleStack):
 
         self.connection.xenapi.VIF.destroy(vif_ref)
         vif_ref = self.connection.xenapi.VIF.create(vif_record)
+
+        if "ratelimit" in data:
+            if data["ratelimit"]:
+                self.connection.xenapi.VIF.set_qos_algorithm_type(vif_ref, "ratelimit")
+                self.connection.xenapi.VIF.set_qos_algorithm_params(
+                    vif_ref, {"kbps": str(data["ratelimit"]/1024)}
+                )
+            else:
+                self.connection.xenapi.VIF.set_qos_algorithm_type(vif_ref, "")
+
         return self._network_interface_info(vif_ref)
 
     def network_interface_delete(self, guest_id, network_interface_id):
