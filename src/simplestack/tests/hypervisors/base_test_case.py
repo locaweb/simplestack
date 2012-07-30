@@ -156,7 +156,6 @@ class HypervisorBaseTest(object):
         nw_interface = self.stack.network_interface_update(
             self._get_vm_id(), nw_interfaces[0]['id'], {"ratelimit": 10 * 1024 * 1024}
         )
-        import sys; sys.stdout = sys.__stdout__; import ipdb; ipdb.set_trace()
         nw_interface = self.stack.network_interface_update(
             self._get_vm_id(), nw_interfaces[0]['id'], {"ratelimit": False}
         )

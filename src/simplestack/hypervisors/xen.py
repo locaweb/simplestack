@@ -416,9 +416,11 @@ class Stack(SimpleStack):
 
         if "ratelimit" in data:
             if data["ratelimit"]:
+                # kbps in xen is actually kBps
+                rate = data["ratelimit"]/(8*1024)
                 self.connection.xenapi.VIF.set_qos_algorithm_type(vif_ref, "ratelimit")
                 self.connection.xenapi.VIF.set_qos_algorithm_params(
-                    vif_ref, {"kbps": str(data["ratelimit"]/1024)}
+                    vif_ref, {"kbps": str(rate)}
                 )
             else:
                 self.connection.xenapi.VIF.set_qos_algorithm_type(vif_ref, "")
