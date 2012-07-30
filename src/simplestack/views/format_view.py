@@ -23,7 +23,7 @@ class FormatView(object):
         return {
             'id': sr_id,
             'name': name,
-            'type': sr_type
+            'type': sr_type,
             'used_space': int(used_space),
             'allocated_space': int(allocated_space),
             'size': int(physical_size)
