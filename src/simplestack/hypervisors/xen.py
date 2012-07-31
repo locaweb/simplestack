@@ -174,9 +174,11 @@ class Stack(SimpleStack):
             else:
                 self.connection.xenapi.VM.set_ha_restart_priority(vm_ref, "")
         if "template" in guestdata:
-            self.connection.xenapi.VM.set_is_a_template(
-                vm_ref, guestdata["template"]
-            )
+            is_template = self.connection.xenapi.VM.get_is_a_template(vm_ref)
+            if guestdata["template"] ^ is_template:
+                self.connection.xenapi.VM.set_is_a_template(
+                    vm_ref, guestdata["template"]
+                )
         if "paravirtualized" in guestdata:
             if guestdata["paravirtualized"]:
                 if guestdata["paravirtualized"] == True:
