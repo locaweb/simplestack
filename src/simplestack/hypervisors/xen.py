@@ -306,6 +306,8 @@ class Stack(SimpleStack):
         }
 
         vdi_rec = ({
+            "name_label": "New Disk",
+            "name_description": "Simplestack generated disk",
             "virtual_size": str(data["size"] * 1024 * 1024 * 1024),
             "type": "system",
             "sharable": False,
