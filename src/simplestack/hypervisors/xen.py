@@ -191,7 +191,9 @@ class Stack(SimpleStack):
                 self.connection.xenapi.VM.set_HVM_boot_params(
                     vm_ref, {"order": "dc"}
                 )
-                self.connection.xenapi.VM.set_HVM_boot_policy(vm_ref, "BIOS order")
+                self.connection.xenapi.VM.set_HVM_boot_policy(
+                    vm_ref, "BIOS order"
+                )
         if "hdd" in guestdata:
             disk = self.get_disks(vm_ref)[-1]
             disks_size = self.get_disks_size(vm_ref)
@@ -204,14 +206,32 @@ class Stack(SimpleStack):
     def guest_delete(self, guest_id):
         self._delete_vm(guest_id)
 
-    def guest_import(self, vm_stream, vm_size):
+    def guest_import(self, vm_stream, vm_size, storage_id=None):
         session_ref = self.connection._session
         master = self.poolinfo.get("api_server")
+        storage_ref = None
+
+        if storage_id:
+            storage_ref = self.connection.xenapi.SR.get_by_uuid(storage_id)
+        else:
+            storages = self.connection.xenapi.SR.get_all_records()
+            max_free_space = 0
+            for sr_ref, record in storages.iteritems():
+                free_space = (
+                    int(record["physical_size"]) -
+                    int(record["virtual_allocation"])
+                )
+                if free_space > max_free_space:
+                    max_free_space = free_space
+                    storage_ref = sr_ref
+            if vm_size and vm_size > 0 and vm_size > max_free_space:
+                raise Exception("No storage space left for importing")
+
         task_ref = self.connection.xenapi.task.create(
             "import vm", "import job"
         )
-        path = "/import?session_id=%s&task_id=%s" % (
-            session_ref, task_ref
+        path = "/import?session_id=%s&task_id=%s&sr_id=%s" % (
+            session_ref, task_ref, storage_ref
         )
 
         try:
@@ -312,7 +332,6 @@ class Stack(SimpleStack):
 
         disk_rec = self._disk_rec(vm_ref, next_device)
         return self._disk_info(disk_rec)
-
 
     def disk_info(self, guest_id, disk_id):
         vm_ref = self._vm_ref(guest_id)
@@ -428,8 +447,10 @@ class Stack(SimpleStack):
         if "ratelimit" in data:
             if data["ratelimit"]:
                 # kbps in xen is actually kBps
-                rate = data["ratelimit"]/(8*1024)
-                self.connection.xenapi.VIF.set_qos_algorithm_type(vif_ref, "ratelimit")
+                rate = data["ratelimit"] / (8 * 1024)
+                self.connection.xenapi.VIF.set_qos_algorithm_type(
+                    vif_ref, "ratelimit"
+                )
                 self.connection.xenapi.VIF.set_qos_algorithm_params(
                     vif_ref, {"kbps": str(rate)}
                 )
@@ -549,11 +570,14 @@ class Stack(SimpleStack):
 
         tools_up_to_date = None
         if vm["guest_metrics"] != "OpaqueRef:NULL":
-            tools_up_to_date = self.connection.xenapi.VM_guest_metrics.get_PV_drivers_up_to_date(vm["guest_metrics"])
+            tools_up_to_date = self.connection.xenapi.VM_guest_metrics.\
+                                get_PV_drivers_up_to_date(vm["guest_metrics"])
 
         host = None
         if vm["resident_on"] != "OpaqueRef:NULL":
-            host = self.connection.xenapi.host.get_name_label(vm["resident_on"])
+            host = self.connection.xenapi.host.get_name_label(
+                vm["resident_on"]
+            )
 
         return(
             self.format_for.guest(

@@ -101,6 +101,28 @@ def storage_info(hypervisor, host, storage_id):
     manager = create_manager(hypervisor, host)
     return json.dumps(manager.storage_info(storage_id))
 
+
+@post('/:hypervisor/:host/storages/:storage_id/guests')
+def storage_guest_import(hypervisor, host, storage_id):
+    """
+    ::
+
+      POST /:hypervisor/:host/storages/:storage_id/guests
+
+    Import a new guest
+    """
+    response.content_type = "application/json"
+    manager = create_manager(hypervisor, host)
+    guest = manager.guest_import(
+        request.environ['wsgi.input'],
+        request.content_length,
+        storage_id
+    )
+    location = "/%s/%s/guests/%s" % (hypervisor, host, guest["id"])
+    response.set_header("Location", location)
+    return json.dumps(guest)
+
+
 @get('/:hypervisor/:host/guests')
 def guest_list(hypervisor, host):
     """
@@ -136,18 +158,21 @@ def guest_create(hypervisor, host):
     return json.dumps(guest)
 
 
-@put('/:hypervisor/:host/guests')
+@post('/:hypervisor/:host/guests')
 def guest_import(hypervisor, host):
     """
     ::
 
-      PUT /:hypervisor/:host/guests
+      POST /:hypervisor/:host/guests
 
     Import a new guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    guest = manager.guest_import(request.environ['wsgi.input'], request.content_length)
+    guest = manager.guest_import(
+        request.environ['wsgi.input'],
+        request.content_length
+    )
     location = "/%s/%s/guests/%s" % (hypervisor, host, guest["id"])
     response.set_header("Location", location)
     return json.dumps(guest)
@@ -205,6 +230,7 @@ def guest_clone(hypervisor, host, guest_id):
     response.set_header("Location", location)
     return json.dumps(guest)
 
+
 @get('/:hypervisor/:host/guests/:guest_id/export')
 def guest_export(hypervisor, host, guest_id):
     """
@@ -250,6 +276,7 @@ def disk_list(hypervisor, host, guest_id):
     manager = create_manager(hypervisor, host)
     return json.dumps(manager.disk_list(guest_id))
 
+
 @post('/:hypervisor/:host/guests/:guest_id/disks')
 def disk_create(hypervisor, host, guest_id):
     """
@@ -271,6 +298,7 @@ def disk_create(hypervisor, host, guest_id):
     )
     response.set_header("Location", location)
     return json.dumps(disk)
+
 
 @get('/:hypervisor/:host/guests/:guest_id/disks/:disk_id')
 def disk_info(hypervisor, host, guest_id, disk_id):
@@ -369,6 +397,7 @@ def network_interface_list(hypervisor, host, guest_id):
     manager = create_manager(hypervisor, host)
     return json.dumps(manager.network_interface_list(guest_id))
 
+
 @post('/:hypervisor/:host/guests/:guest_id/network_interfaces')
 def network_interface_create(hypervisor, host, guest_id):
     """
@@ -390,6 +419,7 @@ def network_interface_create(hypervisor, host, guest_id):
     )
     response.set_header("Location", location)
     return json.dumps(network_interface)
+
 
 @get('/:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id')
 def network_interface_info(hypervisor, host, guest_id, interface_id):
@@ -430,7 +460,7 @@ def network_interface_delete(hypervisor, host, guest_id, interface_id):
     """
     ::
 
-      DELETE /:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id
+      DELETE /:hypervisor/:host/guests/:guest_id/network_interfaces/:if_id
 
     Delete a network interface from a given guest
     """

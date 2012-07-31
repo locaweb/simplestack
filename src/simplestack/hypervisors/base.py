@@ -56,7 +56,7 @@ class SimpleStack(object):
     def guest_clone(self, guest_id, guestdata):
         raise FeatureNotImplemented()
 
-    def guest_import(self, gueststream, guestsize):
+    def guest_import(self, gueststream, guestsize, storage_id=None):
         raise FeatureNotImplemented()
 
     def guest_info(self, guest_id):

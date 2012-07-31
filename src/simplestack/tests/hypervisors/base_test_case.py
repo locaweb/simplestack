@@ -20,7 +20,8 @@ import random
 
 
 class HypervisorBaseTest(object):
-    # debugging: import sys; sys.stdout = sys.__stdout__; import ipdb; ipdb.set_trace()
+    # debugging:
+    # import sys; sys.stdout = sys.__stdout__; import ipdb; ipdb.set_trace()
 
     def test_pool_info(self):
         pool = self.stack.pool_info()
@@ -154,7 +155,8 @@ class HypervisorBaseTest(object):
         self.stack.guest_shutdown(self._get_vm_id(), True)
         nw_interfaces = self.stack.network_interface_list(self._get_vm_id())
         nw_interface = self.stack.network_interface_update(
-            self._get_vm_id(), nw_interfaces[0]['id'], {"ratelimit": 10 * 1024 * 1024}
+            self._get_vm_id(), nw_interfaces[0]['id'],
+            {"ratelimit": 10 * 1024 * 1024}
         )
         nw_interface = self.stack.network_interface_update(
             self._get_vm_id(), nw_interfaces[0]['id'], {"ratelimit": False}

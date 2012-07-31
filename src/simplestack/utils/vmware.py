@@ -242,6 +242,7 @@ def get_vmi_driver(vm_obj):
             return device
     return None
 
+
 def get_cd(vm_obj):
     for device in vm_obj.properties.config.hardware.device:
         if device._type == "VirtualCdrom":

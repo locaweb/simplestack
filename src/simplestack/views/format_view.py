@@ -19,7 +19,8 @@
 
 class FormatView(object):
 
-    def storage(self, sr_id, name, sr_type, used_space, allocated_space, physical_size):
+    def storage(self, sr_id, name, sr_type, used_space, allocated_space,
+                physical_size):
         return {
             'id': sr_id,
             'name': name,
@@ -29,8 +30,8 @@ class FormatView(object):
             'size': int(physical_size)
         }
 
-
-    def guest(self, vm_id, name, cpus, memory, hdd, paravirt, tools, state, host):
+    def guest(self, vm_id, name, cpus, memory, hdd, paravirt, tools, state,
+              host):
         return {
             'id': vm_id,
             'name': name,
