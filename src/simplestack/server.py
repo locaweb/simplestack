@@ -99,7 +99,7 @@ def host_info(hypervisor, host, host_id):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    return json.dumps(manager.host_info(storage_id))
+    return json.dumps(manager.host_info(host_id))
 
 
 @get('/:hypervisor/:host/storages')
