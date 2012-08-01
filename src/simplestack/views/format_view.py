@@ -19,6 +19,13 @@
 
 class FormatView(object):
 
+    def host(self, host_id, name, address):
+        return {
+            'id': host_id,
+            'name': name,
+            'address': address
+        }
+
     def storage(self, sr_id, name, sr_type, used_space, allocated_space,
                 physical_size):
         return {

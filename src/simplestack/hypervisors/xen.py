@@ -85,6 +85,16 @@ class Stack(SimpleStack):
             )
         )
 
+    def host_list(self):
+        hosts = []
+        for h in self.connection.xenapi.host.get_all_records().values():
+            hosts.append({'id': h["uuid"]})
+        return hosts
+
+    def host_info(self, host_id):
+        host_ref = self.connection.xenapi.host.get_by_uuid(host_id)
+        return self._host_info(host_ref)
+
     def storage_list(self):
         storages = []
         for sr in self.connection.xenapi.SR.get_all_records().values():
@@ -555,6 +565,16 @@ class Stack(SimpleStack):
         except:
             LOG.warning("uuid=%s action=not_found" % uuid)
             return None
+
+    def _host_info(self, host_ref):
+        host = self.connection.xenapi.host.get_record(host_ref)
+        return(
+            self.format_for.host(
+                host['uuid'],
+                host['name_label'],
+                host['address']
+            )
+        )
 
     def _storage_info(self, sr_ref):
         sr = self.connection.xenapi.SR.get_record(sr_ref)

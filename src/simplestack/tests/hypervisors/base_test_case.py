@@ -29,6 +29,26 @@ class HypervisorBaseTest(object):
         self.assertNotEqual(pool.get("used_memory"), None)
         self.assertNotEqual(pool.get("master"), None)
 
+    def test_host_list(self):
+        hosts = self.stack.host_list()
+        self.assertNotEqual(len(hosts), 0)
+
+    def test_host_info(self):
+        hosts = self.stack.host_list()
+        host = self.stack.host_info(hosts[0]["id"])
+        self.assertTrue(host["name"])
+        self.assertTrue(host["address"])
+
+    def test_storage_list(self):
+        storages = self.stack.storage_list()
+        self.assertNotEqual(len(storages), 0)
+
+    def test_storage_info(self):
+        storages = self.stack.storage_list()
+        storage = self.stack.storage_info(storages[0]["id"])
+        self.assertTrue(storage["type"])
+        self.assertTrue(storage["allocated_space"])
+
     def test_guest_info(self):
         guest = self.stack.guest_info(self._get_vm_id())
         self.assertEqual(guest["id"], self._get_vm_id())
