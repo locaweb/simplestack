@@ -375,9 +375,6 @@ class Stack(SimpleStack):
             iso_ref = self.connection.xenapi.VDI.get_by_name_label(
                 media_data["name"]
             )[0]
-            self.connection.xenapi.VBD.set_bootable(
-                cd_ref, media_data.get("bootable") == True
-            )
             self.connection.xenapi.VBD.insert(cd_ref, iso_ref)
         else:
             self.media_unmount(guest_id)
