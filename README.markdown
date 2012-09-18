@@ -2,12 +2,10 @@
 
 A simple abstraction layer to deal with different hypervisors.
 
-## Hypervisors
+## Documentation
 
-* VMware
-* Xen
-* KVM (Work in progress)
-* HyperV (Not yet implemented)
+http://simplestack.rtfd.org
 
+## License
 
-More info: http://locaweb.github.com/simplestack
+APACHE 2.0
