@@ -36,6 +36,18 @@ class SimpleStack(object):
     def pool_info(self):
         raise FeatureNotImplemented()
 
+    def host_list(self):
+        raise FeatureNotImplemented()
+
+    def host_info(self, host_id):
+        raise FeatureNotImplemented()
+
+    def storage_list(self):
+        raise FeatureNotImplemented()
+
+    def storage_info(self, storage_id):
+        raise FeatureNotImplemented()
+
     def guest_list(self):
         if not self.has_libvirt():
             raise FeatureNotImplemented()
@@ -57,6 +69,9 @@ class SimpleStack(object):
         raise FeatureNotImplemented()
 
     def guest_import(self, gueststream, guestsize, storage_id=None):
+        raise FeatureNotImplemented()
+
+    def guest_export(self, guest_id):
         raise FeatureNotImplemented()
 
     def guest_info(self, guest_id):
@@ -129,6 +144,9 @@ class SimpleStack(object):
         raise FeatureNotImplemented()
 
     def media_info(self, guest_id):
+        raise FeatureNotImplemented()
+
+    def media_unmount(self, guest_id):
         raise FeatureNotImplemented()
 
     def network_interface_list(self, guest_id):
