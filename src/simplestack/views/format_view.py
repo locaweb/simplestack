@@ -37,7 +37,7 @@ class FormatView(object):
             'size': int(physical_size)
         }
 
-    def guest(self, vm_id, name, cpus, memory, hdd, paravirt, tools, state,
+    def guest(self, vm_id, name, cpus, memory, hdd, paravirt, tools, ip, state,
               host):
         return {
             'id': vm_id,
@@ -47,6 +47,7 @@ class FormatView(object):
             'hdd': hdd,
             'paravirtualized': paravirt,
             'tools_up_to_date': tools,
+            'ip': ip,
             'state': state,
             'host': host
         }

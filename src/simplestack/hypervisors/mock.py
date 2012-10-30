@@ -37,6 +37,7 @@ class Stack(SimpleStack):
         "tags": [],
         "paravirtualized": True,
         "tools_up_to_date": False,
+        "ip": None,
         "cd": None,
         "network_interfaces": {
             "00:11:22:33:44:55": {

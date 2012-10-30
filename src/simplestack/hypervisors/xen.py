@@ -590,9 +590,13 @@ class Stack(SimpleStack):
         vm = self.connection.xenapi.VM.get_record(vm_ref)
 
         tools_up_to_date = None
+        ip = None
         if vm["guest_metrics"] != "OpaqueRef:NULL":
-            tools_up_to_date = self.connection.xenapi.VM_guest_metrics.\
-                                get_PV_drivers_up_to_date(vm["guest_metrics"])
+            guest_metrics = self.connection.xenapi.VM_guest_metrics.\
+                                get_record(vm["guest_metrics"])
+            tools_up_to_date = guest_metrics["PV_drivers_up_to_date"]
+            if "0/ip" in guest_metrics["networks"].keys():
+                ip = guest_metrics["networks"]["0/ip"]
 
         host = None
         if vm["resident_on"] != "OpaqueRef:NULL":
@@ -609,6 +613,7 @@ class Stack(SimpleStack):
                 self.get_disks_size(vm_ref) / (1024 * 1024 * 1024),
                 vm["PV_args"],
                 tools_up_to_date,
+                ip,
                 self.state_translation[vm.get('power_state')],
                 host
             )

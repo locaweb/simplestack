@@ -200,6 +200,7 @@ class Stack(SimpleStack):
                 vmware.get_disk_size(vm) / (1024 * 1024),
                 vmware.get_vmi_driver(vm) != None,
                 vm.properties.guest.toolsStatus == "toolsOk",
+                None,
                 self.state_translation[vm.get_status()],
                 None
             )

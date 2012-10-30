@@ -53,6 +53,7 @@ class HypervisorBaseTest(object):
         guest = self.stack.guest_info(self._get_vm_id())
         self.assertEqual(guest["id"], self._get_vm_id())
         self.assertFalse(guest["tools_up_to_date"])
+        self.assertFalse(guest["ip"])
 
     def test_guest_start(self):
         self._stop_vm()
