@@ -25,7 +25,12 @@ import uuid
 import random
 import datetime
 
+"""
+Base implementation for all other hypervisors
 
+This file works as a guideline for the other hypervisor
+implementations.
+"""
 class Stack(SimpleStack):
 
     defaultdata = {
@@ -79,7 +84,9 @@ class Stack(SimpleStack):
         self.guests[guest_id]['state'] = "STARTED"
 
     def guest_reboot(self, guest_id, force=False):
-        pass
+        if not self.guests.get(guest_id):
+            raise EntityNotFound("Guest", guest_id)
+        self.guests[guest_id]['state'] = "STARTED"
 
     def guest_suspend(self, guest_id):
         if not self.guests.get(guest_id):
