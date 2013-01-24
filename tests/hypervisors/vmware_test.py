@@ -18,7 +18,7 @@
 
 from simplestack.hypervisors import vmware
 from simplestack.utils import vmware as vmware_utils
-from simplestack.tests.hypervisors.base_test_case import HypervisorBaseTest
+from tests.hypervisors.base_test_case import HypervisorBaseTest
 
 import random
 import unittest

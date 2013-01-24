@@ -18,7 +18,8 @@
 
 from simplestack.exceptions import FeatureNotImplemented
 from simplestack.hypervisors import mock
-from simplestack.tests.hypervisors.base_test_case import HypervisorBaseTest
+
+from tests.hypervisors.base_test_case import HypervisorBaseTest
 
 import random
 import unittest
