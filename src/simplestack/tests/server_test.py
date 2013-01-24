@@ -29,7 +29,7 @@ class ServerTest(unittest.TestCase):
         return {"x-simplestack-hypervisor-token": "YWRtaW46c2VjcmV0"}
 
     def test_having_any_port_configured(self):
-        server.config.read('src/conf/simplestack.cfg')
+        server.config.read('etc/simplestack.cfg')
         self.assertTrue(int(server.config.get("server", "port")))
 
     def test_hypervisor_token(self):

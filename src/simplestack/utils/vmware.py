@@ -110,7 +110,7 @@ def update_vm(server, vm_obj, guestdata):
         device_config_spec.set_element_device(media_device._obj)
         device_config_specs.append(device_config_spec)
 
-    if enable_vmi != None:
+    if enable_vmi is not None:
         vmi_driver = get_vmi_driver(vm_obj)
         if enable_vmi and not vmi_driver:
             vmi_driver = VirtualMachineVMIROM()

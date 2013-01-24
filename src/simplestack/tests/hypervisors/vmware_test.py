@@ -30,7 +30,7 @@ class VMwareTest(unittest.TestCase, HypervisorBaseTest):
     @classmethod
     def setUpClass(clazz):
         conf = ConfigParser.ConfigParser()
-        conf.read("test.cfg")
+        conf.read("etc/test.cfg")
         clazz.stack = vmware.Stack({
             "api_server": conf.get("vmware", "api_server"),
             "username": conf.get("vmware", "username"),

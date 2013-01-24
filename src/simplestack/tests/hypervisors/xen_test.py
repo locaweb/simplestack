@@ -28,7 +28,7 @@ class XenTest(unittest.TestCase, HypervisorBaseTest):
     @classmethod
     def setUpClass(clazz):
         conf = ConfigParser.ConfigParser()
-        conf.read("test.cfg")
+        conf.read("etc/test.cfg")
         clazz.stack = xen.Stack({
             "api_server": conf.get("xen", "api_server"),
             "username": conf.get("xen", "username"),

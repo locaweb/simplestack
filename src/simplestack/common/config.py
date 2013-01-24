@@ -26,8 +26,16 @@ import logging
 import logging.config
 import logging.handlers
 
+
+"""
+Configuration file load when bootstraping
+"""
 config = ConfigParser.ConfigParser()
-config_file = "/etc/simplestack/simplestack.cfg"
+
+if ("SIMPLESTACK_CFG" in os.environ):
+    config_file = os.environ["SIMPLESTACK_CFG"]
+else:
+    config_file = "/etc/simplestack/simplestack.cfg"
 
 if os.path.isfile(config_file):
     config.read(config_file)
@@ -42,6 +50,7 @@ def set_logger():
     formatter = logging.Formatter(log_format, log_date_format)
 
     SysLogHandler = logging.handlers.SysLogHandler
+
     try:
         handler = SysLogHandler(address='/dev/log',
                                 facility=SysLogHandler.LOG_SYSLOG)
