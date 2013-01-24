@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Simplestack documentation build configuration file, created by
-# sphinx-quickstart on Wed Jun 13 21:45:10 2012.
+# sphinx-quickstart on Wed Jun 13 21:45:10 2013.
 #
 # This file is execfile()d with the current directory set to its containing dir.
 #
@@ -41,7 +41,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Simplestack'
-copyright = u'2012, Locaweb team'
+copyright = u'2013, Locaweb team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -248,7 +248,7 @@ texinfo_documents = [
 epub_title = u'Simplestack'
 epub_author = u'Locaweb team'
 epub_publisher = u'Locaweb team'
-epub_copyright = u'2012, Locaweb team'
+epub_copyright = u'2013, Locaweb team'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.
