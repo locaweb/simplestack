@@ -28,7 +28,7 @@ class FeatureNotAvailableTest(unittest.TestCase):
         exception = FeatureNotAvailable()
         output = json.loads(exception.output)
         message = "The selected hypervisor doesn't implement this feature"
-        self.assertEqual(exception.status, 501)
+        self.assertEqual(exception.status, '501 Not Implemented')
         self.assertEqual(output['message'], message)
         self.assertEqual(
             exception.headers.get('Content-Type'), "application/json"
