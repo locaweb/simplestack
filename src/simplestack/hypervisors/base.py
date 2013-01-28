@@ -18,14 +18,14 @@
 # @author: Willian Molinari (PotHix), Locaweb.
 
 from simplestack.exceptions import FeatureNotImplemented
-from simplestack.views.format_view import FormatView
+from simplestack.presenters.formatter import Formatter
 
 
 class SimpleStack(object):
 
     def __init__(self):
         self.connection = False
-        self.format_for = FormatView()
+        self.format_for = Formatter()
 
     def libvirt_connect(self):
         raise FeatureNotImplemented()

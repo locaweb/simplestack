@@ -17,7 +17,7 @@
 # @author: Willian Molinari (PotHix), Locaweb.
 
 
-class FormatView(object):
+class Formatter(object):
 
     def host(self, host_id, name, address):
         return {

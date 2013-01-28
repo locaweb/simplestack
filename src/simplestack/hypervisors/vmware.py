@@ -21,7 +21,7 @@ from pysphere import VIServer
 from simplestack.utils import vmware
 from simplestack.exceptions import EntityNotFound
 from simplestack.hypervisors.base import SimpleStack
-from simplestack.views.format_view import FormatView
+from simplestack.presenters.formatter import Formatter
 
 import re
 import datetime
@@ -39,7 +39,7 @@ class Stack(SimpleStack):
     def __init__(self, poolinfo):
         self.connection = False
         self.poolinfo = poolinfo
-        self.format_for = FormatView()
+        self.format_for = Formatter()
         self.connect()
 
     def libvirt_connect(self):
