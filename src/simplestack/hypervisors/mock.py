@@ -26,10 +26,10 @@ import random
 import datetime
 
 """
-Base implementation for all other hypervisors
+Mock hypervisor defines the interface for the hypervisors.
 
-This file works as a guideline for the other hypervisor
-implementations.
+This module will be the first to receive new methods and validate
+the code interface for the other hypervisors.
 """
 class Stack(SimpleStack):
 
