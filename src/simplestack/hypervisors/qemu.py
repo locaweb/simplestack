@@ -38,7 +38,7 @@ class Stack(SimpleStack):
 
     def libvirt_connect(self):
         return (
-            libvirt.open("qemu+tls://%s@%s/system?no_verify=1" % (
+            libvirt.open("qemu+tcp://%s@%s/system?no_verify=1" % (
                 self.poolinfo.get("username"),
                 self.poolinfo.get("api_server")
             ))
