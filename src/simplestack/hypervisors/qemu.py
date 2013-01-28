@@ -37,6 +37,7 @@ class Stack(SimpleStack):
         self.connect()
 
     def libvirt_connect(self):
+        # FIXME: Use qemu+tls instead of tcp
         return (
             libvirt.open("qemu+tcp://%s@%s/system?no_verify=1" % (
                 self.poolinfo.get("username"),

@@ -48,4 +48,4 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
         self.vm = self.__class__.vm
 
     def _get_vm_id(self):
-        return self.vm.ID()
+        return self.vm.UUID()
