@@ -25,6 +25,7 @@ import ConfigParser
 
 
 class XenTest(unittest.TestCase, HypervisorBaseTest):
+
     @classmethod
     def setUpClass(clazz):
         conf = ConfigParser.ConfigParser()
