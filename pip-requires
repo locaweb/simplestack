@@ -2,6 +2,7 @@ bottle
 gevent
 ipdb
 nose
+pep8
 pysphere
 supay
 webtest

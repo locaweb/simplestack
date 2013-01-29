@@ -6,12 +6,13 @@ export simplestack_env
 bin_pip         = pip
 bin_python      = python
 venv_dir        = .venv
+venv_bin        = $(venv_dir)/bin
 
 clean:
 	@find . -name '*.pyc' -delete
 
 pep:
-	@pep8 --repeat --show-source src setup.py
+	@$(venv_bin)/pep8 --repeat --show-source src setup.py
 
 install_venv:
 	$(bin_pip) install virtualenv
@@ -20,10 +21,10 @@ create_venv: install_venv
 	virtualenv $(venv_dir)
 
 bootstrap: create_venv
-	$(venv_dir)/bin/$(bin_pip) install -r pip-requires
+	$(venv_bin)/$(bin_pip) install -r pip-requires
 
 test:
-	@$(venv_dir)/bin/nosetests $(TEST)
+	@$(venv_bin)/nosetests $(TEST)
 
 env:
 	@echo $(simplestack_env)
