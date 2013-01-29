@@ -19,6 +19,7 @@
 
 from simplestack.exceptions import FeatureNotImplemented
 from simplestack.presenters.formatter import Formatter
+from simplestack.decorators.libvirt import *
 
 
 class SimpleStack(object):
@@ -55,10 +56,8 @@ class SimpleStack(object):
     def storage_info(self, storage_id):
         raise FeatureNotImplemented()
 
+    @libvirt
     def guest_list(self):
-        if not self.has_libvirt():
-            raise FeatureNotImplemented()
-
         not_running = [
             self.libvirt_vm_info(self.libvirt_connection.lookupByName(vm_name))
             for vm_name in self.libvirt_connection.listDefinedDomains()
@@ -81,27 +80,21 @@ class SimpleStack(object):
     def guest_export(self, guest_id):
         raise FeatureNotImplemented()
 
+    @libvirt
     def guest_info(self, guest_id):
-        if not self.has_libvirt():
-            raise FeatureNotImplemented()
-
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         return self.libvirt_vm_info(dom)
 
+    @libvirt
     def guest_shutdown(self, guest_id, force=False):
-        if not self.has_libvirt():
-            raise FeatureNotImplemented()
-
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         if force:
             return dom.destroy()
         else:
             return dom.shutdown()
 
+    @libvirt
     def guest_start(self, guest_id):
-        if not self.has_libvirt():
-            raise FeatureNotImplemented()
-
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         dom.create()
 
@@ -109,17 +102,13 @@ class SimpleStack(object):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         return dom.suspend()
 
+    @libvirt
     def guest_resume(self, guest_id):
-        if not self.has_libvirt():
-            raise FeatureNotImplemented()
-
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         return dom.resume()
 
+    @libvirt
     def guest_reboot(self, guest_id, force=False):
-        if not self.has_libvirt():
-            raise FeatureNotImplemented()
-
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         if force:
             return vm.reset(0)
@@ -171,10 +160,8 @@ class SimpleStack(object):
     def network_interface_delete(self, guest_id, network_interface_id):
         raise FeatureNotImplemented()
 
+    @libvirt
     def snapshot_list(self, guest_id):
-        if not self.has_libvirt():
-            raise FeatureNotImplemented()
-
         dom = self.libvirt_connection.lookupByID(guest_id)
         snaps = [
             self.libvirt_snapshot_info(s)
@@ -185,10 +172,8 @@ class SimpleStack(object):
     def snapshot_create(self, guestname, name=None):
         raise FeatureNotImplemented()
 
+    @libvirt
     def snapshot_info(self, guestname, snapshot_name):
-        if not self.has_libvirt():
-            raise FeatureNotImplemented()
-
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         snap = self.libvirt_get_snapshot(dom, snapshot_id)
         if snap:
@@ -196,18 +181,14 @@ class SimpleStack(object):
         else:
             raise EntityNotFound("Snapshot", snapshot_id)
 
+    @libvirt
     def snapshot_delete(self, guest_id, snapshot_id):
-        if not self.has_libvirt():
-            raise FeatureNotImplemented()
-
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         snap = self.libvirt_get_snapshot(dom, snapshot_id)
         snap.delete(0)
 
+    @libvirt
     def snapshot_revert(self, guest_id, snapshot_id):
-        if not self.has_libvirt():
-            raise FeatureNotImplemented()
-
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         snap = self.libvirt_get_snapshot(dom, snapshot_id)
         dom.revertToSnapshot(snap)
@@ -250,6 +231,3 @@ class SimpleStack(object):
 
     def libvirt_get_snapshot(self, dom, snapshot_id):
         pass
-
-    def has_libvirt(self):
-        return hasattr(self, "libvirt_connection") and self.libvirt_connection
