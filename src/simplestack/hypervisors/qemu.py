@@ -22,6 +22,10 @@ from simplestack.hypervisors.base import SimpleStack
 import libvirt
 
 
+"""
+This module provides Qemu implementation through libvirt
+http://libvirt.org/guide/html/
+"""
 class Stack(SimpleStack):
 
     state_translation = {
@@ -48,32 +52,3 @@ class Stack(SimpleStack):
     def connect(self):
         self.libvirt_connection = self.libvirt_connect()
         self.connection = self.libvirt_connection
-
-    # def guest_update(self, guest_id, guestdata):
-    #     dom = self.connection.lookupByUUIDString(guest_id)
-    #
-    # def guest_delete(self, guest_id):
-    #     dom = self.connection.lookupByUUIDString(guest_id)
-    #
-    # def media_mount(self, guest_id, media_data):
-    #     dom = self.connection.lookupByUUIDString(guest_id)
-    #
-    # def media_info(self, guest_id):
-    #     dom = self.connection.lookupByUUIDString(guest_id)
-    #
-    # def snapshot_create(self, guest_id, snapshot_name=None):
-    #     dom = self.connection.lookupByID(guest_id)
-
-    # http://libvirt.org/guide/html/
-    # <domain type='kvm'>
-    #     <name>test</name>
-    #     <memory unit='KiB'>524288</memory>
-    #     <os>
-    #         <type arch='x86_64'>hvm</type>
-    #     </os>
-    # </domain>
-    # virDomainSuspend || virDomainSave
-    # virDomainResume || virDomainRestore
-    # virDomainSetVcpus & virDomainSetMemory
-    # <domainsnapshot><description>name</description></domainsnapshot>
-    # snapshot.getXMLDesc

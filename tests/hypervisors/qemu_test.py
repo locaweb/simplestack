@@ -28,24 +28,41 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
 
     @classmethod
     def setUpClass(clazz):
+        vm_info = """
+            <domain type='kvm'>
+                <name>TestVM:%f</name>
+                <memory unit='KiB'>524288</memory>
+                <os>
+                    <type arch='x86_64'>hvm</type>
+                </os>
+            </domain>
+        """
         conf = ConfigParser.ConfigParser()
         conf.read("etc/test.cfg")
         clazz.stack = qemu.Stack({
             "api_server": conf.get("qemu", "api_server"),
             "username": conf.get("qemu", "username")
         })
-        vm_name = "TestVM:%f" % random.random()
-        clazz.vm = clazz.stack.connection.lookupByID(clazz.stack.connection.listDomainsID()[0])
+
+        clazz.vm = clazz.stack.connection.createXML(vm_info % random.random(), 1)
 
     @classmethod
     def tearDownClass(clazz):
-        # vm.power_off()
-        # vm.undefine()
-        pass
+        clazz.vm.shutdown()
+        clazz.vm.destroy()
 
     def setUp(self):
         self.stack = self.__class__.stack
         self.vm = self.__class__.vm
 
+    def _stop_vm(self):
+        self.vm.shutdown()
+
     def _get_vm_id(self):
-        return self.vm.UUID()
+        return self.vm.ID()
+
+    def _network_name(self):
+        return "default"
+
+    def _media_name(self):
+        return "[] /vmimages/tools-isoimages/windows.iso"
