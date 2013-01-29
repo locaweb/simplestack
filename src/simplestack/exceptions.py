@@ -17,10 +17,12 @@
 # @author: Willian Molinari (PotHix), Locaweb.
 
 import json
+
 from bottle import HTTPError, HTTPResponse
 
 
 class SimpleStackError(HTTPError):
+
     def __init__(self, code, message):
         super(SimpleStackError, self).__init__(
             code, None, None, None, {"Content-Type": "application/json"}
@@ -32,6 +34,7 @@ class SimpleStackError(HTTPError):
 
 
 class FeatureNotAvailable(SimpleStackError):
+
     def __init__(self):
         simplestack_error = super(FeatureNotAvailable, self)
         simplestack_error.__init__(
@@ -40,6 +43,7 @@ class FeatureNotAvailable(SimpleStackError):
 
 
 class FeatureNotImplemented(SimpleStackError):
+
     def __init__(self):
         simplestack_error = super(FeatureNotImplemented, self)
         simplestack_error.__init__(
@@ -48,6 +52,7 @@ class FeatureNotImplemented(SimpleStackError):
 
 
 class EntityNotFound(SimpleStackError):
+
     def __init__(self, entity_type, entity_id):
         simplestack_error = super(EntityNotFound, self)
         simplestack_error.__init__(
@@ -56,7 +61,9 @@ class EntityNotFound(SimpleStackError):
 
 
 class HypervisorError(SimpleStackError):
+
     def __init__(self, hypervisor_error):
+
         simplestack_error = super(HypervisorError, self)
         simplestack_error.__init__(
             500, "Hypervisor Error: %s" % hypervisor_error

@@ -17,16 +17,16 @@
 # @author: Thiago Morello (morellon), Locaweb.
 # @author: Willian Molinari (PotHix), Locaweb.
 
-from simplestack.hypervisors.base import SimpleStack
-
 import libvirt
 
+from simplestack.hypervisors.base import SimpleStack
 
-"""
-This module provides Qemu implementation through libvirt
-http://libvirt.org/guide/html/
-"""
+
 class Stack(SimpleStack):
+    """
+    This module provides Qemu implementation through libvirt
+    http://libvirt.org/guide/html/
+    """
 
     state_translation = {
         libvirt.VIR_DOMAIN_RUNNING: "STARTED",

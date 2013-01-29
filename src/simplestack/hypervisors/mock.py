@@ -25,13 +25,14 @@ import uuid
 import random
 import datetime
 
-"""
-Mock hypervisor defines the interface for the hypervisors.
 
-This module will be the first to receive new methods and validate
-the code interface for the other hypervisors.
-"""
 class Stack(SimpleStack):
+    """
+    Mock hypervisor defines the interface for the hypervisors.
+
+    This module will be the first to receive new methods and validate
+    the code interface for the other hypervisors.
+    """
 
     defaultdata = {
         "host": "localhost",

@@ -21,14 +21,14 @@ from simplestack.exceptions import FeatureNotImplemented
 from simplestack.presenters.formatter import Formatter
 
 
-"""
-This module is the base implementation for all hypervisors available.
-
-It uses libvirt as the fallback implementation and throw an error
-(FeatureNotImplemented) if the hypervisor doesn't have an implementation
-for the given method and doesn't support libvirt also.
-"""
 class SimpleStack(object):
+    """
+    This module is the base implementation for all hypervisors available.
+
+    It uses libvirt as the fallback implementation and throw an error
+    (FeatureNotImplemented) if the hypervisor doesn't have an implementation
+    for the given method and doesn't support libvirt also.
+    """
 
     def __init__(self):
         self.connection = False

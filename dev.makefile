@@ -11,7 +11,7 @@ clean:
 	@find . -name '*.pyc' -delete
 
 pep:
-	pep8 --repeat --show-source src setup.py
+	@pep8 --repeat --show-source src setup.py
 
 install_venv:
 	$(bin_pip) install virtualenv
