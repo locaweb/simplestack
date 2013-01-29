@@ -1,5 +1,6 @@
 bottle
 gevent
+ipdbplugin
 nose
 pysphere
 supay

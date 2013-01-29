@@ -21,7 +21,7 @@ import random
 
 class HypervisorBaseTest(object):
     # debugging:
-    # import sys; sys.stdout = sys.__stdout__; import ipdb; ipdb.set_trace()
+    import sys; sys.stdout = sys.__stdout__; import ipdb; ipdb.set_trace()
 
     def test_pool_info(self):
         pool = self.stack.pool_info()
