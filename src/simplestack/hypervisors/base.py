@@ -56,7 +56,7 @@ class SimpleStack(object):
     def storage_info(self, storage_id):
         raise FeatureNotImplemented()
 
-    @libvirt
+    @libvirt(True)
     def guest_list(self):
         not_running = [
             self.libvirt_vm_info(self.libvirt_connection.lookupByName(vm_name))
@@ -80,12 +80,12 @@ class SimpleStack(object):
     def guest_export(self, guest_id):
         raise FeatureNotImplemented()
 
-    @libvirt
+    @libvirt(True)
     def guest_info(self, guest_id):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         return self.libvirt_vm_info(dom)
 
-    @libvirt
+    @libvirt(True)
     def guest_shutdown(self, guest_id, force=False):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         if force:
@@ -93,7 +93,7 @@ class SimpleStack(object):
         else:
             return dom.shutdown()
 
-    @libvirt
+    @libvirt(True)
     def guest_start(self, guest_id):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         dom.create()
@@ -102,12 +102,12 @@ class SimpleStack(object):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         return dom.suspend()
 
-    @libvirt
+    @libvirt(True)
     def guest_resume(self, guest_id):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         return dom.resume()
 
-    @libvirt
+    @libvirt(True)
     def guest_reboot(self, guest_id, force=False):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         if force:
@@ -160,7 +160,7 @@ class SimpleStack(object):
     def network_interface_delete(self, guest_id, network_interface_id):
         raise FeatureNotImplemented()
 
-    @libvirt
+    @libvirt(True)
     def snapshot_list(self, guest_id):
         dom = self.libvirt_connection.lookupByID(guest_id)
         snaps = [
@@ -172,7 +172,7 @@ class SimpleStack(object):
     def snapshot_create(self, guestname, name=None):
         raise FeatureNotImplemented()
 
-    @libvirt
+    @libvirt(True)
     def snapshot_info(self, guestname, snapshot_name):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         snap = self.libvirt_get_snapshot(dom, snapshot_id)
@@ -181,13 +181,13 @@ class SimpleStack(object):
         else:
             raise EntityNotFound("Snapshot", snapshot_id)
 
-    @libvirt
+    @libvirt(True)
     def snapshot_delete(self, guest_id, snapshot_id):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         snap = self.libvirt_get_snapshot(dom, snapshot_id)
         snap.delete(0)
 
-    @libvirt
+    @libvirt(True)
     def snapshot_revert(self, guest_id, snapshot_id):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         snap = self.libvirt_get_snapshot(dom, snapshot_id)
@@ -210,6 +210,7 @@ class SimpleStack(object):
                 dom.name(),
                 infos[3],
                 infos[1] / 1024,
+                None,
                 None,
                 None,
                 None,

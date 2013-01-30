@@ -55,6 +55,10 @@ class HypervisorBaseTest(object):
         """
         pass
 
+    def test_guest_list(self):
+        guests = self.stack.guest_list()
+        self.assertNotEqual(guests, [])
+
     def test_guest_info(self):
         guest = self.stack.guest_info(self._get_vm_id())
         self.assertEqual(guest["id"], self._get_vm_id())

@@ -28,15 +28,6 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
 
     @classmethod
     def setUpClass(clazz):
-        vm_info = """
-            <domain type='kvm'>
-                <name>TestVM:%f</name>
-                <memory unit='KiB'>524288</memory>
-                <os>
-                    <type arch='x86_64'>hvm</type>
-                </os>
-            </domain>
-        """
         conf = ConfigParser.ConfigParser()
         conf.read("etc/test.cfg")
         clazz.stack = qemu.Stack({
@@ -44,7 +35,10 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
             "username": conf.get("qemu", "username")
         })
 
-        clazz.vm = clazz.stack.guest_create({'name': 'SimplestackTestVM:%f' % random.random(), 'memory': 524288})
+        clazz.vm = clazz.stack.guest_create({
+            'name':  'SimplestackTestVM:%f' % random.random(),
+            'memory': 524288
+        })
 
     @classmethod
     def tearDownClass(clazz):

@@ -20,6 +20,7 @@
 import libvirt
 
 from simplestack.hypervisors.base import SimpleStack
+from simplestack.presenters.formatter import Formatter
 
 
 class Stack(SimpleStack):
@@ -29,15 +30,17 @@ class Stack(SimpleStack):
     """
 
     state_translation = {
+        libvirt.VIR_DOMAIN_PAUSED:  "PAUSED",
         libvirt.VIR_DOMAIN_RUNNING: "STARTED",
-        libvirt.VIR_DOMAIN_SHUTOFF: "STOPPED",
-        libvirt.VIR_DOMAIN_PAUSED: "PAUSED"
+        libvirt.VIR_DOMAIN_SHUTOFF: "STOPPED"
     }
 
     def __init__(self, poolinfo):
         self.connection = False
         self.libvirt_connection = False
         self.poolinfo = poolinfo
+        self.format_for = Formatter()
+
         self.connect()
 
         self.guest_xml = """

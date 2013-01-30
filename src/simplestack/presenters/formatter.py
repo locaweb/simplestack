@@ -37,15 +37,14 @@ class Formatter(object):
             'size': int(physical_size)
         }
 
-    def guest(self, vm_id, name, cpus, memory, hdd, paravirt, tools, ip, state,
-              host):
+    def guest(self, vmid, name, cpus, mem, hdd, pvirt, tools, ip, state, host):
         return {
-            'id': vm_id,
+            'id': vmid,
             'name': name,
             'cpus': int(cpus),
-            'memory': int(memory),
+            'memory': int(mem),
             'hdd': hdd,
-            'paravirtualized': paravirt,
+            'paravirtualized': pvirt,
             'tools_up_to_date': tools,
             'ip': ip,
             'state': state,

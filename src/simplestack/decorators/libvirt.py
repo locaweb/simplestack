@@ -18,10 +18,18 @@
 from simplestack.exceptions import FeatureNotImplemented
 
 
-def libvirt(f):
-    def has_connection(*args, **kwargs):
-        if not (hasattr(f, "libvirt_connection") and f.libvirt_connection):
-            raise FeatureNotImplemented()
-        return f(*args, **kwargs)
+"""
+Decide if it should raise FeatureNotImplemented for if
+the current method is not using libvirt
 
-    return has_connection
+Unfortulately is not possible to get self.libvirt_connection here
+"""
+def libvirt(available):
+    def wrapper(f):
+        def has_connection(*args, **kwargs):
+            if not available:
+                raise FeatureNotImplemented()
+            return f(*args, **kwargs)
+
+        return has_connection
+    return wrapper
