@@ -56,7 +56,7 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
             self.vm.shutdown()
 
     def _get_vm_id(self):
-        return self.vm.UUID()
+        return self.vm.UUIDString()
 
     def _network_name(self):
         return "default"
@@ -67,16 +67,7 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
     def test_guest_update(self):
         pass
 
-    def test_guest_suspend(self):
-        pass
-
     def test_guest_start(self):
-        pass
-
-    def test_guest_resume(self):
-        pass
-
-    def test_guest_info(self):
         pass
 
     def test_guest_force_reboot(self):
@@ -86,6 +77,7 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
         pass
 
     def test_guest_shutdown(self):
+        """ available on base hypervisor """
         pass
 
     def test_disk_create(self):
@@ -116,15 +108,19 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
         pass
 
     def test_snapshot_info(self):
+        """ available on base hypervisor """
         pass
 
     def test_snapshot_list(self):
+        """ available on base hypervisor """
         pass
 
     def test_snapshot_revert(self):
+        """ available on base hypervisor """
         pass
 
     def test_snapshot_delete(self):
+        """ available on base hypervisor """
         pass
 
     def test_snapshot_create(self):
