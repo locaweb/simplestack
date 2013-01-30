@@ -25,7 +25,7 @@ from simplestack.hypervisors.base import SimpleStack
 class Stack(SimpleStack):
     """
     This module provides Qemu implementation through libvirt
-    http://libvirt.org/guide/html/
+    http://libvirt.org/guide/html-single/
     """
 
     state_translation = {
@@ -40,6 +40,16 @@ class Stack(SimpleStack):
         self.poolinfo = poolinfo
         self.connect()
 
+        self.guest_xml = """
+            <domain type='kvm'>
+                <name>%(name)s</name>
+                <memory unit='KiB'>%(memory)s</memory>
+                <os>
+                    <type arch='x86_64'>hvm</type>
+                </os>
+            </domain>
+        """
+
     def libvirt_connect(self):
         # FIXME: Use qemu+tls instead of tcp
         return (
@@ -52,3 +62,13 @@ class Stack(SimpleStack):
     def connect(self):
         self.libvirt_connection = self.libvirt_connect()
         self.connection = self.libvirt_connection
+
+    def guest_create(self, guestdata):
+        """
+        This method creates a new guest
+
+        guestdata should contain the following arguments:
+        {'name': 'vm name', 'memory': 524288}
+        """
+
+        return self.libvirt_connection.createXML(self.guest_xml % guestdata, 0)

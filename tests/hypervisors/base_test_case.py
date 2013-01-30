@@ -49,6 +49,12 @@ class HypervisorBaseTest(object):
         self.assertTrue(storage["type"])
         self.assertTrue(storage["allocated_space"])
 
+    def test_guest_create(self):
+        """
+        This method is tested on every hypervisor setup!
+        """
+        pass
+
     def test_guest_info(self):
         guest = self.stack.guest_info(self._get_vm_id())
         self.assertEqual(guest["id"], self._get_vm_id())

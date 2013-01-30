@@ -44,7 +44,7 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
             "username": conf.get("qemu", "username")
         })
 
-        clazz.vm = clazz.stack.connection.createXML(vm_info % random.random(), 1)
+        clazz.vm = clazz.stack.guest_create({'name': 'SimplestackTestVM:%f' % random.random(), 'memory': 524288})
 
     @classmethod
     def tearDownClass(clazz):
@@ -56,13 +56,115 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
         self.vm = self.__class__.vm
 
     def _stop_vm(self):
-        self.vm.shutdown()
+        if self.vm.ID() < 0:
+            self.vm.destroy()
+        else:
+            self.vm.shutdown()
 
     def _get_vm_id(self):
-        return self.vm.ID()
+        return self.vm.UUID()
 
     def _network_name(self):
         return "default"
 
     def _media_name(self):
         return "[] /vmimages/tools-isoimages/windows.iso"
+
+    def test_guest_update(self):
+        pass
+
+    def test_guest_suspend(self):
+        pass
+
+    def test_guest_start(self):
+        pass
+
+    def test_guest_resume(self):
+        pass
+
+    def test_guest_info(self):
+        pass
+
+    def test_guest_force_reboot(self):
+        pass
+
+    def test_guest_update(self):
+        pass
+
+    def test_guest_shutdown(self):
+        pass
+
+    def test_disk_create(self):
+        pass
+
+    def test_disk_info(self):
+        pass
+
+    def test_disk_list(self):
+        pass
+
+    def test_disk_update(self):
+        pass
+
+    def test_tag_list(self):
+        pass
+
+    def test_tag_delete(self):
+        pass
+
+    def test_tag_create(self):
+        pass
+
+    def test_storage_list(self):
+        pass
+
+    def test_storage_info(self):
+        pass
+
+    def test_snapshot_info(self):
+        pass
+
+    def test_snapshot_list(self):
+        pass
+
+    def test_snapshot_revert(self):
+        pass
+
+    def test_snapshot_delete(self):
+        pass
+
+    def test_snapshot_create(self):
+        pass
+
+    def test_pool_info(self):
+        pass
+
+    def test_network_interface_update(self):
+        pass
+
+    def test_network_interface_info(self):
+        pass
+
+    def test_network_interface_delete(self):
+        pass
+
+    def test_network_interface_create(self):
+        pass
+
+    def test_network_interface_list(self):
+        pass
+
+    def test_network_interface_create(self):
+        pass
+
+    def test_media_mount(self):
+        pass
+
+    def test_media_unmount(self):
+        pass
+
+    def test_host_list(self):
+        pass
+
+    def test_host_info(self):
+        pass
