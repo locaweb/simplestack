@@ -3,3 +3,4 @@ doc/build
 test.cfg
 simplestack.cfg
 .noseids
+build
