@@ -119,7 +119,9 @@ class SimpleStack(object):
         raise FeatureNotImplemented()
 
     def guest_delete(self, guest_id):
-        raise FeatureNotImplemented()
+        dom = self.libvirt_connection.lookupByUUIDString(guest_id)
+        dom.undefine()
+        dom.destroy()
 
     def disk_list(self, guest_id):
         raise FeatureNotImplemented()

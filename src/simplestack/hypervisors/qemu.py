@@ -74,4 +74,4 @@ class Stack(SimpleStack):
         {'name': 'vm name', 'memory': 524288}
         """
 
-        return self.libvirt_connection.createXML(self.guest_xml % guestdata, 0)
+        return self.libvirt_connection.defineXML(self.guest_xml % guestdata)

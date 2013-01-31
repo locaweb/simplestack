@@ -2,7 +2,3 @@
 doc/build
 test.cfg
 .noseids
-build
-.tox
-*simplestack.egg*
-dist

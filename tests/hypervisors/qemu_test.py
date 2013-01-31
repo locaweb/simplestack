@@ -39,11 +39,11 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
             'name':  'SimplestackTestVM:%f' % random.random(),
             'memory': 524288
         })
+        clazz.stack.guest_start(clazz.vm.UUIDString())
 
     @classmethod
     def tearDownClass(clazz):
-        clazz.vm.shutdown()
-        clazz.vm.destroy()
+        clazz.stack.guest_delete(clazz.vm.UUIDString())
 
     def setUp(self):
         self.stack = self.__class__.stack
@@ -51,9 +51,9 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
 
     def _stop_vm(self):
         if self.vm.ID() < 0:
-            self.vm.destroy()
+            self.stack.guest_shutdown(self._get_vm_id(), force=True)
         else:
-            self.vm.shutdown()
+            self.stack.guest_shutdown(self._get_vm_id() )
 
     def _get_vm_id(self):
         return self.vm.UUIDString()
@@ -65,9 +65,6 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
         return "[] /vmimages/tools-isoimages/windows.iso"
 
     def test_guest_update(self):
-        pass
-
-    def test_guest_start(self):
         pass
 
     def test_guest_force_reboot(self):
