@@ -12,5 +12,5 @@ setup(
     data_files=[
         ('/usr/sbin', ['usr/sbin/simplestack']),
         ('/etc/simplestack', ['etc/simplestack.cfg']),
-    ]
+    ],
 )

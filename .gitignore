@@ -1,6 +1,8 @@
 *.pyc
 doc/build
 test.cfg
-simplestack.cfg
 .noseids
 build
+.tox
+*simplestack.egg*
+dist
