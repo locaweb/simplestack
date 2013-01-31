@@ -49,6 +49,10 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
         self.stack = self.__class__.stack
         self.vm = self.__class__.vm
 
+        # Trying to assure the running state of the vm
+        if self.stack.guest_info(self._get_vm_id())["state"] == "STOPPED":
+            self.stack.guest_start(self._get_vm_id())
+
     def _stop_vm(self):
         if self.vm.ID() < 0:
             self.stack.guest_shutdown(self._get_vm_id(), force=True)
@@ -73,9 +77,13 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
     def test_guest_update(self):
         pass
 
-    def test_guest_shutdown(self):
-        """ available on base hypervisor """
-        pass
+    # Implemented by base hypervisor tests
+    # def test_guest_shutdown(self):
+    # def test_guest_list(self):
+    # def test_guest_info(self):
+    # def test_guest_start(self):
+    # def test_guest_resume(self):
+    # def test_guest_reboot(self):
 
     def test_disk_create(self):
         pass
