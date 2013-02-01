@@ -1,4 +1,5 @@
 bottle
+cheetah
 gevent
 ipdb
 nose

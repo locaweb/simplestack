@@ -17,11 +17,13 @@
 # @author: Thiago Morello (morellon), Locaweb.
 # @author: Willian Molinari (PotHix), Locaweb.
 
+import os
 import libvirt
 
 from simplestack.hypervisors.base import SimpleStack
 from simplestack.presenters.formatter import Formatter
 
+from Cheetah.Template import Template
 
 class Stack(SimpleStack):
     """
@@ -42,16 +44,7 @@ class Stack(SimpleStack):
         self.format_for = Formatter()
 
         self.connect()
-
-        self.guest_xml = """
-            <domain type='kvm'>
-                <name>%(name)s</name>
-                <memory unit='KiB'>%(memory)s</memory>
-                <os>
-                    <type arch='x86_64'>hvm</type>
-                </os>
-            </domain>
-        """
+        self.template_path = os.path.join(os.path.dirname(__file__), '../templates/qemu_xml.tmpl')
 
     def libvirt_connect(self):
         # FIXME: Use qemu+tls instead of tcp
@@ -70,8 +63,10 @@ class Stack(SimpleStack):
         """
         This method creates a new guest
 
-        guestdata should contain the following arguments:
-        {'name': 'vm name', 'memory': 524288}
+        guestdata should contain a dict with the following arguments:
+
+        name, memory, image
         """
 
-        return self.libvirt_connection.defineXML(self.guest_xml % guestdata)
+        xml = str(Template(file = self.template_path, searchList = [guestdata,]))
+        return self.libvirt_connection.defineXML(xml)
