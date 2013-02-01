@@ -20,6 +20,7 @@
 import os
 import libvirt
 
+from simplestack.exceptions import InvalidArguments
 from simplestack.hypervisors.base import SimpleStack
 from simplestack.presenters.formatter import Formatter
 
@@ -65,8 +66,11 @@ class Stack(SimpleStack):
 
         guestdata should contain a dict with the following arguments:
 
-        name, memory, image
+        name, memory, image, network_name
         """
 
-        xml = str(Template(file = self.template_path, searchList = [guestdata,]))
-        return self.libvirt_connection.defineXML(xml)
+        try:
+            xml = str(Template(file = self.template_path, searchList = [guestdata,]))
+            return self.libvirt_connection.defineXML(xml)
+        except:
+            raise InvalidArguments()

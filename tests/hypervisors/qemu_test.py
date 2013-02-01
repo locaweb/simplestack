@@ -38,7 +38,7 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
         clazz.vm = clazz.stack.guest_create({
             'name':  'SimplestackTestVM:%f' % random.random(),
             'memory': 524288,
-            'image': '/mnt/storage/images/simplestack_image.img'
+            'image': '/mnt/storage/images/simplestack_image.img',
         })
         clazz.stack.guest_start(clazz.vm.UUIDString())
 

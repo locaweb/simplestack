@@ -68,3 +68,12 @@ class HypervisorError(SimpleStackError):
         simplestack_error.__init__(
             500, "Hypervisor Error: %s" % hypervisor_error
         )
+
+
+class InvalidArguments(SimpleStackError):
+
+    def __init__(self):
+        simplestack_error = super(InvalidArguments, self)
+        simplestack_error.__init__(
+            417, "Invalid arguments"
+        )
