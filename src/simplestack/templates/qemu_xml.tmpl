@@ -15,12 +15,7 @@
     <clock offset='utc'/>
     <devices>
         <disk type='file' device='disk'>
-            <driver name='qemu' type='raw' io='native'/>
-            <source file='/mnt/storage/images/simplestack_image.img'/>
-            <target dev='vda' bus='virtio'/>
-        </disk>
-        <disk type='file' device='disk'>
-            <driver name='qemu' type='raw' io='native'/>
+            <driver name='qemu' type='qcow2' cache='none' io='native'/>
             <source file='$image'/>
             <target dev='vda' bus='virtio'/>
         </disk>
@@ -63,4 +58,3 @@
     </devices>
     <seclabel type='none'/>
 </domain>
-
