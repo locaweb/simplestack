@@ -436,6 +436,10 @@ class Stack(SimpleStack):
             vif_record["network"] = net_refs[0]
 
         vif_ref = self.connection.xenapi.VIF.create(vif_record)
+        try:
+            self.connection.xenapi.VIF.plug(vif_ref)
+        except:
+            pass
         return self._network_interface_info(vif_ref)
 
     def network_interface_info(self, guest_id, network_interface_id):
