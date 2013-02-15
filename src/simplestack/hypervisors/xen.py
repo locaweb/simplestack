@@ -455,10 +455,18 @@ class Stack(SimpleStack):
             if len(net_refs) == 0:
                 raise Exception("Unknown network: %s" % data["network"])
 
-            vif_record["network"] = net_refs[0]
-
-        self.connection.xenapi.VIF.destroy(vif_ref)
-        vif_ref = self.connection.xenapi.VIF.create(vif_record)
+            if vif_record["network"] != net_refs[0]:
+                vif_record["network"] = net_refs[0]
+                try:
+                    self.connection.xenapi.VIF.unplug(vif_ref)
+                except:
+                    pass
+                self.connection.xenapi.VIF.destroy(vif_ref)
+                vif_ref = self.connection.xenapi.VIF.create(vif_record)
+                try:
+                    self.connection.xenapi.VIF.plug(vif_ref)
+                except:
+                    pass
 
         if "ratelimit" in data:
             if data["ratelimit"]:
