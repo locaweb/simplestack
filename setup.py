@@ -10,7 +10,7 @@ setup(
     package_dir={'': 'src'},
     packages=find_packages('src'),
     data_files=[
-        ('/usr/sbin', ['usr/sbin/simplestack']),
+        ('/usr/sbin', ['bin/simplestack']),
         ('/etc/simplestack', ['etc/simplestack.cfg']),
     ],
 )
