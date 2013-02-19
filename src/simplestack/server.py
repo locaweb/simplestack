@@ -35,7 +35,8 @@ from bottle import delete, put, get, post, error, redirect, run, debug
 from bottle import abort, request, ServerAdapter, response, static_file
 from bottle import error, HTTPError
 
-from simplestack.common.config import config, set_logger
+from simplestack.common.config import config
+from simplestack.common.logger import set_logger
 
 app = bottle.app()
 LOG = logging.getLogger('simplestack.server')
