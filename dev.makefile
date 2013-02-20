@@ -28,3 +28,6 @@ test:
 
 env:
 	@echo $(simplestack_env)
+
+server:
+	$(simplestack_env) bin/simplestack -a foreground -p var/run/simplestack/ -l log/

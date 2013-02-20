@@ -7,17 +7,24 @@ from supay import Daemon
 
 if __name__ == '__main__':
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "a:", ["action="])
+        opts, args = getopt.getopt(sys.argv[1:], "a:p:l:")
     except getopt.GetoptError, err:
         print str(err)
 
     action = 'start'
+    log = '/var/log/simplestack.log'
+    pid = '/var/run/simplestack'
+
     for o, a in opts:
         if o in ('-a', '--action'):
             action = a
+        elif o in ('-p', '--pid'):
+            pid = a
+        elif o in ('-l', '--log'):
+            log = a
 
-    daemon = Daemon(name='simplestack', catch_all_log='/var/log/simplestack.log',
-                    pid_dir='/var/run/simplestack')
+    daemon = Daemon(name='simplestack', catch_all_log=log, pid_dir=pid)
+
     if action == 'start':
         daemon.start()
         main()
