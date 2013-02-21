@@ -472,6 +472,18 @@ class Stack(SimpleStack):
                 except:
                     pass
 
+        if "active" in data:
+            if data["active"]:
+                try:
+                    self.connection.xenapi.VIF.plug(vif_ref)
+                except:
+                    pass
+            else:
+                try:
+                    self.connection.xenapi.VIF.unplug(vif_ref)
+                except:
+                    pass
+
         if "ratelimit" in data:
             if data["ratelimit"]:
                 # kbps in xen is actually kBps
