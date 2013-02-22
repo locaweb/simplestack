@@ -16,6 +16,8 @@
 # @author: Thiago Morello (morellon), Locaweb.
 # @author: Willian Molinari (PotHix), Locaweb.
 
+from nose.exc import SkipTest
+
 from simplestack.hypervisors import qemu
 from tests.hypervisors.base_test_case import HypervisorBaseTest
 
@@ -71,13 +73,13 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
         return "[] /vmimages/tools-isoimages/windows.iso"
 
     def test_guest_update(self):
-        pass
+        raise SkipTest
 
     def test_guest_force_reboot(self):
-        pass
+        raise SkipTest
 
     def test_guest_update(self):
-        pass
+        raise SkipTest
 
     # Implemented by base hypervisor tests
     # def test_guest_shutdown(self):
@@ -88,80 +90,80 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
     # def test_guest_reboot(self):
 
     def test_disk_create(self):
-        pass
+        raise SkipTest
 
     def test_disk_info(self):
-        pass
+        raise SkipTest
 
     def test_disk_list(self):
-        pass
+        raise SkipTest
 
     def test_disk_update(self):
-        pass
+        raise SkipTest
 
     def test_tag_list(self):
-        pass
+        raise SkipTest
 
     def test_tag_delete(self):
-        pass
+        raise SkipTest
 
     def test_tag_create(self):
-        pass
+        raise SkipTest
 
     def test_storage_list(self):
-        pass
+        raise SkipTest
 
     def test_storage_info(self):
-        pass
+        raise SkipTest
 
     def test_snapshot_info(self):
         """ available on base hypervisor """
-        pass
+        raise SkipTest
 
     def test_snapshot_list(self):
         """ available on base hypervisor """
-        pass
+        raise SkipTest
 
     def test_snapshot_revert(self):
         """ available on base hypervisor """
-        pass
+        raise SkipTest
 
     def test_snapshot_delete(self):
         """ available on base hypervisor """
-        pass
+        raise SkipTest
 
     def test_snapshot_create(self):
-        pass
+        raise SkipTest
 
     def test_pool_info(self):
-        pass
+        raise SkipTest
 
     def test_network_interface_update(self):
-        pass
+        raise SkipTest
 
     def test_network_interface_info(self):
-        pass
+        raise SkipTest
 
     def test_network_interface_delete(self):
-        pass
+        raise SkipTest
 
     def test_network_interface_create(self):
-        pass
+        raise SkipTest
 
     def test_network_interface_list(self):
-        pass
+        raise SkipTest
 
     def test_network_interface_create(self):
-        pass
+        raise SkipTest
 
     def test_media_mount(self):
-        pass
+        raise SkipTest
 
     def test_media_unmount(self):
-        pass
+        raise SkipTest
 
     def test_host_list(self):
-        pass
+        raise SkipTest
 
     def test_host_info(self):
-        pass
+        raise SkipTest
