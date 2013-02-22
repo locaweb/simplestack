@@ -16,6 +16,8 @@
 # @author: Thiago Morello (morellon), Locaweb.
 # @author: Willian Molinari (PotHix), Locaweb.
 
+from nose.exc import SkipTest
+
 from simplestack.hypervisors import vmware
 from simplestack.utils import vmware as vmware_utils
 from tests.hypervisors.base_test_case import HypervisorBaseTest
@@ -74,3 +76,36 @@ class VMwareTest(unittest.TestCase, HypervisorBaseTest):
 
     def _media_name(self):
         return "[] /vmimages/tools-isoimages/windows.iso"
+
+    def test_disk_create(self):
+        raise SkipTest
+
+    def test_disk_info(self):
+        raise SkipTest
+
+    def test_disk_list(self):
+        raise SkipTest
+
+    def test_disk_update(self):
+        raise SkipTest
+
+    def test_host_list(self):
+        raise SkipTest
+
+    def test_host_info(self):
+        raise SkipTest
+
+    def test_network_interface_update(self):
+        raise SkipTest
+
+    def test_network_interface_delete(self):
+        raise SkipTest
+
+    def test_network_interface_create(self):
+        raise SkipTest
+
+    def test_storage_list(self):
+        raise SkipTest
+
+    def test_storage_info(self):
+        raise SkipTest

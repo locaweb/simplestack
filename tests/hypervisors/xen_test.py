@@ -16,6 +16,8 @@
 # @author: Thiago Morello (morellon), Locaweb.
 # @author: Willian Molinari (PotHix), Locaweb.
 
+from nose.exc import SkipTest
+
 from simplestack.hypervisors import xen
 from tests.hypervisors.base_test_case import HypervisorBaseTest
 

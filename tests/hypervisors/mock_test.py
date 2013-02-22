@@ -16,6 +16,8 @@
 # @author: Thiago Morello (morellon), Locaweb.
 # @author: Willian Molinari (PotHix), Locaweb.
 
+from nose.exc import SkipTest
+
 from simplestack.exceptions import FeatureNotImplemented
 from simplestack.hypervisors import mock
 

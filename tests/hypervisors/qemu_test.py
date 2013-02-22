@@ -153,9 +153,6 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
     def test_network_interface_list(self):
         raise SkipTest
 
-    def test_network_interface_create(self):
-        raise SkipTest
-
     def test_media_mount(self):
         raise SkipTest
 
