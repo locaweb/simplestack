@@ -18,7 +18,8 @@ install_venv:
 	$(bin_pip) install virtualenv
 
 create_venv: install_venv
-	virtualenv $(venv_dir)
+	# Unfortunately libvirt doesn't work inside virtualenv
+	virtualenv --system-site-packages $(venv_dir)
 
 bootstrap: create_venv
 	$(venv_bin)/$(bin_pip) install -r pip-requires
