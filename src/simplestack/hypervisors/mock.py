@@ -17,6 +17,8 @@
 # @author: Thiago Morello (morellon), Locaweb.
 # @author: Willian Molinari (PotHix), Locaweb.
 
+from random import randint
+
 from simplestack.exceptions import EntityNotFound
 from simplestack.hypervisors.base import SimpleStack
 from simplestack.presenters.formatter import Formatter
@@ -34,17 +36,15 @@ class Stack(SimpleStack):
     the code interface for the other hypervisors.
     """
 
-    defaultdata = {
-        "host": "localhost",
-        "state": "STARTED",
-        "cpus": "4",
-        "memory": "1024",
-        "snapshots": {},
-        "tags": [],
-        "paravirtualized": True,
-        "tools_up_to_date": False,
-        "ip": None,
+    default_guest_data = {
         "cd": None,
+        "cpus": "4",
+        "disks": [
+            {"id": 1, "name": "disk1", "size":100}
+        ],
+        "host": "localhost",
+        "ip": None,
+        "memory": "1024",
         "network_interfaces": {
             "00:11:22:33:44:55": {
                 "id": "00:11:22:33:44:55",
@@ -52,10 +52,21 @@ class Stack(SimpleStack):
                 "mac": "00:11:22:33:44:55",
                 "network": "network1"
             }
-        }
+        },
+        "paravirtualized": True,
+        "snapshots": {},
+        "state": "STARTED",
+        "tags": [],
+        "tools_up_to_date": False,
     }
 
     guests = {}
+    hosts = [
+        {"id": 1, "name": "host1", "address": "127.0.0.1"}
+    ]
+    storages = [
+        {"id": 1, "name": "storage1", "type": "NFS", "allocated_space": 100}
+    ]
 
     def __init__(self, poolinfo):
         self.connection = False
@@ -100,7 +111,7 @@ class Stack(SimpleStack):
         self.guests[guest_id]['state'] = "STARTED"
 
     def guest_create(self, guestdata):
-        guest = self.defaultdata.copy()
+        guest = self.default_guest_data.copy()
         guest["id"] = str(uuid.uuid4())
         self.guests[guest["id"]] = guest
         return guest
@@ -210,3 +221,43 @@ class Stack(SimpleStack):
                 self.guests[guest_id]['tags'].remove(tag_name)
 
         return self.guests[guest_id]['tags']
+
+
+    def disk_create(self, guest_id, data):
+        data["id"] = str(randint(1,10000))
+        self.guests[guest_id]["disks"].append(data)
+        return data
+
+    def disk_list(self, guest_id):
+        return self.guests[guest_id]["disks"]
+
+    def disk_info(self, guest_id, disk_id):
+        return [
+            disk
+            for disk in self.guests[guest_id]["disks"]
+            if disk["id"] == disk_id
+        ][0]
+
+    def disk_update(self, guest_id, disk_id, data):
+        disk = self.disk_info(guest_id, disk_id)
+        self.guests[guest_id]["disks"] = [
+            disk
+            for disk in self.guests[guest_id]["disks"]
+            if disk["id"] != disk_id
+        ]
+        data["id"] = disk["id"]
+        self.guests[guest_id]["disks"].append(data)
+        return data
+
+
+    def host_info(self, host_id):
+        return [i for i in self.hosts if i["id"] == host_id][0]
+
+    def host_list(self):
+        return self.hosts
+
+    def storage_info(self, storage_id):
+        return [i for i in self.storages if i["id"] == storage_id][0]
+
+    def storage_list(self):
+        return self.storages
