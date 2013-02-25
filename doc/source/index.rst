@@ -21,7 +21,7 @@ Virtualization support
 Unfortunately not all hypervisors have support to all features the Simplestack
 API provides and when the hypervisor could not deal with this operation or
 Simplestack doesn't have the implementation for the requested operation it will
-raise the (*NotImplementedError*) exception.
+raise the (**NotImplementedError**) exception.
 
 The current implementation state for Simplestack can be seen below.
 
