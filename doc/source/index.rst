@@ -49,5 +49,6 @@ machines on a large infrastructure.
 Using
 =====
 
+* :doc:`Using with libvirt <libvirt>`
 * :doc:`REST API <restapi>`
 * :doc:`REST API Endpoints <restapi_autodoc>`
