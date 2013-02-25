@@ -25,4 +25,4 @@ Where `x-simplestack-hypervisor-token` is a base64 encoded string for the user
 and password: simplestack:simpleP4s5w0rD.
 
 For more information on the available endpoints for hypervisor operations
-please refer to the :doc:`REST API reference <restapi_autodoc>`.
+please refer to the :doc:`REST API endpoints reference <restapi_autodoc>`.
