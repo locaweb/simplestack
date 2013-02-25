@@ -17,6 +17,9 @@
 # @author: Thiago Morello (morellon), Locaweb.
 # @author: Willian Molinari (PotHix), Locaweb.
 
+import os
+
+from simplestack.common.config import config
 from simplestack.exceptions import FeatureNotImplemented
 from simplestack.presenters.formatter import Formatter
 from simplestack.decorators.libvirt import *
@@ -37,6 +40,29 @@ class SimpleStack(object):
 
     def libvirt_connect(self):
         raise FeatureNotImplemented()
+
+    def libvirt_connection_path(self):
+        print config.sections()
+        proto = config.get("libvirt", "transport")
+
+        if proto == "ssh":
+            keyfile = config.get("libvirt", "ssh_keyfile")
+
+            if os.path.exists(keyfile):
+                params = "keyfile=%s" % keyfile
+            else:
+                raise SSHKeyInvalid
+        else:
+            params = "no_verify=1"
+
+        conn_str = "qemu+%(proto)s://%(username)s@%(server)s/system?%(params)s"
+
+        return(conn_str % {
+            "params": params,
+            "proto" : proto,
+            "server": self.poolinfo.get("api_server"),
+            "username": self.poolinfo.get("username"),
+        })
 
     def connect(self):
         raise FeatureNotImplemented()

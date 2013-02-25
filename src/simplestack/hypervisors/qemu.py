@@ -48,13 +48,7 @@ class Stack(SimpleStack):
         self.template_path = os.path.join(os.path.dirname(__file__), '../templates/qemu_xml.tmpl')
 
     def libvirt_connect(self):
-        # FIXME: Use qemu+tls instead of tcp
-        return (
-            libvirt.open("qemu+tcp://%s@%s/system?no_verify=1" % (
-                self.poolinfo.get("username"),
-                self.poolinfo.get("api_server")
-            ))
-        )
+        return libvirt.open(self.libvirt_connection_path())
 
     def connect(self):
         self.libvirt_connection = self.libvirt_connect()
