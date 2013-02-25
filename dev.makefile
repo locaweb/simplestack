@@ -25,7 +25,7 @@ bootstrap: create_venv
 	$(venv_bin)/$(bin_pip) install -r pip-requires
 
 test:
-	@$(venv_bin)/nosetests $(TEST)
+	@$(simplestack_env) $(venv_bin)/nosetests $(TEST)
 
 env:
 	@echo $(simplestack_env)
