@@ -18,7 +18,7 @@
 from simplestack.exceptions import FeatureNotImplemented
 
 
-def libvirt(available):
+def require_libvirt(available):
     """
     Decide if it should raise FeatureNotImplemented for if
     the current method is not using libvirt

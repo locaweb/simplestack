@@ -18,9 +18,11 @@
 # @author: Willian Molinari (PotHix), Locaweb.
 
 import os
+import libvirt
+import xml.etree.ElementTree as et
 
 from simplestack.common.config import config
-from simplestack.exceptions import FeatureNotImplemented
+from simplestack.exceptions import FeatureNotImplemented, EntityNotFound
 from simplestack.presenters.formatter import Formatter
 from simplestack.decorators.libvirt import *
 
@@ -39,10 +41,9 @@ class SimpleStack(object):
         self.format_for = Formatter()
 
     def libvirt_connect(self):
-        raise FeatureNotImplemented()
+        return libvirt.open(self.libvirt_connection_path())
 
     def libvirt_connection_path(self):
-        print config.sections()
         proto = config.get("libvirt", "transport")
 
         if proto == "ssh":
@@ -65,6 +66,10 @@ class SimpleStack(object):
         })
 
     def connect(self):
+        """
+        Each hypervisor should implement this method to return its own connection
+        object or just use the libvirt_connect() here.
+        """
         raise FeatureNotImplemented()
 
     def pool_info(self):
@@ -82,7 +87,7 @@ class SimpleStack(object):
     def storage_info(self, storage_id):
         raise FeatureNotImplemented()
 
-    @libvirt(True)
+    @require_libvirt(True)
     def guest_list(self):
         not_running = [
             self.libvirt_vm_info(self.libvirt_connection.lookupByName(vm_name))
@@ -106,12 +111,12 @@ class SimpleStack(object):
     def guest_export(self, guest_id):
         raise FeatureNotImplemented()
 
-    @libvirt(True)
+    @require_libvirt(True)
     def guest_info(self, guest_id):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         return self.libvirt_vm_info(dom)
 
-    @libvirt(True)
+    @require_libvirt(True)
     def guest_shutdown(self, guest_id, force=False):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         if force:
@@ -119,21 +124,22 @@ class SimpleStack(object):
         else:
             return dom.shutdown()
 
-    @libvirt(True)
+    @require_libvirt(True)
     def guest_start(self, guest_id):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         dom.create()
 
+    @require_libvirt(True)
     def guest_suspend(self, guest_id):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         return dom.suspend()
 
-    @libvirt(True)
+    @require_libvirt(True)
     def guest_resume(self, guest_id):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         return dom.resume()
 
-    @libvirt(True)
+    @require_libvirt(True)
     def guest_reboot(self, guest_id, force=False):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         if force:
@@ -144,6 +150,7 @@ class SimpleStack(object):
     def guest_update(self, guest_id, guestdata):
         raise FeatureNotImplemented()
 
+    @require_libvirt(True)
     def guest_delete(self, guest_id):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         dom.undefine()
@@ -173,14 +180,40 @@ class SimpleStack(object):
     def media_unmount(self, guest_id):
         raise FeatureNotImplemented()
 
+    @require_libvirt(True)
     def network_interface_list(self, guest_id):
-        raise FeatureNotImplemented()
+        dom = self.libvirt_connection.lookupByUUIDString(guest_id)
+        root = et.fromstring(dom.XMLDesc(0))
+
+        interfaces = []
+
+        for iface in root.iter("interface"):
+            iface_param = {}
+            for i in iface.getchildren():
+                key = i.attrib.keys()[0]
+                iface_param[key] = i.attrib[key]
+
+            # Keeping the contract for id values
+            iface_param["id"] = iface_param["address"]
+            interfaces.append(iface_param)
+
+        return interfaces
 
     def network_interface_create(self, guest_id, data):
         raise FeatureNotImplemented()
 
+    @require_libvirt(True)
     def network_interface_info(self, guest_id, network_interface_id):
-        raise FeatureNotImplemented()
+        dom = self.libvirt_connection.lookupByUUIDString(guest_id)
+        root = et.fromstring(dom.XMLDesc(0))
+
+        nw_interfaces = self.network_interface_list(guest_id)
+
+        for iface in nw_interfaces:
+            if iface["id"] == network_interface_id:
+                return iface
+
+        raise EntityNotFound("Network interface", network_interface_id)
 
     def network_interface_update(self, guest_id, network_interface_id, data):
         raise FeatureNotImplemented()
@@ -188,7 +221,7 @@ class SimpleStack(object):
     def network_interface_delete(self, guest_id, network_interface_id):
         raise FeatureNotImplemented()
 
-    @libvirt(True)
+    @require_libvirt(True)
     def snapshot_list(self, guest_id):
         dom = self.libvirt_connection.lookupByID(guest_id)
         snaps = [
@@ -200,7 +233,7 @@ class SimpleStack(object):
     def snapshot_create(self, guestname, name=None):
         raise FeatureNotImplemented()
 
-    @libvirt(True)
+    @require_libvirt(True)
     def snapshot_info(self, guestname, snapshot_name):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         snap = self.libvirt_get_snapshot(dom, snapshot_id)
@@ -209,13 +242,13 @@ class SimpleStack(object):
         else:
             raise EntityNotFound("Snapshot", snapshot_id)
 
-    @libvirt(True)
+    @require_libvirt(True)
     def snapshot_delete(self, guest_id, snapshot_id):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         snap = self.libvirt_get_snapshot(dom, snapshot_id)
         snap.delete(0)
 
-    @libvirt(True)
+    @require_libvirt(True)
     def snapshot_revert(self, guest_id, snapshot_id):
         dom = self.libvirt_connection.lookupByUUIDString(guest_id)
         snap = self.libvirt_get_snapshot(dom, snapshot_id)

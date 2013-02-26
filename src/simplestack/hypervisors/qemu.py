@@ -47,9 +47,6 @@ class Stack(SimpleStack):
         self.connect()
         self.template_path = os.path.join(os.path.dirname(__file__), '../templates/qemu_xml.tmpl')
 
-    def libvirt_connect(self):
-        return libvirt.open(self.libvirt_connection_path())
-
     def connect(self):
         self.libvirt_connection = self.libvirt_connect()
         self.connection = self.libvirt_connection
