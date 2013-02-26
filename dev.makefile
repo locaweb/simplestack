@@ -5,6 +5,7 @@ export simplestack_env
 
 bin_pip         = pip
 bin_python      = python
+bin_console     = python
 venv_dir        = .venv
 venv_bin        = $(venv_dir)/bin
 
@@ -32,3 +33,6 @@ env:
 
 server:
 	$(simplestack_env) bin/simplestack -a foreground -p var/run/simplestack/ -l log/
+
+console:
+	PYTHONPATH=src $(simplestack_env) $(bin_console)
