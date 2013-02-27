@@ -90,6 +90,7 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
     # def test_guest_reboot(self):
     # def test_network_interface_info(self):
     # def test_network_interface_list(self):
+    # def test_pool_info(self):
 
     def test_disk_create(self):
         raise SkipTest
@@ -135,9 +136,6 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
         raise SkipTest
 
     def test_snapshot_create(self):
-        raise SkipTest
-
-    def test_pool_info(self):
         raise SkipTest
 
     def test_network_interface_update(self):

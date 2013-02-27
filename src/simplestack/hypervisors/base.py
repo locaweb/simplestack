@@ -72,8 +72,13 @@ class SimpleStack(object):
         """
         raise FeatureNotImplemented()
 
+    @require_libvirt(True)
     def pool_info(self):
-        raise FeatureNotImplemented()
+        free = self.libvirt_connection.getFreeMemory()/1024/1024
+        total = self.libvirt_connection.getInfo()[1]
+        address = self.poolinfo.get("api_server").split(":")[0]
+
+        return self.format_for.pool(total - free, free, address)
 
     def host_list(self):
         raise FeatureNotImplemented()
