@@ -30,6 +30,9 @@ class Stack(SimpleStack):
     """
     This module provides Qemu implementation through libvirt
     http://libvirt.org/guide/html-single/
+
+    Most part of this module uses the libvirt code available through
+    inheritance via SimpleStack class.
     """
 
     state_translation = {

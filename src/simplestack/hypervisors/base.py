@@ -80,17 +80,47 @@ class SimpleStack(object):
 
         return self.format_for.pool(total - free, free, address)
 
+    @require_libvirt(True)
     def host_list(self):
-        raise FeatureNotImplemented()
+        hosts = []
+        hosts.append(
+            {"id": "libvirt:" + self.poolinfo.get("api_server").split(":")[0]}
+        )
+        return hosts
 
+    @require_libvirt(True)
     def host_info(self, host_id):
-        raise FeatureNotImplemented()
+        return(
+            self.format_for.host(
+                "libvirt:" + self.poolinfo.get("api_server").split(":")[0],
+                self.poolinfo.get("api_server").split(":")[0],
+                self.poolinfo.get("api_server").split(":")[0],
+            )
+        )
 
+    @require_libvirt(True)
     def storage_list(self):
-        raise FeatureNotImplemented()
+        storages = []
 
+        for storage in self.libvirt_connection.listAllStoragePools(0):
+            storages.append({"id": storage.UUIDString()})
+
+        return storages
+
+    @require_libvirt(True)
     def storage_info(self, storage_id):
-        raise FeatureNotImplemented()
+        s = self.libvirt_connection.storagePoolLookupByUUIDString(storage_id)
+        info = s.info()
+        return(
+            self.format_for.storage(
+                storage_id,
+                s.name,
+                "Not defined for Libvirt",
+                int(info[2]),
+                int(info[2]),
+                int(info[1]),
+            )
+        )
 
     @require_libvirt(True)
     def guest_list(self):
