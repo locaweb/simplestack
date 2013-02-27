@@ -234,8 +234,37 @@ class SimpleStack(object):
 
         return interfaces
 
+    @require_libvirt(True)
     def network_interface_create(self, guest_id, data):
-        raise FeatureNotImplemented()
+        dom = self.libvirt_connection.lookupByUUIDString(guest_id)
+        root = et.fromstring(dom.XMLDesc(0))
+
+        interface = et.Element('interface')
+        interface.set("type", "network")
+
+        model = et.SubElement(interface, 'model')
+        model.set("type", "virtio")
+
+        if data.get("mac"):
+            mac = et.SubElement(interface, 'mac')
+            mac.set("address", str(data["mac"]))
+
+        if data.get("network"):
+            mac = et.SubElement(interface, 'source')
+            mac.set("network", str(data["network"]))
+
+        if data.get("name"):
+            mac = et.SubElement(interface, 'alias')
+            mac.set("name", str(data["name"]))
+
+        # FIXME: try it out for interface updating
+        # dom.updateDeviceFlags(et.tostring(interface))
+
+        # Try this one instead:
+        dom.attachDeviceFlags(et.tostring(interface))
+
+
+        return {"id": data["mac"]}
 
     @require_libvirt(True)
     def network_interface_info(self, guest_id, network_interface_id):
@@ -251,10 +280,34 @@ class SimpleStack(object):
         raise EntityNotFound("Network interface", network_interface_id)
 
     def network_interface_update(self, guest_id, network_interface_id, data):
-        raise FeatureNotImplemented()
+        dom = self.libvirt_connection.lookupByUUIDString(guest_id)
+        root = et.fromstring(dom.XMLDesc(0))
+
+        # For each children of each interface, set the attributes to data
+        # if the mac is the same of network_interface_id
+        for iface in root.iter("interface"):
+            for i in iface.getchildren():
+                if i.attrib.get("mac") == network_interface_id:
+                    for k,v in data:
+                        data.set(k,v)
+
+                    # FIXME: try it out for interface updating
+                    dom.updateDeviceFlags(et.tostring(iface), 0)
+
 
     def network_interface_delete(self, guest_id, network_interface_id):
-        raise FeatureNotImplemented()
+        dom = self.libvirt_connection.lookupByUUIDString(guest_id)
+        root = et.fromstring(dom.XMLDesc(0))
+
+        iface_id = "address"  # defining the simplestack's libvirt id
+
+        for iface in root.iter("interface"):
+            for i in iface.getchildren():
+                if i.attrib.get(iface_id) == network_interface_id:
+                    iface.remove()
+                    return True
+
+        raise EntityNotFound("Network interface", network_interface_id)
 
     @require_libvirt(True)
     def snapshot_list(self, guest_id):
