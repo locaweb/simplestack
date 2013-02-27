@@ -404,6 +404,10 @@ class Stack(SimpleStack):
         return [self._network_interface_info(n) for n in vif_refs]
 
     def network_interface_create(self, guest_id, data):
+        """
+        Data should contain at least a network key:
+        {"network": "THE NETWORK NAME"}
+        """
         vm_ref = self._vm_ref(guest_id)
 
         devices = []

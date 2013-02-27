@@ -64,11 +64,12 @@ def custom500(error):
 @get('/:hypervisor/:host')
 def pool_info(hypervisor, host):
     """
+    Get pool information
+
     ::
 
       GET /:hypervisor/:host
 
-    Get pool information
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -79,11 +80,12 @@ def pool_info(hypervisor, host):
 @get('/:hypervisor/:host/hosts')
 def host_list(hypervisor, host):
     """
+    Get hosts for a given pool
+
     ::
 
       GET /:hypervisor/:host/hosts
 
-    Get hosts for a given pool
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -93,11 +95,12 @@ def host_list(hypervisor, host):
 @get('/:hypervisor/:host/hosts/:host_id')
 def host_info(hypervisor, host, host_id):
     """
+    Get host info
+
     ::
 
       GET /:hypervisor/:host/hosts/:host_id
 
-    Get host info
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -107,11 +110,12 @@ def host_info(hypervisor, host, host_id):
 @get('/:hypervisor/:host/storages')
 def storage_list(hypervisor, host):
     """
+    Get storages for a given pool
+
     ::
 
       GET /:hypervisor/:host/storages
 
-    Get storages for a given pool
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -121,11 +125,12 @@ def storage_list(hypervisor, host):
 @get('/:hypervisor/:host/storages/:storage_id')
 def storage_info(hypervisor, host, storage_id):
     """
+    Get storage info
+
     ::
 
       GET /:hypervisor/:host/storages/:storage_id
 
-    Get storage info
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -135,11 +140,12 @@ def storage_info(hypervisor, host, storage_id):
 @post('/:hypervisor/:host/storages/:storage_id/guests')
 def storage_guest_import(hypervisor, host, storage_id):
     """
+    Import a new guest
+
     ::
 
       POST /:hypervisor/:host/storages/:storage_id/guests
 
-    Import a new guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -156,11 +162,12 @@ def storage_guest_import(hypervisor, host, storage_id):
 @get('/:hypervisor/:host/guests')
 def guest_list(hypervisor, host):
     """
+    Get guests for a given pool
+
     ::
 
       GET /:hypervisor/:host/guests
 
-    Get guests for a given pool
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -170,11 +177,12 @@ def guest_list(hypervisor, host):
 @post('/:hypervisor/:host/guests')
 def guest_create(hypervisor, host):
     """
+    Create a new guest
+
     ::
 
       POST /:hypervisor/:host/guests
 
-    Create a new guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -191,11 +199,12 @@ def guest_create(hypervisor, host):
 @post('/:hypervisor/:host/guests')
 def guest_import(hypervisor, host):
     """
+    Import a new guest
+
     ::
 
       POST /:hypervisor/:host/guests
 
-    Import a new guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -211,11 +220,12 @@ def guest_import(hypervisor, host):
 @get('/:hypervisor/:host/guests/:guest_id')
 def guest_info(hypervisor, host, guest_id):
     """
+    Get guest informations
+
     ::
 
       GET /:hypervisor/:host/guests/:guest_id
 
-    Get guest informations
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -225,11 +235,12 @@ def guest_info(hypervisor, host, guest_id):
 @put('/:hypervisor/:host/guests/:guest_id')
 def guest_update(hypervisor, host, guest_id):
     """
+    Update guest informations
+
     ::
 
       PUT /:hypervisor/:host
 
-    Update guest informations
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -243,11 +254,12 @@ def guest_update(hypervisor, host, guest_id):
 @post('/:hypervisor/:host/guests/:guest_id/clone')
 def guest_clone(hypervisor, host, guest_id):
     """
+    Clone a guest
+
     ::
 
       POST /:hypervisor/:host/guests/:guest_id/clone
 
-    Clone a guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -264,11 +276,12 @@ def guest_clone(hypervisor, host, guest_id):
 @get('/:hypervisor/:host/guests/:guest_id/export')
 def guest_export(hypervisor, host, guest_id):
     """
+    Export guest file
+
     ::
 
       GET /:hypervisor/:host/guests/:guest_id/export
 
-    Export guest file
     """
     response.content_type = "application/octet-stream"
     manager = create_manager(hypervisor, host)
@@ -282,11 +295,12 @@ def guest_export(hypervisor, host, guest_id):
 @delete('/:hypervisor/:host/guests/:guest_id')
 def guest_delete(hypervisor, host, guest_id):
     """
+    Deletes guest
+
     ::
 
       DELETE /:hypervisor/:host/guests/:guest_id
 
-    Deletes guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -296,11 +310,12 @@ def guest_delete(hypervisor, host, guest_id):
 @get('/:hypervisor/:host/guests/:guest_id/disks')
 def disk_list(hypervisor, host, guest_id):
     """
+    Get all disks for a given guest
+
     ::
 
       GET /:hypervisor/:host/guests/:guest_id/disks
 
-    Get all disks for a given guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -310,11 +325,12 @@ def disk_list(hypervisor, host, guest_id):
 @post('/:hypervisor/:host/guests/:guest_id/disks')
 def disk_create(hypervisor, host, guest_id):
     """
+    Create a disk for a given guest
+
     ::
 
       POST /:hypervisor/:host/guests/:guest_id/disks
 
-    Create a disk for a given guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -333,11 +349,12 @@ def disk_create(hypervisor, host, guest_id):
 @get('/:hypervisor/:host/guests/:guest_id/disks/:disk_id')
 def disk_info(hypervisor, host, guest_id, disk_id):
     """
+    Get a disk in a given guest
+
     ::
 
       GET /:hypervisor/:host/guests/:guest_id/disks/:disk_id
 
-    Get a disk in a given guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -348,11 +365,12 @@ def disk_info(hypervisor, host, guest_id, disk_id):
 @put('/:hypervisor/:host/guests/:guest_id/disks/:disk_id')
 def disk_update(hypervisor, host, guest_id, disk_id):
     """
+    Update a disk in a given guest
+
     ::
 
       PUT /:hypervisor/:host/guests/:guest_id/disks/:disk_id
 
-    Update a disk in a given guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -367,11 +385,12 @@ def disk_update(hypervisor, host, guest_id, disk_id):
 @delete('/:hypervisor/:host/guests/:guest_id/disks/:disk_id')
 def disk_delete(hypervisor, host, guest_id, disk_id):
     """
+    Delete a disk from a given guest
+
     ::
 
       DELETE /:hypervisor/:host/guests/:guest_id/disks/:disk_id
 
-    Delete a disk from a given guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -381,13 +400,12 @@ def disk_delete(hypervisor, host, guest_id, disk_id):
 @put('/:hypervisor/:host/guests/:guest_id/media_device')
 def media_mount(hypervisor, host, guest_id):
     """
+    Mounts an ISO to a CD/DVD drive
+
     ::
 
       PUT /:hypervisor/:host/guests/:guest_id/media_device
 
-    Mounts an ISO to a CD/DVD drive
-
-    Deletes guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -401,13 +419,12 @@ def media_mount(hypervisor, host, guest_id):
 @get('/:hypervisor/:host/guests/:guest_id/media_device')
 def media_info(hypervisor, host, guest_id):
     """
+    Gets the mounted media device name
+
     ::
 
       GET /:hypervisor/:host/guests/:guest_id/media_device
 
-    Gets the mounted media device name
-
-    Deletes guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -417,11 +434,12 @@ def media_info(hypervisor, host, guest_id):
 @get('/:hypervisor/:host/guests/:guest_id/network_interfaces')
 def network_interface_list(hypervisor, host, guest_id):
     """
+    Get all network interfaces for a given guest
+
     ::
 
       GET /:hypervisor/:host/guests/:guest_id/network_interfaces
 
-    Get all network interfaces for a given guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -431,11 +449,18 @@ def network_interface_list(hypervisor, host, guest_id):
 @post('/:hypervisor/:host/guests/:guest_id/network_interfaces')
 def network_interface_create(hypervisor, host, guest_id):
     """
+    Create a network interface for a given guest
+
     ::
 
       POST /:hypervisor/:host/guests/:guest_id/network_interfaces
 
-    Create a network interface for a given guest
+
+    The body should contain a JSON object. The required keys should vary for
+    each hypervisor.
+
+    Xen example:
+    {"network": "THE NETWORK NAME"}
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -454,11 +479,12 @@ def network_interface_create(hypervisor, host, guest_id):
 @get('/:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id')
 def network_interface_info(hypervisor, host, guest_id, interface_id):
     """
+    Get a network interface in a given guest
+
     ::
 
       GET /:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id
 
-    Get a network interface in a given guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -469,11 +495,12 @@ def network_interface_info(hypervisor, host, guest_id, interface_id):
 @put('/:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id')
 def network_interface_update(hypervisor, host, guest_id, interface_id):
     """
+    Update a network interface in a given guest
+
     ::
 
       PUT /:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id
 
-    Update a network interface in a given guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -488,11 +515,12 @@ def network_interface_update(hypervisor, host, guest_id, interface_id):
 @delete('/:hypervisor/:host/guests/:guest_id/network_interfaces/:interface_id')
 def network_interface_delete(hypervisor, host, guest_id, interface_id):
     """
+    Delete a network interface from a given guest
+
     ::
 
       DELETE /:hypervisor/:host/guests/:guest_id/network_interfaces/:if_id
 
-    Delete a network interface from a given guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -502,11 +530,12 @@ def network_interface_delete(hypervisor, host, guest_id, interface_id):
 @get('/:hypervisor/:host/guests/:guest_id/tags')
 def tag_list(hypervisor, host, guest_id):
     """
+    Get all tags for a given guest
+
     ::
 
       GET /:hypervisor/:host/guests/:guest_id/tags
 
-    Get all tags for a given guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -516,11 +545,12 @@ def tag_list(hypervisor, host, guest_id):
 @post('/:hypervisor/:host/guests/:guest_id/tags')
 def tag_create(hypervisor, host, guest_id):
     """
+    Create a new tag for a given guest
+
     ::
 
       POST /:hypervisor/:host/guests/:guest_id/tags
 
-    Create a new tag for a given guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -540,11 +570,12 @@ def tag_create(hypervisor, host, guest_id):
 @delete('/:hypervisor/:host/guests/:guest_id/tags/:tag_name')
 def tag_delete(hypervisor, host, guest_id, tag_name):
     """
+    Delete a given tag for a given guest
+
     ::
 
       DELETE /:hypervisor/:host/guests/:guest_id/tags
 
-    Delete a given tag for a given guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -554,11 +585,12 @@ def tag_delete(hypervisor, host, guest_id, tag_name):
 @get('/:hypervisor/:host/guests/:guest_id/snapshots')
 def snapshot_list(hypervisor, host, guest_id):
     """
+    Get all snapshots for a given guest
+
     ::
 
       GET /:hypervisor/:host/guests/:guest_id/snapshots
 
-    Get all snapshots for a given guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -568,11 +600,12 @@ def snapshot_list(hypervisor, host, guest_id):
 @post('/:hypervisor/:host/guests/:guest_id/snapshots')
 def snapshot_create(hypervisor, host, guest_id):
     """
+    Create a snapshot for a given guest
+
     ::
 
       POST /:hypervisor/:host/guests/:guest_id/snapshots
 
-    Create a snapshot for a given guest
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -591,11 +624,12 @@ def snapshot_create(hypervisor, host, guest_id):
 @get('/:hypervisor/:host/guests/:guest_id/snapshots/:snapshot_id')
 def snapshot_info(hypervisor, host, guest_id, snapshot_id):
     """
+    Get snapshot informations for a given guest_id and snapshot_id
+
     ::
 
       GET /:hypervisor/:host/guests/:guest_id/snapshots/:snapshot_id
 
-    Get snapshot informations for a given guest_id and snapshot_id
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -605,11 +639,12 @@ def snapshot_info(hypervisor, host, guest_id, snapshot_id):
 @put('/:hypervisor/:host/guests/:guest_id/snapshots/:snapshot_id/revert')
 def snapshot_revert(hypervisor, host, guest_id, snapshot_id):
     """
+    Remove a snapshot for a given guest_id and snapshot_id
+
     ::
 
       PUT /:hypervisor/:host/guests/:guest_id/snapshots/:snapshot_id/revert
 
-    Remove a snapshot for a given guest_id and snapshot_id
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -619,11 +654,12 @@ def snapshot_revert(hypervisor, host, guest_id, snapshot_id):
 @delete('/:hypervisor/:host/guests/:guest_id/snapshots/:snapshot_id')
 def snapshot_delete(hypervisor, host, guest_id, snapshot_id):
     """
+    Remove a snapshot for a given guest_id and snapshot_id
+
     ::
 
       DELETE /:hypervisor/:host/guests/:guest_id/snapshots/:snapshot_id
 
-    Remove a snapshot for a given guest_id and snapshot_id
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -633,11 +669,12 @@ def snapshot_delete(hypervisor, host, guest_id, snapshot_id):
 @put('/:hypervisor/:host/guests/:guest_id/reboot')
 def reboot_guest(hypervisor, host, guest_id):
     """
+    Reboot a guest based on the given guest_id
+
     ::
 
       PUT /:hypervisor/:host/guests/:guest_id/reboot
 
-    Reboot a guest based on the given guest_id
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
@@ -657,11 +694,12 @@ def reboot_guest(hypervisor, host, guest_id):
 @put('/:hypervisor/:host/guests/:guest_id/power')
 def power_guest(hypervisor, host, guest_id):
     """
+    Turn a guest on/off based on a given guest_id
+
     ::
 
       PUT /:hypervisor/:host/guests/:guest_id/power
 
-    Turn a guest on/off based on a given guest_id
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
