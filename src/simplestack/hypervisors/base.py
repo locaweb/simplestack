@@ -257,14 +257,11 @@ class SimpleStack(object):
             mac = et.SubElement(interface, 'alias')
             mac.set("name", str(data["name"]))
 
-        # FIXME: try it out for interface updating
-        # dom.updateDeviceFlags(et.tostring(interface))
+        dom.attachDeviceFlags(et.tostring(interface), 2)
 
-        # Try this one instead:
-        dom.attachDeviceFlags(et.tostring(interface))
+        nw_interfaces = self.network_interface_list(guest_id)
 
-
-        return {"id": data["mac"]}
+        return {"id": nw_interfaces[-1]["id"]}
 
     @require_libvirt(True)
     def network_interface_info(self, guest_id, network_interface_id):
@@ -291,8 +288,7 @@ class SimpleStack(object):
                     for k,v in data:
                         data.set(k,v)
 
-                    # FIXME: try it out for interface updating
-                    dom.updateDeviceFlags(et.tostring(iface), 0)
+                    dom.updateDeviceFlags(et.tostring(iface), 2)
 
 
     def network_interface_delete(self, guest_id, network_interface_id):
@@ -304,8 +300,8 @@ class SimpleStack(object):
         for iface in root.iter("interface"):
             for i in iface.getchildren():
                 if i.attrib.get(iface_id) == network_interface_id:
-                    iface.remove()
-                    return True
+                    dom.detachDeviceFlags(et.tostring(iface), 2)
+                    return {"id": network_interface_id}
 
         raise EntityNotFound("Network interface", network_interface_id)
 

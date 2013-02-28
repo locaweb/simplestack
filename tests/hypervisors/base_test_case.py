@@ -165,7 +165,7 @@ class HypervisorBaseTest(object):
         # TODO: change network
         self.stack.guest_shutdown(self._get_vm_id(), True)
 
-        p = {"network": self._network_name(), "mac": random.random()}
+        p = {"network": self._network_name()}
         created_nw = self.stack.network_interface_create(self._get_vm_id(), p)
         nw_interface = self.stack.network_interface_info(
             self._get_vm_id(),
@@ -196,7 +196,7 @@ class HypervisorBaseTest(object):
     def test_network_interface_delete(self):
         self.stack.guest_shutdown(self._get_vm_id(), True)
 
-        p = {"network": self._network_name(), "mac": random.random()}
+        p = {"network": self._network_name()}
         created_nw = self.stack.network_interface_create(self._get_vm_id(), p)
         self.stack.network_interface_delete(
             self._get_vm_id(),
