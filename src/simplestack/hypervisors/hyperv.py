@@ -45,23 +45,5 @@ class Stack(SimpleStack):
         )
 
     def connect(self):
-        self.libvirt_connect()
-        self.connection = self.libvirt
-
-    def host_info(self):
-        return self.connection.getInfo()
-
-    def guest_list(self):
-        return [
-            self.connection.lookupByID(id).name()
-            for id in self.connection.listDomainsID()
-        ]
-
-    def guest_info(self, guestname):
-        vm = self.connection.lookupByName(guestname)
-        info = {
-            'name': vm.name(),
-            'info': vm.info(),
-            'state': vm.state(0),
-        }
-        return info
+        self.libvirt_connection = self.libvirt_connect()
+        self.connection = self.libvirt_connection
