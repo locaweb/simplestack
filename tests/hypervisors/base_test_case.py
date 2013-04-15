@@ -47,7 +47,7 @@ class HypervisorBaseTest(object):
         storages = self.stack.storage_list()
         storage = self.stack.storage_info(storages[0]["id"])
         self.assertTrue(storage["type"])
-        self.assertTrue(storage["allocated_space"])
+        self.assertTrue(type(storage["allocated_space"]), int)
 
     def test_guest_create(self):
         """

@@ -114,7 +114,7 @@ class SimpleStack(object):
         return(
             self.format_for.storage(
                 storage_id,
-                s.name,
+                s.name(),
                 "Not defined for Libvirt",
                 int(info[2]),
                 int(info[2]),
