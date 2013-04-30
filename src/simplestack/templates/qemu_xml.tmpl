@@ -1,7 +1,7 @@
 <domain type='kvm'>
-    <name>$name</name>
-    <memory unit='KiB'>$memory</memory>
-    <currentMemory unit='KiB'>$memory</currentMemory>
+    <name>{{ name }}</name>
+    <memory unit='KiB'>{{ memory }}</memory>
+    <currentMemory unit='KiB'>{{ memory }}</currentMemory>
     <vcpu placement='static'>1</vcpu>
     <os>
         <type arch='x86_64' machine='pc-1.1'>hvm</type>
@@ -16,7 +16,7 @@
     <devices>
         <disk type='file' device='disk'>
             <driver name='qemu' type='qcow2' cache='none' io='native'/>
-            <source file='$image'/>
+            <source file='{{ image }}'/>
             <target dev='vda' bus='virtio'/>
         </disk>
         <disk type='block' device='cdrom'>
@@ -31,8 +31,11 @@
         <controller type='ide' index='0'>
             <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
         </controller>
-        <interface type='network'>
-            <source network='$network_name'/>
+        <interface type='{{ network["network"] }}'>
+            <source {{ network["network"] }}='{{ network["name"] }}' />
+            {% if network["type"] == "openvswitch" %}
+                <virtualport type='openvswitch' />
+            {% endif %}
             <model type='virtio'/>
             <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
         </interface>

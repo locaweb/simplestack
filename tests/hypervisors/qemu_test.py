@@ -41,7 +41,7 @@ class QemuTest(unittest.TestCase, HypervisorBaseTest):
             'name':  'SimplestackTestVM:%f' % random.random(),
             'memory': 524288,
             'image': '/storage/images/simplestack_test_image.img',
-            'network_name': 'default',
+            'network': {'name': 'default', 'network': 'network', 'type': 'network'},
         })
         clazz.stack.guest_start(clazz.vm.UUIDString())
 

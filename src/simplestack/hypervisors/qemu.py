@@ -24,7 +24,8 @@ from simplestack.exceptions import InvalidArguments
 from simplestack.hypervisors.base import SimpleStack
 from simplestack.presenters.formatter import Formatter
 
-from Cheetah.Template import Template
+from jinja2 import Template, Environment, PackageLoader
+
 
 class Stack(SimpleStack):
     """
@@ -48,7 +49,6 @@ class Stack(SimpleStack):
         self.format_for = Formatter()
 
         self.connect()
-        self.template_path = os.path.join(os.path.dirname(__file__), '../templates/qemu_xml.tmpl')
 
     def connect(self):
         self.libvirt_connection = self.libvirt_connect()
@@ -64,7 +64,10 @@ class Stack(SimpleStack):
         """
 
         try:
-            xml = str(Template(file = self.template_path, searchList = [guestdata,]))
+            env = Environment(loader=PackageLoader("simplestack", "."))
+            template = env.get_template("templates/qemu_xml.tmpl")
+            xml = template.render(guestdata)
+
             return self.libvirt_connection.defineXML(xml)
         except:
             raise InvalidArguments()
