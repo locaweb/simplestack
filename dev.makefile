@@ -1,5 +1,5 @@
 simplestack_cfg = etc/simplestack.cfg
-simplestack_env = SIMPLESTACK_CFG=$(simplestack_cfg)
+simplestack_env = PYTHONPATH=src SIMPLESTACK_CFG=$(simplestack_cfg)
 
 export simplestack_env
 
@@ -35,4 +35,4 @@ server:
 	$(simplestack_env) bin/simplestack -a foreground -p var/run/simplestack/ -l log/
 
 console:
-	PYTHONPATH=src $(simplestack_env) $(bin_console)
+	$(simplestack_env) $(bin_console)
