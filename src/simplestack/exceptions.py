@@ -77,3 +77,21 @@ class InvalidArguments(SimpleStackError):
         simplestack_error.__init__(
             417, "Invalid arguments"
         )
+
+
+class SSHKeyNotFound(SimpleStackError):
+
+    def __init__(self):
+        simplestack_error = super(SSHKeyInvalid, self)
+        simplestack_error.__init__(
+            417, "SSH key not found"
+        )
+
+
+class CertificateNotFound(SimpleStackError):
+
+    def __init__(self):
+        simplestack_error = super(CertificateNotFound, self)
+        simplestack_error.__init__(
+            417, "TLS certificate not found"
+        )

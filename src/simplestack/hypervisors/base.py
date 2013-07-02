@@ -22,9 +22,11 @@ import libvirt
 import xml.etree.ElementTree as et
 
 from simplestack.common.config import config
-from simplestack.exceptions import FeatureNotImplemented, EntityNotFound
 from simplestack.presenters.formatter import Formatter
 from simplestack.decorators.libvirt import *
+
+from simplestack.exceptions import FeatureNotImplemented, EntityNotFound
+from simplestack.exceptions import SSHKeyNotFound, CertificateNotFound
 
 
 class SimpleStack(object):
@@ -52,7 +54,15 @@ class SimpleStack(object):
             if os.path.exists(keyfile):
                 params = "keyfile=%s" % keyfile
             else:
-                raise SSHKeyInvalid
+                raise SSHKeyNotFound
+
+        elif proto == "tls":
+            cert = config.get("libvirt", "pki_path")
+
+            if os.path.exists(keyfile):
+                params = "pki_path=%s" % cert
+            else:
+                raise CertificateNotFound
         else:
             params = "no_verify=1"
 
