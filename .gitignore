@@ -3,4 +3,3 @@ doc/build
 test.cfg
 .noseids
 log
-etc/libvirt/cert/*.pem

@@ -1,0 +1,11 @@
+If you're root, You need these three files:
+
+/etc/pki/CA/cacert.pem
+/etc/pki/libvirt/private/clientkey.pem
+/etc/pki/libvirt/clientcert.pem
+
+If you're a normal user you'll need these:
+
+$HOME/.pki/libvirt/cacert.pem
+$HOME/.pki/libvirt/clientkey.pem
+$HOME/.pki/libvirt/clientcert.pem
