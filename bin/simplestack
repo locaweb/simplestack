@@ -27,10 +27,10 @@ if __name__ == '__main__':
 
     if action == 'start':
         daemon.start()
-        main()
+        main(action)
     elif action == 'status':
         daemon.status()
     elif action == 'stop':
         daemon.stop()
     elif action == 'foreground':
-        main()
+        main(action)

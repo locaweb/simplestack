@@ -745,9 +745,11 @@ def create_manager(hypervisor, host):
     })
 
 
-def main():
-    os.setgid(grp.getgrnam('nogroup')[2])
-    os.setuid(pwd.getpwnam(config.get("server", "user"))[2])
+def main(action):
+    if not action == "foreground":
+        os.setgid(grp.getgrnam('nogroup')[2])
+        os.setuid(pwd.getpwnam(config.get("server", "user"))[2])
+
     debug(config.getboolean("server", "debug"))
     port = config.getint("server", "port")
     bind_addr = config.get("server", "bind_addr")
