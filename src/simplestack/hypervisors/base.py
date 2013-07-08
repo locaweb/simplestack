@@ -55,14 +55,6 @@ class SimpleStack(object):
                 params = "keyfile=%s" % keyfile
             else:
                 raise SSHKeyNotFound
-
-        elif proto == "tls":
-            cert = config.get("libvirt", "pki_path")
-
-            if os.path.exists(keyfile):
-                params = "pki_path=%s" % cert
-            else:
-                raise CertificateNotFound
         else:
             params = "no_verify=1"
 
