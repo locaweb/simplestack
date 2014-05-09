@@ -259,11 +259,7 @@ class Stack(SimpleStack):
             if err.errno == errno.ECONNRESET:
                 LOG.warning("error=CONNRESET action=import message='BUG?'")
             else:
-                task_rec = self.connection.xenapi.task.get_record(task_ref)
                 raise
-        else:
-            task_rec = self.connection.xenapi.task.get_record(task_ref)
-            raise
 
         task_rec = self.connection.xenapi.task.get_record(task_ref)
         vm_ref = re.sub(r'<.*?>', "", task_rec["result"])
