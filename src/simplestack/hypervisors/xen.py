@@ -81,7 +81,8 @@ class Stack(SimpleStack):
             self.format_for.pool(
                 used_memory / (1024 * 1024),
                 total_memory / (1024 * 1024),
-                master_rec["address"]
+                master_rec["address"],
+                { 'xen_version': master_rec.get('software_version', {}).get('product_version') }
             )
         )
 

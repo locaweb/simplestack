@@ -78,9 +78,10 @@ class Formatter(object):
             'network': name_label
         }
 
-    def pool(self, used_memory, total_memory, master):
+    def pool(self, used_memory, total_memory, master, software_info=None):
         return {
             "used_memory": used_memory,
             "total_memory": total_memory,
-            "master": master
+            "master": master,
+            "software_info": software_info
         }
