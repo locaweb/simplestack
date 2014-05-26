@@ -82,7 +82,7 @@ class Stack(SimpleStack):
                 used_memory / (1024 * 1024),
                 total_memory / (1024 * 1024),
                 master_rec["address"],
-                { 'xen_version': master_rec['software_version']['product_version'] }
+                { 'xen_version': master_rec.get('software_version', {}).get('product_version') }
             )
         )
 
