@@ -160,9 +160,12 @@ class Stack(SimpleStack):
         if "name" in guestdata:
             self.connection.xenapi.VM.set_name_label(vm_ref, guestdata["name"])
         if "memory" in guestdata:
-            memory = str(int(guestdata["memory"]) * 1024 * 1024)
+            memory = str(int(guestdata["memory"]["base"]) * 1024 * 1024)
+            memory_static_min = str(int(guestdata["memory"]["static_min"]) * 1024 * 1024)
+            memory_static_max = str(int(guestdata["memory"]["static_max"]) * 1024 * 1024)
+
             self.connection.xenapi.VM.set_memory_limits(
-                vm_ref, memory, memory, memory, memory
+                vm_ref, memory_static_min, memory_static_max, memory, memory
             )
         if "cpus" in guestdata:
             max_cpus = self.connection.xenapi.VM.get_VCPUs_max(vm_ref)
