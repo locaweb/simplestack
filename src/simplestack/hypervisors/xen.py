@@ -169,15 +169,17 @@ class Stack(SimpleStack):
             self.connection.xenapi.VM.set_memory_limits(
                 vm_ref, memory_static_min, memory_static_max, memory_target, memory_target
             )
-        if "cpus" in guestdata:
-            max_cpus = self.connection.xenapi.VM.get_VCPUs_max(vm_ref)
-            cpus = str(guestdata["cpus"])
+        if "vcpus" in guestdata:
+            vcpus = guestdata["vcpus"]
+            vcpus_at_startup = str(vcpus["vcpus_at_startup"])
+            vcpus_max = str(vcpus["vcpus_max"])
+
             if int(cpus) > int(max_cpus):
-                self.connection.xenapi.VM.set_VCPUs_max(vm_ref, cpus)
-                self.connection.xenapi.VM.set_VCPUs_at_startup(vm_ref, cpus)
+                self.connection.xenapi.VM.set_VCPUs_max(vm_ref, vcpus_max)
+                self.connection.xenapi.VM.set_VCPUs_at_startup(vm_ref, vcpus_at_startup)
             else:
-                self.connection.xenapi.VM.set_VCPUs_at_startup(vm_ref, cpus)
-                self.connection.xenapi.VM.set_VCPUs_max(vm_ref, cpus)
+                self.connection.xenapi.VM.set_VCPUs_at_startup(vm_ref, vcpus_at_startup)
+                self.connection.xenapi.VM.set_VCPUs_max(vm_ref, vcpus_max)
         if "vcpu_settings" in guestdata:
             parameters = self.connection.xenapi.VM.get_VCPUs_params(vm_ref)
             parameters.update(guestdata["vcpu_settings"])
