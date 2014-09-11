@@ -162,9 +162,9 @@ class Stack(SimpleStack):
         if "memory_settings" in guestdata:
             memory_settings = guestdata["memory_settings"]
 
-            memory = str(int(memory_settings["memory"]) * 1024 * 1024)
-            memory_static_min = str(int(memory_settings["memory_static_min"]) * 1024 * 1024)
-            memory_static_max = str(int(memory_settings["memory_static_max"]) * 1024 * 1024)
+            memory = str(int(memory_settings["memory"])<<20)
+            memory_static_min = str(int(memory_settings["memory_static_min"])<<20)
+            memory_static_max = str(int(memory_settings["memory_static_max"])<<20)
 
             self.connection.xenapi.VM.set_memory_limits(
                 vm_ref, memory_static_min, memory_static_max, memory, memory
