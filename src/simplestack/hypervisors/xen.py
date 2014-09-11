@@ -159,12 +159,12 @@ class Stack(SimpleStack):
         vm_ref = self._vm_ref(guest_id)
         if "name" in guestdata:
             self.connection.xenapi.VM.set_name_label(vm_ref, guestdata["name"])
-        if "memory_settings" in guestdata:
-            memory_settings = guestdata["memory_settings"]
+        if "memory" in guestdata:
+            memory = guestdata["memory"]
 
-            memory_target = str(int(memory_settings["memory_target"])<<20)
-            memory_static_min = str(int(memory_settings["memory_static_min"])<<20)
-            memory_static_max = str(int(memory_settings["memory_static_max"])<<20)
+            memory_target = str(int(memory["memory_target"])<<20)
+            memory_static_min = str(int(memory["memory_static_min"])<<20)
+            memory_static_max = str(int(memory["memory_static_max"])<<20)
 
             self.connection.xenapi.VM.set_memory_limits(
                 vm_ref, memory_static_min, memory_static_max, memory_target, memory_target
