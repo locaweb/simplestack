@@ -169,6 +169,11 @@ class Stack(SimpleStack):
             self.connection.xenapi.VM.set_memory_limits(
                 vm_ref, memory_static_min, memory_static_max, memory_target, memory_target
             )
+        if "memory_target_live" in guestdata:
+            memory_target = str(int(guestdata["memory_target_live"])<<20)
+            self.connection.xenapi.VM.set_memory_dynamic_range(
+                vm_ref, memory_target, memory_target
+            )
         if "vcpus" in guestdata:
             vcpus = guestdata["vcpus"]
             vcpus_at_startup = str(vcpus["vcpus_at_startup"])
