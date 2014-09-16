@@ -176,12 +176,15 @@ class Stack(SimpleStack):
             self.connection.xenapi.VM.set_memory_dynamic_range(
                 vm_ref, memory_target, memory_target
             )
-        if "vcpus" in guestdata:
-            vcpus = guestdata["vcpus"]
-            vcpus_at_startup = str(vcpus.get("vcpus_at_startup"))
-            vcpus_max = str(vcpus.get("vcpus_max"))
+        if "cpus" in guestdata:
+            vcpus = guestdata["cpus"]
+            if not isinstance(vcpus,dict):
+               vcpus = { "vcpus_at_startup" : vcpus, "vcpus_max" : self.connection.xenapi.VM.get_VCPUs_max(vm_ref) }
 
-            if int(cpus) > int(max_cpus):
+            vcpus_at_startup = str(vcpus["vcpus_at_startup"])
+            vcpus_max = str(vcpus["vcpus_max"])
+
+            if int(vcpus_at_startup) > int(vcpus_max):
                 self.connection.xenapi.VM.set_VCPUs_max(vm_ref, vcpus_max)
                 self.connection.xenapi.VM.set_VCPUs_at_startup(vm_ref, vcpus_at_startup)
             else:
