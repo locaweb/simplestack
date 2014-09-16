@@ -160,19 +160,38 @@ class Stack(SimpleStack):
         if "name" in guestdata:
             self.connection.xenapi.VM.set_name_label(vm_ref, guestdata["name"])
         if "memory" in guestdata:
-            memory = str(int(guestdata["memory"]) * 1024 * 1024)
+            memory = guestdata["memory"]
+            if not isinstance(memory,dict):
+               memory = { "memory_target" : memory , "memory_static_min" : memory, "memory_static_max" : memory }
+
+            memory_target = str(int(memory["memory_target"])<<20)
+            memory_static_min = str(int(memory["memory_static_min"])<<20)
+            memory_static_max = str(int(memory["memory_static_max"])<<20)
+
             self.connection.xenapi.VM.set_memory_limits(
-                vm_ref, memory, memory, memory, memory
+                vm_ref, memory_static_min, memory_static_max, memory_target, memory_target
+            )
+        if "memory_target_live" in guestdata:
+            memory_target = str(int(guestdata["memory_target_live"])<<20)
+            self.connection.xenapi.VM.set_memory_dynamic_range(
+                vm_ref, memory_target, memory_target
             )
         if "cpus" in guestdata:
-            max_cpus = self.connection.xenapi.VM.get_VCPUs_max(vm_ref)
-            cpus = str(guestdata["cpus"])
-            if int(cpus) > int(max_cpus):
-                self.connection.xenapi.VM.set_VCPUs_max(vm_ref, cpus)
-                self.connection.xenapi.VM.set_VCPUs_at_startup(vm_ref, cpus)
+            vcpus = guestdata["cpus"]
+            if not isinstance(vcpus,dict):
+               vcpus = { "vcpus_at_startup" : vcpus, "vcpus_max" : self.connection.xenapi.VM.get_VCPUs_max(vm_ref) }
+
+            vcpus_at_startup = str(vcpus["vcpus_at_startup"])
+            vcpus_max = str(vcpus["vcpus_max"])
+
+            if int(vcpus_at_startup) > int(vcpus_max):
+                self.connection.xenapi.VM.set_VCPUs_max(vm_ref, vcpus_at_startup)
+                self.connection.xenapi.VM.set_VCPUs_at_startup(vm_ref, vcpus_at_startup)
             else:
-                self.connection.xenapi.VM.set_VCPUs_at_startup(vm_ref, cpus)
-                self.connection.xenapi.VM.set_VCPUs_max(vm_ref, cpus)
+                self.connection.xenapi.VM.set_VCPUs_at_startup(vm_ref, vcpus_at_startup)
+                self.connection.xenapi.VM.set_VCPUs_max(vm_ref, vcpus_max)
+        if "vcpus_number_live" in guestdata:
+            self.connection.xenapi.VM.set_VCPUs_number_live(vm_ref, guestdata["vcpus_number_live"])
         if "vcpu_settings" in guestdata:
             parameters = self.connection.xenapi.VM.get_VCPUs_params(vm_ref)
             parameters.update(guestdata["vcpu_settings"])
