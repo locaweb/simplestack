@@ -181,7 +181,6 @@ class Stack(SimpleStack):
             if not isinstance(vcpus,dict):
                vcpus = { "vcpus_at_startup" : vcpus, "vcpus_max" : self.connection.xenapi.VM.get_VCPUs_max(vm_ref) }
 
-    #        import sys; sys.stdout = sys.__stdout__; import ipdb; ipdb.set_trace()
             vcpus_at_startup = str(vcpus["vcpus_at_startup"])
             vcpus_max = str(vcpus["vcpus_max"])
 
