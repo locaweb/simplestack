@@ -178,8 +178,8 @@ class Stack(SimpleStack):
             )
         if "vcpus" in guestdata:
             vcpus = guestdata["vcpus"]
-            vcpus_at_startup = str(vcpus["vcpus_at_startup"])
-            vcpus_max = str(vcpus["vcpus_max"])
+            vcpus_at_startup = str(vcpus.get("vcpus_at_startup"))
+            vcpus_max = str(vcpus.get("vcpus_max"))
 
             if int(cpus) > int(max_cpus):
                 self.connection.xenapi.VM.set_VCPUs_max(vm_ref, vcpus_max)
