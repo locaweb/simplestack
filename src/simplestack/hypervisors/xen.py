@@ -191,7 +191,7 @@ class Stack(SimpleStack):
 
             self.connection.xenapi.VM.set_VCPUs_at_startup(vm_ref, vcpus_at_startup)
         if "vcpus_number_live" in guestdata:
-            self.connection.xenapi.VM.set_VCPUs_number_live(vm_ref, guestdata["vcpus_number_live"])
+            self.connection.xenapi.VM.set_VCPUs_number_live(vm_ref, str(guestdata["vcpus_number_live"]))
         if "vcpu_settings" in guestdata:
             parameters = self.connection.xenapi.VM.get_VCPUs_params(vm_ref)
             parameters.update(guestdata["vcpu_settings"])
