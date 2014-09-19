@@ -186,10 +186,10 @@ class Stack(SimpleStack):
 
             if int(vcpus_at_startup) > int(vcpus_max):
                 self.connection.xenapi.VM.set_VCPUs_max(vm_ref, vcpus_at_startup)
-                self.connection.xenapi.VM.set_VCPUs_at_startup(vm_ref, vcpus_at_startup)
             else:
-                self.connection.xenapi.VM.set_VCPUs_at_startup(vm_ref, vcpus_at_startup)
                 self.connection.xenapi.VM.set_VCPUs_max(vm_ref, vcpus_max)
+
+            self.connection.xenapi.VM.set_VCPUs_at_startup(vm_ref, vcpus_at_startup)
         if "vcpus_number_live" in guestdata:
             self.connection.xenapi.VM.set_VCPUs_number_live(vm_ref, guestdata["vcpus_number_live"])
         if "vcpu_settings" in guestdata:
