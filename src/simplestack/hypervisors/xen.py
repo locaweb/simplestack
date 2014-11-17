@@ -62,6 +62,9 @@ class Stack(SimpleStack):
             else:
                 raise error
 
+    def logout(self):
+        self.connection.xenapi.session.logout()
+
     def pool_info(self):
         used_memory = 0
         for vm_rec in self.connection.xenapi.VM.get_all_records().values():

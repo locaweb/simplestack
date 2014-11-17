@@ -73,8 +73,11 @@ def pool_info(hypervisor, host):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
+    pool_info = manager.pool_info()
 
-    return json.dumps(manager.pool_info())
+    manager.logout()
+
+    return json.dumps(pool_info)
 
 
 @get('/:hypervisor/:host/hosts')
@@ -89,7 +92,11 @@ def host_list(hypervisor, host):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    return json.dumps(manager.host_list())
+    host_list = manager.host_list()
+
+    manager.logout()
+
+    return json.dumps(host_list)
 
 
 @get('/:hypervisor/:host/hosts/:host_id')
@@ -104,7 +111,11 @@ def host_info(hypervisor, host, host_id):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    return json.dumps(manager.host_info(host_id))
+    host_info = manager.host_info(host_id)
+
+    manager.logout()
+
+    return json.dumps(host_info)
 
 
 @get('/:hypervisor/:host/storages')
@@ -119,7 +130,11 @@ def storage_list(hypervisor, host):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    return json.dumps(manager.storage_list())
+    storage_list = manager.storage_list()
+
+    manager.logout()
+
+    return json.dumps(storage_list)
 
 
 @get('/:hypervisor/:host/storages/:storage_id')
@@ -134,7 +149,11 @@ def storage_info(hypervisor, host, storage_id):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    return json.dumps(manager.storage_info(storage_id))
+    storage_info = manager.storage_info(storage_id)
+
+    manager.logout()
+
+    return json.dumps(storage_info)
 
 
 @post('/:hypervisor/:host/storages/:storage_id/guests')
@@ -156,6 +175,9 @@ def storage_guest_import(hypervisor, host, storage_id):
     )
     location = "/%s/%s/guests/%s" % (hypervisor, host, guest["id"])
     response.set_header("Location", location)
+
+    manager.logout()
+
     return json.dumps(guest)
 
 
@@ -171,7 +193,11 @@ def guest_list(hypervisor, host):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    return json.dumps(manager.guest_list())
+    guest_list = manager.guest_list()
+
+    manager.logout()
+
+    return json.dumps(guest_list)
 
 
 @post('/:hypervisor/:host/guests')
@@ -193,6 +219,9 @@ def guest_create(hypervisor, host):
     guest = manager.guest_create(data)
     location = "/%s/%s/guests/%s" % (hypervisor, host, guest["id"])
     response.set_header("Location", location)
+
+    manager.logout()
+
     return json.dumps(guest)
 
 
@@ -214,6 +243,9 @@ def guest_import(hypervisor, host):
     )
     location = "/%s/%s/guests/%s" % (hypervisor, host, guest["id"])
     response.set_header("Location", location)
+
+    manager.logout()
+
     return json.dumps(guest)
 
 
@@ -229,7 +261,11 @@ def guest_info(hypervisor, host, guest_id):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    return json.dumps(manager.guest_info(guest_id))
+    guest_id = manager.guest_info(guest_id)
+
+    manager.logout()
+
+    return json.dumps(guest_id)
 
 
 @put('/:hypervisor/:host/guests/:guest_id')
@@ -248,7 +284,11 @@ def guest_update(hypervisor, host, guest_id):
     if not data:
         abort(400, 'No data received')
     data = json.loads(data)
-    return json.dumps(manager.guest_update(guest_id, data))
+    guest_data = manager.guest_update(guest_id, data)
+
+    manager.logout()
+
+    return json.dumps(guest_data)
 
 
 @post('/:hypervisor/:host/guests/:guest_id/clone')
@@ -270,6 +310,9 @@ def guest_clone(hypervisor, host, guest_id):
     guest = manager.guest_clone(guest_id, data)
     location = "/%s/%s/guests/%s" % (hypervisor, host, guest["id"])
     response.set_header("Location", location)
+
+    manager.logout()
+
     return json.dumps(guest)
 
 
@@ -291,6 +334,8 @@ def guest_export(hypervisor, host, guest_id):
         yield response_part
         response_part = export_response.read(1024)
 
+    manager.logout()
+
 
 @delete('/:hypervisor/:host/guests/:guest_id')
 def guest_delete(hypervisor, host, guest_id):
@@ -304,7 +349,11 @@ def guest_delete(hypervisor, host, guest_id):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    return json.dumps(manager.guest_delete(guest_id))
+    guest_delete = manager.guest_delete(guest_id)
+
+    manager.logout()
+
+    return json.dumps(guest_delete)
 
 
 @get('/:hypervisor/:host/guests/:guest_id/disks')
@@ -319,7 +368,11 @@ def disk_list(hypervisor, host, guest_id):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    return json.dumps(manager.disk_list(guest_id))
+    disk_list = manager.disk_list(guest_id)
+
+    manager.logout()
+
+    return json.dumps(disk_list)
 
 
 @post('/:hypervisor/:host/guests/:guest_id/disks')
@@ -343,6 +396,9 @@ def disk_create(hypervisor, host, guest_id):
         hypervisor, host, guest_id, disk["id"]
     )
     response.set_header("Location", location)
+
+    manager.logout()
+
     return json.dumps(disk)
 
 
@@ -359,6 +415,9 @@ def disk_info(hypervisor, host, guest_id, disk_id):
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
     nwi_info = manager.disk_info(guest_id, disk_id)
+
+    manager.logout()
+
     return json.dumps(nwi_info)
 
 
@@ -379,6 +438,9 @@ def disk_update(hypervisor, host, guest_id, disk_id):
         abort(400, 'No data received')
     data = json.loads(data)
     nwi_info = manager.disk_update(guest_id, disk_id, data)
+
+    manager.logout()
+
     return json.dumps(nwi_info)
 
 
@@ -395,6 +457,7 @@ def disk_delete(hypervisor, host, guest_id, disk_id):
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
     manager.disk_delete(guest_id, disk_id)
+    manager.logout()
 
 
 @put('/:hypervisor/:host/guests/:guest_id/media_device')
@@ -414,6 +477,7 @@ def media_mount(hypervisor, host, guest_id):
         abort(400, 'No data received')
     data = json.loads(data)
     manager.media_mount(guest_id, data)
+    manager.logout()
 
 
 @get('/:hypervisor/:host/guests/:guest_id/media_device')
@@ -428,7 +492,11 @@ def media_info(hypervisor, host, guest_id):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    return json.dumps(manager.media_info(guest_id))
+    media_info = manager.media_info(guest_id)
+
+    manager.logout()
+
+    return json.dumps(media_info)
 
 
 @get('/:hypervisor/:host/guests/:guest_id/network_interfaces')
@@ -443,7 +511,11 @@ def network_interface_list(hypervisor, host, guest_id):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    return json.dumps(manager.network_interface_list(guest_id))
+    netiface_list = manager.network_interface_list(guest_id)
+
+    manager.logout()
+
+    return json.dumps(netiface_list)
 
 
 @post('/:hypervisor/:host/guests/:guest_id/network_interfaces')
@@ -473,6 +545,9 @@ def network_interface_create(hypervisor, host, guest_id):
         hypervisor, host, guest_id, network_interface["id"]
     )
     response.set_header("Location", location)
+
+    manager.logout()
+
     return json.dumps(network_interface)
 
 
@@ -489,6 +564,9 @@ def network_interface_info(hypervisor, host, guest_id, interface_id):
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
     nwi_info = manager.network_interface_info(guest_id, interface_id)
+
+    manager.logout()
+
     return json.dumps(nwi_info)
 
 
@@ -509,6 +587,9 @@ def network_interface_update(hypervisor, host, guest_id, interface_id):
         abort(400, 'No data received')
     data = json.loads(data)
     nwi_info = manager.network_interface_update(guest_id, interface_id, data)
+
+    manager.logout()
+
     return json.dumps(nwi_info)
 
 
@@ -525,6 +606,7 @@ def network_interface_delete(hypervisor, host, guest_id, interface_id):
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
     manager.network_interface_delete(guest_id, interface_id)
+    manager.logout()
 
 
 @get('/:hypervisor/:host/guests/:guest_id/tags')
@@ -539,7 +621,11 @@ def tag_list(hypervisor, host, guest_id):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    return json.dumps(manager.tag_list(guest_id))
+    tag_list = manager.tag_list(guest_id)
+
+    manager.logout()
+
+    return json.dumps(tag_list)
 
 
 @post('/:hypervisor/:host/guests/:guest_id/tags')
@@ -564,6 +650,9 @@ def tag_create(hypervisor, host, guest_id):
         hypervisor, host, guest_id, tag[0]
     )
     response.set_header("Location", location)
+
+    manager.logout()
+
     return json.dumps(tag)
 
 
@@ -579,7 +668,11 @@ def tag_delete(hypervisor, host, guest_id, tag_name):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    return json.dumps(manager.tag_delete(guest_id, tag_name))
+    tag_delete = manager.tag_delete(guest_id, tag_name)
+
+    manager.logout()
+
+    return json.dumps(tag_delete)
 
 
 @get('/:hypervisor/:host/guests/:guest_id/snapshots')
@@ -594,7 +687,11 @@ def snapshot_list(hypervisor, host, guest_id):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    return json.dumps(manager.snapshot_list(guest_id))
+    snapshot_list = manager.snapshot_list(guest_id)
+
+    manager.logout()
+
+    return json.dumps(snapshot_list)
 
 
 @post('/:hypervisor/:host/guests/:guest_id/snapshots')
@@ -618,6 +715,9 @@ def snapshot_create(hypervisor, host, guest_id):
         hypervisor, host, guest_id, snapshot["id"]
     )
     response.set_header("Location", location)
+
+    manager.logout()
+
     return json.dumps(snapshot)
 
 
@@ -633,7 +733,11 @@ def snapshot_info(hypervisor, host, guest_id, snapshot_id):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    return json.dumps(manager.snapshot_info(guest_id, snapshot_id))
+    snapshot_info = manager.snapshot_info(guest_id, snapshot_id)
+
+    manager.logout()
+
+    return json.dumps(snapshot_info)
 
 
 @put('/:hypervisor/:host/guests/:guest_id/snapshots/:snapshot_id/revert')
@@ -648,7 +752,11 @@ def snapshot_revert(hypervisor, host, guest_id, snapshot_id):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    return json.dumps(manager.snapshot_revert(guest_id, snapshot_id))
+    snapshot_revert = manager.snapshot_revert(guest_id, snapshot_id)
+
+    manager.logout()
+
+    return json.dumps(snapshot_revert)
 
 
 @delete('/:hypervisor/:host/guests/:guest_id/snapshots/:snapshot_id')
@@ -663,7 +771,11 @@ def snapshot_delete(hypervisor, host, guest_id, snapshot_id):
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    return json.dumps(manager.snapshot_delete(guest_id, snapshot_id))
+    snapshot_delete = manager.snapshot_delete(guest_id, snapshot_id)
+
+    manager.logout()
+
+    return json.dumps(snapshot_delete)
 
 
 @put('/:hypervisor/:host/guests/:guest_id/reboot')
@@ -687,6 +799,7 @@ def reboot_guest(hypervisor, host, guest_id):
         force = data.get('force')
 
     manager.guest_reboot(guest_id, force=force)
+    manager.logout()
 
     return json.dumps({"action": "reboot", "message": "ok"})
 
@@ -718,6 +831,9 @@ def power_guest(hypervisor, host, guest_id):
         manager.guest_suspend(guest_id)
     elif state == "resume":
         manager.guest_resume(guest_id)
+
+    manager.logout()
+
     return json.dumps({"action": state, "message": "ok"})
 
 

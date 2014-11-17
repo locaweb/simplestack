@@ -74,6 +74,12 @@ class SimpleStack(object):
         """
         raise FeatureNotImplemented()
 
+    def logout(self):
+        """
+        Each hypervisor should implement this method to have its own logout method.
+        """
+        pass
+
     @require_libvirt(True)
     def pool_info(self):
         free = self.libvirt_connection.getFreeMemory()/1024/1024
