@@ -491,11 +491,11 @@ class Stack(SimpleStack):
         if "locking_mode" in data and vif_record["locking_mode"] != data["locking_mode"]:
             new_attributes["locking_mode"] = data["locking_mode"]
 
-        if "ipv4_allowed" in data and vif_record["ipv4-allowed"] != data["ipv4_allowed"]:
-            new_attributes["ipv4-allowed"] = data["ipv4_allowed"]
+        if "ipv4_allowed" in data and vif_record["ipv4_allowed"] != data["ipv4_allowed"]:
+            new_attributes["ipv4_allowed"] = data["ipv4_allowed"]
 
-        if "ipv6_allowed" in data and vif_record["ipv6-allowed"] != data["ipv6_allowed"]:
-            new_attributes["ipv6-allowed"] = data["ipv6_allowed"]
+        if "ipv6_allowed" in data and vif_record["ipv6_allowed"] != data["ipv6_allowed"]:
+            new_attributes["ipv6_allowed"] = data["ipv6_allowed"]
 
         if len(new_attributes) != 0:
             vif_record.update(new_attributes)
