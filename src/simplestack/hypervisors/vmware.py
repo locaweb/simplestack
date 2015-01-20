@@ -212,6 +212,9 @@ class Stack(SimpleStack):
                 vif.macAddress,
                 vif.unitNumber,
                 vif.macAddress,
+                '',
+                '',
+                '',
                 vif.backing.network.name
             )
         )

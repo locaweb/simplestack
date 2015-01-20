@@ -476,6 +476,8 @@ class Stack(SimpleStack):
         vif_ref = self._network_interface_ref(vm_ref, network_interface_id)
         vif_record = self.connection.xenapi.VIF.get_record(vif_ref)
 
+        new_attributes = {}
+
         if "network" in data:
             net_refs = self.connection.xenapi.network\
                 .get_by_name_label(data["network"])
@@ -484,17 +486,30 @@ class Stack(SimpleStack):
                 raise Exception("Unknown network: %s" % data["network"])
 
             if vif_record["network"] != net_refs[0]:
-                vif_record["network"] = net_refs[0]
-                try:
-                    self.connection.xenapi.VIF.unplug(vif_ref)
-                except:
-                    pass
-                self.connection.xenapi.VIF.destroy(vif_ref)
-                vif_ref = self.connection.xenapi.VIF.create(vif_record)
-                try:
-                    self.connection.xenapi.VIF.plug(vif_ref)
-                except:
-                    pass
+                new_attributes["network"] = net_refs[0]
+
+        if "locking_mode" in data and vif_record["locking-mode"] != data["locking_mode"]:
+            new_attributes["locking-mode"] = data["locking_mode"]
+
+        if "ipv4_allowed" in data and vif_record["ipv4-allowed"] != data["ipv4_allowed"]:
+            new_attributes["ipv4-allowed"] = data["ipv4_allowed"]
+
+        if "ipv6_allowed" in data and vif_record["ipv6-allowed"] != data["ipv6_allowed"]:
+            new_attributes["ipv6-allowed"] = data["ipv6_allowed"]
+
+        if len(new_attributes) != 0:
+            vif_record.update(new_attributes)
+
+            try:
+                self.connection.xenapi.VIF.unplug(vif_ref)
+            except:
+                pass
+            self.connection.xenapi.VIF.destroy(vif_ref)
+            vif_ref = self.connection.xenapi.VIF.create(vif_record)
+            try:
+                self.connection.xenapi.VIF.plug(vif_ref)
+            except:
+                pass
 
         if "active" in data:
             if data["active"]:
@@ -705,6 +720,9 @@ class Stack(SimpleStack):
                 vif_rec["MAC"],
                 vif_rec["device"],
                 vif_rec["MAC"],
+                vif_rec["locking-mode"],
+                vif_rec["ipv4-allowed"],
+                vif_rec["ipv6-allowed"],
                 network_rec["name_label"]
             )
         )

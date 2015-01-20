@@ -70,11 +70,14 @@ class Formatter(object):
 
         }
 
-    def network_interface(self, vif_id, device, mac, name_label):
+    def network_interface(self, vif_id, device, mac, name_label, locking_mode, ipv4_allowed, ipv6_allowed):
         return {
             'id': vif_id,
             'number': device,
             'mac': mac,
+            'locking_mode': locking_mode,
+            'ipv4_allowed': ipv4_allowed,
+            'ipv6_allowed': ipv6_allowed,
             'network': name_label
         }
 
