@@ -488,8 +488,8 @@ class Stack(SimpleStack):
             if vif_record["network"] != net_refs[0]:
                 new_attributes["network"] = net_refs[0]
 
-        if "locking_mode" in data and vif_record["locking-mode"] != data["locking_mode"]:
-            new_attributes["locking-mode"] = data["locking_mode"]
+        if "locking_mode" in data and vif_record["locking_mode"] != data["locking_mode"]:
+            new_attributes["locking_mode"] = data["locking_mode"]
 
         if "ipv4_allowed" in data and vif_record["ipv4-allowed"] != data["ipv4_allowed"]:
             new_attributes["ipv4-allowed"] = data["ipv4_allowed"]
@@ -720,10 +720,10 @@ class Stack(SimpleStack):
                 vif_rec["MAC"],
                 vif_rec["device"],
                 vif_rec["MAC"],
-                vif_rec["locking-mode"],
-                vif_rec["ipv4-allowed"],
-                vif_rec["ipv6-allowed"],
-                network_rec["name_label"]
+                network_rec["name_label"],
+                vif_rec["locking_mode"],
+                vif_rec["ipv4_allowed"],
+                vif_rec["ipv6_allowed"]
             )
         )
 
