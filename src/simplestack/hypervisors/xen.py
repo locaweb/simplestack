@@ -710,7 +710,8 @@ class Stack(SimpleStack):
         )
 
     def _network_interface_info(self, vif_ref):
-        vif_rec = self.connection.xenapi.VIF.get_record(vif_ref)
+        vif_rec = {'locking_mode': None, 'ipv4_allowed': None, 'ipv6_allowed': None}
+        vif_rec.update(self.connection.xenapi.VIF.get_record(vif_ref))
         network_rec = self.connection.xenapi.network.get_record(
             vif_rec["network"]
         )
