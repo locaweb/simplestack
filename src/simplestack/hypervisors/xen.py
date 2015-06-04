@@ -418,6 +418,26 @@ class Stack(SimpleStack):
             name = self.connection.xenapi.VDI.get_record(iso_ref)["name_label"]
             return {"name": name}
 
+    def _network_ref(self, name):
+        net_ref = self.connection.xenapi.network.get_by_name_label(name)
+        if len(net_ref) == 0:
+            raise Exception("Unknown network: %s" % name)
+        return net_ref[0]
+
+    def _network_get_pifs(self, name):
+        ref = self._network_ref(name)
+        return self.connection.xenapi.network.get_PIFs(ref)
+
+    def _network_create(self, name, description, other_config={}):
+        return self.connection.xenapi.network.create({"name_label": name,
+                                                      "name_description": description,
+                                                      "other_config": other_config})
+
+    def network_vlan_create(self, name, description, from_network, vlan, other_config={}):
+        net_ref = self._network_create(name, description, other_config)
+        pif_ref = self._network_get_pifs(from_network)
+        return self.connection.xenapi.pool.create_VLAN_from_PIF(pif_ref[0], net_ref, str(vlan))
+
     def network_interface_list(self, guest_id):
         vm_ref = self._vm_ref(guest_id)
         vif_refs = self.connection.xenapi.VM.get_VIFs(vm_ref)
@@ -451,13 +471,7 @@ class Stack(SimpleStack):
         }
 
         if "network" in data:
-            net_refs = self.connection.xenapi.network.\
-                get_by_name_label(data["network"])
-
-            if len(net_refs) == 0:
-                raise Exception("Unknown network: %s" % data["network"])
-
-            vif_record["network"] = net_refs[0]
+            vif_record["network"] = self._network_ref(data["network"])
 
         vif_ref = self.connection.xenapi.VIF.create(vif_record)
         try:
