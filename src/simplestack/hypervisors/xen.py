@@ -421,7 +421,7 @@ class Stack(SimpleStack):
     def _network_ref(self, name):
         net_ref = self.connection.xenapi.network.get_by_name_label(name)
         if len(net_ref) == 0:
-            raise Exception("Unknown network: %s" % name)
+            raise EntityNotFound("Unknown network: %s" % name)
         return net_ref[0]
 
     def _network_get_pifs(self, name):
@@ -493,14 +493,10 @@ class Stack(SimpleStack):
         new_attributes = {}
 
         if "network" in data:
-            net_refs = self.connection.xenapi.network\
-                .get_by_name_label(data["network"])
+            net_refs = self._network_ref(data["network"])
 
-            if len(net_refs) == 0:
-                raise Exception("Unknown network: %s" % data["network"])
-
-            if vif_record["network"] != net_refs[0]:
-                new_attributes["network"] = net_refs[0]
+            if vif_record["network"] != net_refs:
+                new_attributes["network"] = net_refs
 
         if "locking_mode" in data and vif_record["locking_mode"] != data["locking_mode"]:
             new_attributes["locking_mode"] = data["locking_mode"]
