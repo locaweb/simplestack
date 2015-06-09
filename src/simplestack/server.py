@@ -499,6 +499,62 @@ def media_info(hypervisor, host, guest_id):
     return json.dumps(media_info)
 
 
+@post('/:hypervisor/:host/networks')
+def network_vlan_create(hypervisor, host):
+    """
+    Create a Network with a tagged VLAN
+
+    ::
+
+      POST /:hypervisor/:host/networks
+
+
+    The body should contain a JSON object. The required keys should vary for
+    each hypervisor.
+
+    Xen example:
+    {"name": "VLAN2",
+     "description": "VLAN 2 storage",
+     "from_network": "BOND1",
+     "vlan": 2,
+     "other_config": {}}
+    """
+    response.content_type = "application/json"
+    manager = create_manager(hypervisor, host)
+    data = request.body.readline()
+    if not data:
+        abort(400, 'No data received')
+    data = json.loads(data)
+    network_interface = manager.network_vlan_create(data["name"], data["description"], data["from_network"], data["vlan"], data["other_config"])
+    location = "/%s/%s/networks/%s" % (
+        hypervisor, host, name
+    )
+    response.set_header("Location", location)
+
+    manager.logout()
+
+    return json.dumps(network_interface)
+
+
+@get('/:hypervisor/:host/networks/:network_name')
+def network_info(hypervisor, host, network_name):
+    """
+    Get network info
+
+    ::
+
+      GET /:hypervisor/:host/networks/:network_name
+
+    """
+    response.content_type = "application/json"
+    manager = create_manager(hypervisor, host)
+    network_info = manager.network_info(network_name)
+
+    manager.logout()
+
+    return json.dumps(network_info)
+
+
 @get('/:hypervisor/:host/guests/:guest_id/network_interfaces')
 def network_interface_list(hypervisor, host, guest_id):
     """

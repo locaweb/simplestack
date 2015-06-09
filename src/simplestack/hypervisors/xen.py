@@ -418,6 +418,13 @@ class Stack(SimpleStack):
             name = self.connection.xenapi.VDI.get_record(iso_ref)["name_label"]
             return {"name": name}
 
+    def network_info(self, name):
+        net_ref = self._network_ref(name)
+        return {"name_label": name,
+                "bridge": self.connection.xenapi.network.get_bridge(net_ref),
+                "name_description": self.connection.xenapi.network.get_name_description(net_ref),
+                "other_config": self.connection.xenapi.network.get_other_config(net_ref)}
+
     def _network_ref(self, name):
         net_ref = self.connection.xenapi.network.get_by_name_label(name)
         if len(net_ref) == 0:
@@ -436,7 +443,8 @@ class Stack(SimpleStack):
     def network_vlan_create(self, name, description, from_network, vlan, other_config={}):
         net_ref = self._network_create(name, description, other_config)
         pif_ref = self._network_get_pifs(from_network)
-        return self.connection.xenapi.pool.create_VLAN_from_PIF(pif_ref[0], net_ref, str(vlan))
+        ref = self.connection.xenapi.pool.create_VLAN_from_PIF(pif_ref[0], net_ref, str(vlan))
+        return self.network_info(name)
 
     def network_interface_list(self, guest_id):
         vm_ref = self._vm_ref(guest_id)
