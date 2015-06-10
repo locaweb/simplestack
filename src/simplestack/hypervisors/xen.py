@@ -418,9 +418,15 @@ class Stack(SimpleStack):
             name = self.connection.xenapi.VDI.get_record(iso_ref)["name_label"]
             return {"name": name}
 
-    def network_info(self, name):
-        net_ref = self._network_ref(name)
-        return {"name_label": name,
+    def network_list(self):
+        net_refs = self.connection.xenapi.network.get_all()
+        ret = []
+        for net in net_refs:
+            ret.append({"id": net})
+        return ret
+
+    def network_info(self, net_ref):
+        return {"name_label": self.connection.xenapi.network.get_name_label(net_ref),
                 "bridge": self.connection.xenapi.network.get_bridge(net_ref),
                 "name_description": self.connection.xenapi.network.get_name_description(net_ref),
                 "other_config": self.connection.xenapi.network.get_other_config(net_ref)}

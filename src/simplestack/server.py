@@ -499,6 +499,25 @@ def media_info(hypervisor, host, guest_id):
     return json.dumps(media_info)
 
 
+@get('/:hypervisor/:host/networks')
+def network_list(hypervisor, host):
+    """
+    Get networks for a given pool
+
+    ::
+
+      GET /:hypervisor/:host/networks
+
+    """
+    response.content_type = "application/json"
+    manager = create_manager(hypervisor, host)
+    network_list = manager.network_list()
+
+    manager.logout()
+
+    return json.dumps(network_list)
+
+
 @post('/:hypervisor/:host/networks')
 def network_vlan_create(hypervisor, host):
     """
@@ -527,7 +546,7 @@ def network_vlan_create(hypervisor, host):
     data = json.loads(data)
     network_interface = manager.network_vlan_create(data["name"], data["description"], data["from_network"], data["vlan"], data["other_config"])
     location = "/%s/%s/networks/%s" % (
-        hypervisor, host, name
+        hypervisor, host, data["name"]
     )
     response.set_header("Location", location)
 
