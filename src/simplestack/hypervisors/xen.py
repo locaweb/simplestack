@@ -450,7 +450,7 @@ class Stack(SimpleStack):
         net_ref = self._network_create(name, description, other_config)
         pif_ref = self._network_get_pifs(from_network)
         ref = self.connection.xenapi.pool.create_VLAN_from_PIF(pif_ref[0], net_ref, str(vlan))
-        return self.network_info(name)
+        return net_ref
 
     def network_interface_list(self, guest_id):
         vm_ref = self._vm_ref(guest_id)

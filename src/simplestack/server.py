@@ -544,30 +544,30 @@ def network_vlan_create(hypervisor, host):
     if not data:
         abort(400, 'No data received')
     data = json.loads(data)
-    network_interface = manager.network_vlan_create(data["name"], data["description"], data["from_network"], data["vlan"], data["other_config"])
+    network_ref = manager.network_vlan_create(data["name"], data["description"], data["from_network"], data["vlan"], data["other_config"])
     location = "/%s/%s/networks/%s" % (
-        hypervisor, host, data["name"]
+        hypervisor, host, network_ref
     )
     response.set_header("Location", location)
 
     manager.logout()
 
-    return json.dumps(network_interface)
+    return json.dumps(network_ref)
 
 
-@get('/:hypervisor/:host/networks/:network_name')
-def network_info(hypervisor, host, network_name):
+@get('/:hypervisor/:host/networks/:network')
+def network_info(hypervisor, host, network):
     """
     Get network info
 
     ::
 
-      GET /:hypervisor/:host/networks/:network_name
+      GET /:hypervisor/:host/networks/:network
 
     """
     response.content_type = "application/json"
     manager = create_manager(hypervisor, host)
-    network_info = manager.network_info(network_name)
+    network_info = manager.network_info(network)
 
     manager.logout()
 
