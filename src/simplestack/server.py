@@ -61,6 +61,12 @@ def custom500(error):
     })
 
 
+@error(404)
+def error404(error):
+    response.content_type = 'application/json'
+    return error.output
+
+
 @get('/:hypervisor/:host')
 def pool_info(hypervisor, host):
     """

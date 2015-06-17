@@ -434,7 +434,7 @@ class Stack(SimpleStack):
     def _network_ref(self, name):
         net_ref = self.connection.xenapi.network.get_by_name_label(name)
         if len(net_ref) == 0:
-            raise EntityNotFound("Unknown network: %s" % name)
+            raise EntityNotFound("NetworkInterface", "Unknown network: %s" % name)
         return net_ref[0]
 
     def _network_get_pifs(self, name):
