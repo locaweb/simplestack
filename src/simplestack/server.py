@@ -64,7 +64,11 @@ def custom500(error):
 @error(404)
 def error404(error):
     response.content_type = 'application/json'
-    return error.output
+
+    return json.dumps({
+        "error": error_class,
+        "message": error.output
+    })
 
 
 @get('/:hypervisor/:host')
