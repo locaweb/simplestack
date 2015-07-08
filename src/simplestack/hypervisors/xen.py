@@ -385,6 +385,11 @@ class Stack(SimpleStack):
                 disk_rec["ref"], data["name"]
             )
 
+        if "size" in data:
+            new_disk_size = int(data["size"])
+            new_disk_size *= 1024 * 1024 * 1024
+            self.connection.xenapi.VDI.resize(disk_rec["ref"], str(new_disk_size))
+
         disk_rec = self._disk_rec(vm_ref, disk_id)
         return self._disk_info(disk_rec)
 
