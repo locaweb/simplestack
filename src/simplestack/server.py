@@ -65,6 +65,7 @@ def custom500(error):
 def error404(error):
     response.content_type = 'application/json'
 
+    error_class = error.__class__.__name__
     return json.dumps({
         "error": error_class,
         "message": error.output
