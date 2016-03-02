@@ -22,6 +22,16 @@ directory.
 
 Just read the `dev.makefile` file for more informations on what it does.
 
+### Docker
+
+Just build your container based on our Dockerfile:
+
+    docker build -t simplestack .
+
+And run your container:
+
+    docker run -p 8081:8081 -v $(pwd):/simplestack -it simplestack make -f /simplestack/dev.makefile server
+
 
 ## License
 

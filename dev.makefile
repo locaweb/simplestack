@@ -18,12 +18,15 @@ pep:
 install_venv:
 	$(bin_pip) install virtualenv
 
+# Unfortunately libvirt doesn't work inside virtualenv
 create_venv: install_venv
-	# Unfortunately libvirt doesn't work inside virtualenv
 	virtualenv --system-site-packages $(venv_dir)
 
-bootstrap: create_venv
+bootstrap_venv: create_venv
 	$(venv_bin)/$(bin_pip) install -r pip-requires
+
+bootstrap:
+	$(bin_pip) install -r pip-requires
 
 test:
 	@$(simplestack_env) $(venv_bin)/nosetests $(TEST)
@@ -32,7 +35,7 @@ env:
 	@echo $(simplestack_env)
 
 server:
-	$(simplestack_env) bin/simplestack -a foreground -p var/run/simplestack/ -l log/
+	$(simplestack_env) bin/simplestack -a foreground - p var/run/simplestack/ -l log/
 
 console:
 	$(simplestack_env) $(bin_console)
