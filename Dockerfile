@@ -1,7 +1,6 @@
 FROM debian:jessie
 MAINTAINER PotHix
-RUN apt-get update
-RUN apt-get install -y --force-yes build-essential python-dev make python-pip devscripts node equivs
+RUN apt-get update && apt-get install -y --force-yes build-essential python-dev make python-pip devscripts node equivs
 
 RUN mkdir -p /simplestack/debian
 ADD debian/control /simplestack/debian/control
