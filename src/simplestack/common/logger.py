@@ -1,3 +1,4 @@
+import sys
 import socket
 import logging
 import logging.config
@@ -12,14 +13,18 @@ def set_logger():
     log_date_format = "%Y-%m-%d %H:%M:%S"
     formatter = logging.Formatter(log_format, log_date_format)
 
-    SysLogHandler = logging.handlers.SysLogHandler
 
     try:
-        handler = SysLogHandler(address='/dev/log',
-                                facility=SysLogHandler.LOG_SYSLOG)
-    except socket.error:
-        handler = SysLogHandler(address='/var/run/syslog',
-                                facility=SysLogHandler.LOG_SYSLOG)
+        SysLogHandler = logging.handlers.SysLogHandler
+
+        try:
+            handler = SysLogHandler(address='/dev/log',
+                                    facility=SysLogHandler.LOG_SYSLOG)
+        except socket.error:
+            handler = SysLogHandler(address='/var/run/syslog',
+                                    facility=SysLogHandler.LOG_SYSLOG)
+    except:
+        handler = logging.StreamHandler(sys.stdout)
 
     handler.setFormatter(formatter)
     root_logger.addHandler(handler)

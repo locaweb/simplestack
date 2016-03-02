@@ -1,9 +1,9 @@
-bottle
-jinja2
+bottle==0.10.11
+jinja2==2.6
 gevent
 ipdb
 nose
 pep8
 pysphere
-supay
+supay==0.0.8
 webtest
