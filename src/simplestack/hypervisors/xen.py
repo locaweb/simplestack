@@ -754,7 +754,7 @@ class Stack(SimpleStack):
                 vif_rec["locking_mode"],
                 vif_rec["ipv4_allowed"],
                 vif_rec["ipv6_allowed"],
-                vif_rec["ratelimit"]
+                vif_rec["qos_algorithm_params"]
             )
         )
 
