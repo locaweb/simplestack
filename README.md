@@ -30,7 +30,13 @@ Just build your container based on our Dockerfile:
 
 And run your container:
 
-    docker run -p 8081:8081 -v $(pwd):/simplestack -it simplestack make -f /simplestack/dev.makefile server
+    docker-compose up -d
+
+    docker-compose down
+
+Runing tests:
+
+    docker-compose run web make -f dev.makefile test
 
 
 ## License

@@ -1,0 +1,7 @@
+web:
+  build: .
+  command: "make -f dev.makefile server"
+  volumes:
+    - .:/simplestack
+  ports:
+    - "8081:8081"
