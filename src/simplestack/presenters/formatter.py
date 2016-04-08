@@ -70,7 +70,7 @@ class Formatter(object):
 
         }
 
-    def network_interface(self, vif_id, device, mac, name_label, locking_mode, ipv4_allowed, ipv6_allowed):
+    def network_interface(self, vif_id, device, mac, name_label, locking_mode, ipv4_allowed, ipv6_allowed, rate_limit=None):
         return {
             'id': vif_id,
             'number': device,
@@ -78,7 +78,8 @@ class Formatter(object):
             'locking_mode': locking_mode,
             'ipv4_allowed': ipv4_allowed,
             'ipv6_allowed': ipv6_allowed,
-            'network': name_label
+            'network': name_label,
+            'rate_limit': rate_limit
         }
 
     def pool(self, used_memory, total_memory, uuid, master, software_info=None):

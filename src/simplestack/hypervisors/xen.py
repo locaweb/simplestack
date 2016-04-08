@@ -753,7 +753,8 @@ class Stack(SimpleStack):
                 network_rec["name_label"],
                 vif_rec["locking_mode"],
                 vif_rec["ipv4_allowed"],
-                vif_rec["ipv6_allowed"]
+                vif_rec["ipv6_allowed"],
+                vif_rec["ratelimit"]
             )
         )
 
