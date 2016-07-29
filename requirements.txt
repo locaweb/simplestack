@@ -1,9 +1,5 @@
 bottle==0.10.11
 jinja2==2.6
-gevent
-ipdb
-nose
-pep8
-pysphere
+gevent==0.13.6
+pysphere==0.1.6
 supay==0.0.8
-webtest

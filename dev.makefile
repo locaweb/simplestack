@@ -1,5 +1,5 @@
 simplestack_cfg = etc/simplestack.cfg
-simplestack_env = PYTHONPATH=src SIMPLESTACK_CFG=$(simplestack_cfg)
+simplestack_env = PYTHONPATH=src:$(CURDIR)/vendor/lib/python SIMPLESTACK_CFG=$(simplestack_cfg)
 
 export simplestack_env
 
@@ -23,10 +23,12 @@ create_venv: install_venv
 	virtualenv --system-site-packages $(venv_dir)
 
 bootstrap_venv: create_venv
-	$(venv_bin)/$(bin_pip) install -r pip-requires
+	$(venv_bin)/$(bin_pip) install -r requirements.txt
+	$(venv_bin)/$(bin_pip) install -r test-requirements.txt
 
 bootstrap:
-	$(bin_pip) install -r pip-requires
+	$(bin_pip) install -r requirements.txt
+	$(bin_pip) install -r test-requirements.txt
 
 test:
 	@$(simplestack_env) $(venv_bin)/nosetests $(TEST)
@@ -36,6 +38,9 @@ env:
 
 server:
 	$(simplestack_env) bin/simplestack -a foreground - p var/run/simplestack/ -l log/
+
+vendor:
+	$(bin_pip) install --install-option="--home=$(CURDIR)/vendor" -r requirements.txt
 
 console:
 	$(simplestack_env) $(bin_console)

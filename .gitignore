@@ -3,3 +3,4 @@ doc/build
 test.cfg
 .noseids
 log
+vendor
